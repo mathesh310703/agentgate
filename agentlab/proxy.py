@@ -5,7 +5,8 @@
 
 Point any OpenAI-compatible client at http://127.0.0.1:8000/v1 (any api_key string works).
 
-* Only POST /v1/chat/completions, non-streaming. Other paths -> 404; "stream": true -> 400.
+* POST /v1/chat/completions, non-streaming ("stream": true -> 400). GET /v1/models is answered
+  locally (no upstream call, no cost). Other paths -> 404.
 * The Baseten key is read from .env only (not the environment) and is never logged; the caller's
   Authorization header is ignored. Log lines are additionally scrubbed of the key.
 * The model is forced to MODEL; max_tokens (and max_completion_tokens) are capped at 2000.
@@ -32,6 +33,8 @@ from agentlab import llm
 
 UPSTREAM = llm.BASE_URL + "/chat/completions"
 PATH = "/v1/chat/completions"
+MODELS_PATH = "/v1/models"
+MODELS_LIST = {"object": "list", "data": [{"id": llm.MODEL, "object": "model"}]}
 DROPPABLE = ["reasoning_effort", "temperature", "top_p", "parallel_tool_calls", "seed",
              "presence_penalty", "frequency_penalty", "logprobs", "top_logprobs", "stop"]
 DRY_RUN_LOG = llm.ROOT / "eval" / "cache" / "cost_log_dryrun.csv"
@@ -119,7 +122,10 @@ class Handler(BaseHTTPRequestHandler):
         self._send(status, json.dumps({"error": {"message": message, "type": etype, "code": status}}).encode())
 
     def do_GET(self):
-        self._error(404, "only POST /v1/chat/completions is served", "not_found")
+        if self.path.rstrip("/") == MODELS_PATH:  # answered locally: no upstream call, no cost
+            self.server.log("200 GET /v1/models (local)")
+            return self._send(200, json.dumps(MODELS_LIST).encode())
+        self._error(404, "only POST /v1/chat/completions and GET /v1/models are served", "not_found")
 
     def do_POST(self):
         s = self.server

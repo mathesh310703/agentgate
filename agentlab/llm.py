@@ -1,12 +1,16 @@
-"""Muse Spark Open client (Baseten, OpenAI-compatible) with a disk cache, cost log and guards.
+"""Muse Spark Open client (Baseten, OpenAI-compatible) with budgets, a disk cache and a cost log.
 
-* Key: BASETEN_API_KEY from the environment or from .env in the repo root. Never printed.
-* Cache: data/cache/llm/<sha256>.json, keyed by (model, prompt text, image hashes, params, salt).
-  `salt` separates repeated trials of the same prompt, so trials are independent samples.
-* Cost log: eval/cost_log.csv, one row per real (uncached) call.
-* Guards: BudgetExceeded before a call that could push total spend past BUDGET_STOP_USD;
-  SurpriseOutput after a call whose output tokens exceed the caller's expectation by more than
-  SURPRISE_TOKENS. Both are meant to stop the run, not to be caught and ignored.
+* Key: BASETEN_API_KEY from the environment or .env (python-dotenv). Never printed or logged.
+* Stages: every call declares one of STAGE_BUDGETS. A call whose worst-case cost would push
+  that stage past its budget is refused with StageBudgetExceeded (nothing is sent).
+* Total-spend confirmation: once total spend would pass CONFIRM_TOTAL_USD, calls are refused
+  with ConfirmationRequired until AGENTGATE_CONFIRM_OVER_18=1 is set in the environment.
+* Output cap: max_tokens <= MAX_TOKENS_CAP, reasoning included (Muse Spark Open always reasons).
+* Surprise guard: SurpriseOutput if the visible answer (output minus reasoning) exceeds the
+  caller's `expect_out` by more than SURPRISE_TOKENS.
+* Screenshots: converted to JPEG, at most SCREENSHOT_WIDTH px wide, before sending.
+* Cache: eval/cache/llm/<sha256>.json keyed by (model, prompt text, image hashes, params, salt);
+  `salt` keeps repeated trials independent. Cost log: eval/cost_log.csv (uncached calls only).
 """
 
 from __future__ import annotations
@@ -14,27 +18,44 @@ from __future__ import annotations
 import base64
 import csv
 import hashlib
+import io
 import json
+import math
 import os
 import time
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence, Tuple
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE_URL = "https://inference.baseten.co/v1"
 MODEL = "meta-models/muse-spark-open-1026"
 PRICE_PER_M = {"input": 1.25, "cached_input": 0.15, "output": 4.25}  # baseten.co/pricing, Oct 2026
-BUDGET_STOP_USD = 18.0  # stop before the $20 budget is reached
+STAGE_BUDGETS = {"dev": 5.0, "baseline": 15.0, "defense": 20.0, "benchmark": 30.0,
+                 "arena": 20.0, "reserve": 10.0}
+CONFIRM_TOTAL_USD = 18.0
+CONFIRM_ENV = "AGENTGATE_CONFIRM_OVER_18"
+MAX_TOKENS_CAP = 2000
 SURPRISE_TOKENS = 100
-CACHE_DIR = ROOT / "data" / "cache" / "llm"
+SCREENSHOT_WIDTH = 768
+JPEG_QUALITY = 85
+CACHE_DIR = ROOT / "eval" / "cache" / "llm"
 COST_LOG = ROOT / "eval" / "cost_log.csv"
-COST_FIELDS = ["time", "tag", "model", "prompt_tokens", "cached_tokens", "completion_tokens",
-               "reasoning_tokens", "latency_s", "cost_usd", "total_usd"]
+COST_FIELDS = ["time", "stage", "tag", "model", "prompt_tokens", "cached_tokens", "completion_tokens",
+               "reasoning_tokens", "finish_reason", "latency_s", "cost_usd"]
 
 
-class BudgetExceeded(RuntimeError):
+class BudgetError(RuntimeError):
+    """Base class: the call was refused before anything was sent."""
+
+
+class StageBudgetExceeded(BudgetError):
+    pass
+
+
+class ConfirmationRequired(BudgetError):
     pass
 
 
@@ -48,33 +69,65 @@ class Reply:
     prompt_tokens: int
     completion_tokens: int
     reasoning_tokens: int
+    finish_reason: str
     latency_s: float
     cost_usd: float
     cached: bool
 
 
 def load_key() -> str:
-    key = os.environ.get("BASETEN_API_KEY")
-    env = ROOT / ".env"
-    if not key and env.exists():
-        for line in env.read_text().splitlines():
-            if line.strip().startswith("BASETEN_API_KEY="):
-                key = line.split("=", 1)[1].strip().strip('"').strip("'")
+    from dotenv import load_dotenv
+
+    load_dotenv(ROOT / ".env", override=False)
+    key = (os.environ.get("BASETEN_API_KEY") or "").strip().strip('"').strip("'")
     if not key:
         raise RuntimeError("BASETEN_API_KEY not set: add `BASETEN_API_KEY=...` to .env in the repo root")
     return key
 
 
-def image_part(png_bytes: bytes, detail: str = "auto") -> dict:
-    url = "data:image/png;base64," + base64.b64encode(png_bytes).decode()
+# ---------- images ----------
+
+def prepare_screenshot(image_bytes: bytes, width: int = SCREENSHOT_WIDTH) -> Tuple[bytes, float]:
+    """Return (JPEG bytes at most `width` px wide, scale). Model coords / scale = original coords."""
+    from PIL import Image
+
+    img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+    scale = min(1.0, width / img.width)
+    if scale < 1.0:
+        img = img.resize((width, round(img.height * scale)), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, "JPEG", quality=JPEG_QUALITY)
+    return buf.getvalue(), scale
+
+
+def image_part(image_bytes: bytes, detail: str = "auto") -> dict:
+    jpeg, _ = prepare_screenshot(image_bytes)
+    url = "data:image/jpeg;base64," + base64.b64encode(jpeg).decode()
     return {"type": "image_url", "image_url": {"url": url, "detail": detail}}
 
 
-def total_spent() -> float:
+def text_msg(role: str, text: str, images: Sequence[bytes] = ()) -> dict:
+    return {"role": role, "content": [{"type": "text", "text": text}, *[image_part(b) for b in images]]}
+
+
+# ---------- spend accounting ----------
+
+def read_log() -> List[dict]:
     if not COST_LOG.exists():
-        return 0.0
+        return []
     with open(COST_LOG, newline="") as f:
-        return sum(float(r["cost_usd"]) for r in csv.DictReader(f))
+        return list(csv.DictReader(f))
+
+
+def spend_by_stage() -> Dict[str, float]:
+    out: Dict[str, float] = defaultdict(float)
+    for r in read_log():
+        out[r.get("stage") or "unknown"] += float(r["cost_usd"])
+    return dict(out)
+
+
+def total_spent() -> float:
+    return sum(spend_by_stage().values())
 
 
 def cost_of(prompt_tokens: int, cached_tokens: int, completion_tokens: int) -> float:
@@ -83,11 +136,46 @@ def cost_of(prompt_tokens: int, cached_tokens: int, completion_tokens: int) -> f
             + completion_tokens * p["output"]) / 1e6
 
 
-def _cache_key(model: str, messages: list, params: dict, salt: str) -> str:
+def worst_case_cost(messages: Sequence[dict], max_tokens: int) -> float:
+    """Upper-bound estimate: text at 1 token / 3 chars, each image as 28x28-px tiles, x2 margin,
+    plus a full max_tokens of output."""
+    from PIL import Image
+
+    tokens = 0.0
+    for m in messages:
+        parts = m["content"] if isinstance(m["content"], list) else [{"type": "text", "text": m["content"]}]
+        for p in parts:
+            if p.get("type") == "text":
+                tokens += len(p["text"]) / 3
+            elif p.get("type") == "image_url":
+                b64 = p["image_url"]["url"].split(",", 1)[1]
+                w, h = Image.open(io.BytesIO(base64.b64decode(b64))).size
+                tokens += math.ceil(w / 28) * math.ceil(h / 28)
+    return cost_of(int(2 * tokens) + 50, 0, max_tokens)
+
+
+def check_budget(stage: str, est: float) -> None:
+    if stage not in STAGE_BUDGETS:
+        raise ValueError(f"unknown stage {stage!r}; use one of {list(STAGE_BUDGETS)}")
+    by = spend_by_stage()
+    spent = by.get(stage, 0.0)
+    if spent + est > STAGE_BUDGETS[stage]:
+        raise StageBudgetExceeded(
+            f"stage '{stage}': spent ${spent:.4f} of ${STAGE_BUDGETS[stage]:.2f}; this call could cost up to "
+            f"${est:.4f}. Refused; raise the stage budget or move work to another stage.")
+    total = sum(by.values())
+    if total + est > CONFIRM_TOTAL_USD and os.environ.get(CONFIRM_ENV) != "1":
+        raise ConfirmationRequired(
+            f"total spend ${total:.4f} + up to ${est:.4f} would pass ${CONFIRM_TOTAL_USD:.0f}. "
+            f"Refused until you confirm: set {CONFIRM_ENV}=1.")
+
+
+# ---------- client ----------
+
+def _cache_key(model: str, messages: Sequence[dict], params: dict, salt: str) -> str:
     def strip(part):
         if isinstance(part, dict) and part.get("type") == "image_url":
-            data = part["image_url"]["url"].encode()
-            return {"image_sha256": hashlib.sha256(data).hexdigest()}
+            return {"image_sha256": hashlib.sha256(part["image_url"]["url"].encode()).hexdigest()}
         return part
 
     norm = [{"role": m["role"], "content": [strip(p) for p in m["content"]]
@@ -97,33 +185,26 @@ def _cache_key(model: str, messages: list, params: dict, salt: str) -> str:
 
 
 class SparkClient:
-    def __init__(self, model: str = MODEL, reasoning_effort: Optional[str] = "low",
-                 budget_stop: float = BUDGET_STOP_USD, use_cache: bool = True):
+    def __init__(self, model: str = MODEL, reasoning_effort: Optional[str] = "low", use_cache: bool = True):
         from openai import OpenAI
 
-        self.client = OpenAI(base_url=BASE_URL, api_key=load_key())
+        self.client = OpenAI(base_url=BASE_URL, api_key=load_key(), max_retries=5)
         self.model = model
         self.reasoning_effort = reasoning_effort
-        self.budget_stop = budget_stop
         self.use_cache = use_cache
 
-    def chat(self, messages: Sequence[dict], expect_out: int, tag: str = "", salt: str = "",
-             max_tokens: Optional[int] = None, est_cost: float = 0.05) -> Reply:
-        """One chat completion. `expect_out` is how many output tokens the caller expects."""
+    def chat(self, messages: Sequence[dict], *, stage: str, expect_out: int, tag: str = "",
+             salt: str = "", max_tokens: int = MAX_TOKENS_CAP) -> Reply:
+        """One chat completion, charged to `stage`. `expect_out` = expected visible answer tokens."""
+        max_tokens = min(max_tokens, MAX_TOKENS_CAP)
         params = {"max_tokens": max_tokens, "reasoning_effort": self.reasoning_effort}
-        key = _cache_key(self.model, list(messages), params, salt)
-        path = CACHE_DIR / f"{key}.json"
+        path = CACHE_DIR / f"{_cache_key(self.model, messages, params, salt)}.json"
         if self.use_cache and path.exists():
-            d = json.loads(path.read_text())
-            return Reply(**{**d, "cached": True})
+            return Reply(**{**json.loads(path.read_text()), "cached": True})
 
-        spent = total_spent()
-        if spent + est_cost > self.budget_stop:
-            raise BudgetExceeded(f"spent ${spent:.2f}; next call could pass the ${self.budget_stop:.0f} stop")
+        check_budget(stage, worst_case_cost(messages, max_tokens))
 
-        kwargs = {"model": self.model, "messages": list(messages)}
-        if max_tokens:
-            kwargs["max_tokens"] = max_tokens
+        kwargs = {"model": self.model, "messages": list(messages), "max_tokens": max_tokens}
         if self.reasoning_effort:
             kwargs["reasoning_effort"] = self.reasoning_effort
         t0 = time.perf_counter()
@@ -136,28 +217,27 @@ class SparkClient:
         cost = cost_of(u.prompt_tokens, cached_tok, u.completion_tokens)
         reply = Reply(text=r.choices[0].message.content or "", prompt_tokens=u.prompt_tokens,
                       completion_tokens=u.completion_tokens, reasoning_tokens=reasoning,
-                      latency_s=round(latency, 3), cost_usd=cost, cached=False)
-        self._log(tag, u.prompt_tokens, cached_tok, u.completion_tokens, reasoning, latency, cost, spent + cost)
+                      finish_reason=r.choices[0].finish_reason or "", latency_s=round(latency, 3),
+                      cost_usd=cost, cached=False)
+        self._log(stage, tag, reply, cached_tok)
         CACHE_DIR.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps({k: v for k, v in reply.__dict__.items() if k != "cached"}))
 
-        if u.completion_tokens > expect_out + SURPRISE_TOKENS:
-            raise SurpriseOutput(f"{tag}: {u.completion_tokens} output tokens ({reasoning} reasoning) "
-                                 f"vs {expect_out} expected")
+        visible = u.completion_tokens - reasoning
+        if visible > expect_out + SURPRISE_TOKENS:
+            raise SurpriseOutput(f"{tag}: {visible} visible output tokens vs {expect_out} expected "
+                                 f"(+{reasoning} reasoning)")
         return reply
 
-    def _log(self, tag, prompt, cached, completion, reasoning, latency, cost, total):
+    def _log(self, stage: str, tag: str, r: Reply, cached_tok: int) -> None:
         COST_LOG.parent.mkdir(parents=True, exist_ok=True)
         new = not COST_LOG.exists()
         with open(COST_LOG, "a", newline="") as f:
             w = csv.DictWriter(f, fieldnames=COST_FIELDS)
             if new:
                 w.writeheader()
-            w.writerow({"time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "tag": tag,
-                        "model": self.model, "prompt_tokens": prompt, "cached_tokens": cached,
-                        "completion_tokens": completion, "reasoning_tokens": reasoning,
-                        "latency_s": f"{latency:.3f}", "cost_usd": f"{cost:.6f}", "total_usd": f"{total:.4f}"})
-
-
-def text_msg(role: str, text: str, images: List[bytes] = ()) -> dict:
-    return {"role": role, "content": [{"type": "text", "text": text}, *[image_part(b) for b in images]]}
+            w.writerow({"time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "stage": stage,
+                        "tag": tag, "model": self.model, "prompt_tokens": r.prompt_tokens,
+                        "cached_tokens": cached_tok, "completion_tokens": r.completion_tokens,
+                        "reasoning_tokens": r.reasoning_tokens, "finish_reason": r.finish_reason,
+                        "latency_s": f"{r.latency_s:.3f}", "cost_usd": f"{r.cost_usd:.6f}"})

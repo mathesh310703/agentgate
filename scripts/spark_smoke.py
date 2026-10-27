@@ -1,7 +1,7 @@
 """Muse Spark Open smoke test: one text call, one call with a screenshot image.
 
 Prints latency and token usage. Needs BASETEN_API_KEY in .env (see .env.example).
-Uses the disk cache and cost log in agentlab/llm.py; stops on the budget or surprise-output guard.
+Charged to stage 'dev'. Uses the disk cache, cost log and guards in agentlab/llm.py.
 
   python scripts/spark_smoke.py
 """
@@ -16,20 +16,20 @@ from PIL import Image, ImageDraw, ImageFont
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from agentlab.llm import SparkClient, text_msg, total_spent  # noqa: E402
+from agentlab.llm import SparkClient, spend_by_stage, text_msg  # noqa: E402
 
 
 def screenshot_png() -> bytes:
     """A small synthetic 'screenshot' with a known code word, so the answer can be checked."""
-    img = Image.new("RGB", (800, 450), (245, 247, 250))
+    img = Image.new("RGB", (1280, 800), (245, 247, 250))  # downscaled to 768 px wide on send
     d = ImageDraw.Draw(img)
-    d.rectangle([0, 0, 800, 56], fill=(40, 60, 90))
+    d.rectangle([0, 0, 1280, 56], fill=(40, 60, 90))
     try:
         font = ImageFont.truetype("arial.ttf", 28)
     except OSError:
         font = ImageFont.load_default()
     d.text((20, 12), "Demo Dashboard", fill="white", font=font)
-    d.text((40, 200), "Today's code word: BLUE-42", fill=(20, 20, 20), font=font)
+    d.text((40, 360), "Today's code word: BLUE-42", fill=(20, 20, 20), font=font)
     buf = io.BytesIO()
     img.save(buf, "PNG")
     return buf.getvalue()
@@ -37,19 +37,20 @@ def screenshot_png() -> bytes:
 
 def show(name, r, expected=None):
     ok = "" if expected is None else f"  answer ok: {expected.lower() in r.text.lower()}"
-    print(f"{name}: latency {r.latency_s:.2f}s  prompt {r.prompt_tokens}  output {r.completion_tokens} "
-          f"(reasoning {r.reasoning_tokens})  cost ${r.cost_usd:.5f}  cached {r.cached}{ok}")
+    print(f"{name}: latency {r.latency_s:.2f}s  input {r.prompt_tokens}  output {r.completion_tokens} "
+          f"= answer {r.completion_tokens - r.reasoning_tokens} + reasoning {r.reasoning_tokens}  "
+          f"cost ${r.cost_usd:.5f}  finish {r.finish_reason}  cached {r.cached}{ok}")
     print(f"  reply: {r.text.strip()[:120]!r}")
 
 
 def main() -> int:
     c = SparkClient()
-    r = c.chat([text_msg("user", "Reply with exactly one word: OK")], expect_out=10, tag="smoke_text")
+    r = c.chat([text_msg("user", "Reply with exactly one word: OK")], stage="dev", expect_out=10, tag="smoke_text")
     show("text", r, "OK")
     r = c.chat([text_msg("user", "What is the code word in this screenshot? Reply with the code word only.",
-                         [screenshot_png()])], expect_out=10, tag="smoke_vision")
+                         [screenshot_png()])], stage="dev", expect_out=10, tag="smoke_vision")
     show("vision", r, "BLUE-42")
-    print(f"total spent so far: ${total_spent():.4f}")
+    print(f"spend by stage: { {k: round(v, 5) for k, v in spend_by_stage().items()} }")
     return 0
 
 

@@ -16,6 +16,16 @@ copy .env.example .env      # then put your key after BASETEN_API_KEY= (never co
 
 ```bash
 .venv\Scripts\python scripts/spark_smoke.py   # one text call + one screenshot call; prints latency, tokens, cost
+ is logged to `eval/cost_log.csv`; responses are cached on disk so reruns cost nothing.
+.venv\Scripts\python -m agentlab.spend        # spend per stage from eval/cost_log.csv
+.venv\Scripts\python tests/test_llm_budget.py # offline budget tests (no API calls)
 ```
 
 Every real model call is logged to `eval/cost_log.csv`; responses are cached on disk so reruns cost nothing.
+
+## Budgets and guards (agentlab/llm.py)
+
+- Every call names a stage; budgets (USD): dev 5, baseline 15, defense 20, benchmark 30, arena 20, reserve 10. A call whose worst-case cost would exceed its stage budget is refused before sending.
+- Total spend past $18 needs explicit confirmation (`AGENTGATE_CONFIRM_OVER_18=1`).
+- `max_tokens` is capped at 2000, reasoning included; screenshots are sent as JPEG at most 768 px wide.
+- Experiments use pilot mode (`agentlab/pilot.py`): 5 trials with cost and results printed; the full set only with `--full`.

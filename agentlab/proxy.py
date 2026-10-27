@@ -90,6 +90,8 @@ def fake_response(payload: dict) -> dict:
 
 class ProxyServer(ThreadingHTTPServer):
     daemon_threads = True
+    # On Windows SO_REUSEADDR lets a second server bind the same port silently; fail loudly instead.
+    allow_reuse_address = False
 
     def __init__(self, addr, *, key: Optional[str], dry_run: bool, stage: str = "baseline",
                  upstream: str = UPSTREAM, log=sys.stderr):

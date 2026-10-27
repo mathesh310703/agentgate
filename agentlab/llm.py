@@ -230,14 +230,27 @@ class SparkClient:
         return reply
 
     def _log(self, stage: str, tag: str, r: Reply, cached_tok: int) -> None:
-        COST_LOG.parent.mkdir(parents=True, exist_ok=True)
-        new = not COST_LOG.exists()
-        with open(COST_LOG, "a", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=COST_FIELDS)
-            if new:
-                w.writeheader()
-            w.writerow({"time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "stage": stage,
-                        "tag": tag, "model": self.model, "prompt_tokens": r.prompt_tokens,
-                        "cached_tokens": cached_tok, "completion_tokens": r.completion_tokens,
-                        "reasoning_tokens": r.reasoning_tokens, "finish_reason": r.finish_reason,
-                        "latency_s": f"{r.latency_s:.3f}", "cost_usd": f"{r.cost_usd:.6f}"})
+        log_call(stage, tag, self.model, r.prompt_tokens, cached_tok, r.completion_tokens,
+                 r.reasoning_tokens, r.finish_reason, r.latency_s, r.cost_usd)
+
+
+def usage_numbers(usage) -> Tuple[int, int, int, int]:
+    """(prompt, cached, completion, reasoning) tokens from an OpenAI-style usage object."""
+    cached = getattr(getattr(usage, "prompt_tokens_details", None), "cached_tokens", 0) or 0
+    reasoning = getattr(getattr(usage, "completion_tokens_details", None), "reasoning_tokens", 0) or 0
+    return usage.prompt_tokens, cached, usage.completion_tokens, reasoning
+
+
+def log_call(stage: str, tag: str, model: str, prompt_tokens: int, cached_tokens: int,
+             completion_tokens: int, reasoning_tokens: int, finish_reason: str, latency_s: float,
+             cost_usd: float) -> None:
+    COST_LOG.parent.mkdir(parents=True, exist_ok=True)
+    new = not COST_LOG.exists()
+    with open(COST_LOG, "a", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=COST_FIELDS)
+        if new:
+            w.writeheader()
+        w.writerow({"time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "stage": stage,
+                    "tag": tag, "model": model, "prompt_tokens": prompt_tokens, "cached_tokens": cached_tokens,
+                    "completion_tokens": completion_tokens, "reasoning_tokens": reasoning_tokens,
+                    "finish_reason": finish_reason, "latency_s": f"{latency_s:.3f}", "cost_usd": f"{cost_usd:.6f}"})

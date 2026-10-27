@@ -16,7 +16,6 @@ copy .env.example .env      # then put your key after BASETEN_API_KEY= (never co
 
 ```bash
 .venv\Scripts\python scripts/spark_smoke.py   # one text call + one screenshot call; prints latency, tokens, cost
- is logged to `eval/cost_log.csv`; responses are cached on disk so reruns cost nothing.
 .venv\Scripts\python -m agentlab.spend        # spend per stage from eval/cost_log.csv
 .venv\Scripts\python tests/test_llm_budget.py # offline budget tests (no API calls)
 ```

@@ -15,7 +15,11 @@ Point any OpenAI-compatible client at http://127.0.0.1:8000/v1 (any api_key stri
 * Budget: before forwarding, the worst-case cost is checked against the stage budget and the $18
   total-spend confirmation; after each response the usage is logged with log_call(). Refusals
   return HTTP 402 with an explanation (the OpenAI SDK does not auto-retry 402).
-* The upstream JSON body and status are returned unchanged.
+* Upstream timeout UPSTREAM_TIMEOUT (90 s); a timed-out call is retried once, then -> 504.
+* Tool-argument coercion: in each returned tool call, a parameter whose schema type in the request's
+  "tools" is "string" but which arrived as a number or boolean is converted to a string (13 -> "13",
+  true -> "true"). Each coercion is logged by name and types only, never values.
+* Otherwise the upstream JSON body and status are returned unchanged.
 """
 
 from __future__ import annotations
@@ -38,6 +42,7 @@ MODELS_LIST = {"object": "list", "data": [{"id": llm.MODEL, "object": "model"}]}
 DROPPABLE = ["reasoning_effort", "temperature", "top_p", "parallel_tool_calls", "seed",
              "presence_penalty", "frequency_penalty", "logprobs", "top_logprobs", "stop"]
 DRY_RUN_LOG = llm.ROOT / "eval" / "cache" / "cost_log_dryrun.csv"
+UPSTREAM_TIMEOUT = 90.0
 
 
 def read_env_key(env_path: Path) -> str:
@@ -79,6 +84,45 @@ def rejected_params(status: int, body: bytes, payload: dict) -> list:
     return [k for k in DROPPABLE if k in payload and k in text]
 
 
+def string_params(tools) -> dict:
+    """{function name: set of top-level parameter names whose schema type is "string"}."""
+    out = {}
+    for t in tools or []:
+        fn = (t or {}).get("function") or {}
+        props = (fn.get("parameters") or {}).get("properties") or {}
+        out[fn.get("name")] = {k for k, s in props.items() if isinstance(s, dict) and s.get("type") == "string"}
+    return out
+
+
+def coerce_tool_args(payload: dict, data: dict) -> list:
+    """Stringify number/boolean values of string-typed parameters in `data`'s tool calls, in place.
+    Returns log notes like "file_id int->str" (no values)."""
+    wanted = string_params(payload.get("tools"))
+    notes = []
+    for choice in data.get("choices") or []:
+        for call in (choice.get("message") or {}).get("tool_calls") or []:
+            fn = call.get("function") or {}
+            names = wanted.get(fn.get("name"))
+            if not names:
+                continue
+            try:
+                args = json.loads(fn.get("arguments") or "")
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if not isinstance(args, dict):
+                continue
+            changed = False
+            for k in names & set(args):
+                v = args[k]
+                if isinstance(v, (bool, int, float)):
+                    args[k] = json.dumps(v)  # 13 -> "13", True -> "true"
+                    notes.append(f"{k} {type(v).__name__}->str")
+                    changed = True
+            if changed:
+                fn["arguments"] = json.dumps(args)
+    return notes
+
+
 def fake_response(payload: dict) -> dict:
     prompt = max(1, int(len(json.dumps(payload.get("messages") or [])) / 4))
     return {"id": "dry-run", "object": "chat.completion", "created": int(time.time()), "model": payload["model"],
@@ -94,9 +138,10 @@ class ProxyServer(ThreadingHTTPServer):
     allow_reuse_address = False
 
     def __init__(self, addr, *, key: Optional[str], dry_run: bool, stage: str = "baseline",
-                 upstream: str = UPSTREAM, log=sys.stderr):
+                 upstream: str = UPSTREAM, upstream_timeout: float = UPSTREAM_TIMEOUT, log=sys.stderr):
         super().__init__(addr, Handler)
         self.key, self.dry_run, self.stage, self.upstream, self.logf = key, dry_run, stage, upstream, log
+        self.upstream_timeout = upstream_timeout
         self.lock = threading.Lock()  # budget check + log as one step
         self.last_forwarded: Optional[dict] = None
 
@@ -162,20 +207,40 @@ class Handler(BaseHTTPRequestHandler):
                 status, body = self._forward(p)
         latency = time.perf_counter() - t0
         self._record(status, body, latency)
+        if status == 200:
+            body = self._coerce(p, body)
         self._send(status, body)
+
+    def _coerce(self, p: dict, body: bytes) -> bytes:
+        try:
+            data = json.loads(body)
+        except json.JSONDecodeError:
+            return body
+        notes = coerce_tool_args(p, data)
+        for n in notes:
+            self.server.log(f"coerced {n}")
+        return json.dumps(data).encode() if notes else body
 
     def _forward(self, p: dict):
         import httpx
 
         s = self.server
-        try:
-            r = httpx.post(s.upstream, json=p, timeout=300,
-                           headers={"Authorization": f"Bearer {s.key}", "Content-Type": "application/json"})
-            return r.status_code, r.content
-        except httpx.HTTPError as e:
-            msg = json.dumps({"error": {"message": f"upstream unreachable: {type(e).__name__}",
-                                        "type": "upstream_error", "code": 502}})
-            return 502, msg.encode()
+        for attempt in (1, 2):
+            try:
+                r = httpx.post(s.upstream, json=p, timeout=s.upstream_timeout,
+                               headers={"Authorization": f"Bearer {s.key}", "Content-Type": "application/json"})
+                return r.status_code, r.content
+            except httpx.TimeoutException as e:
+                if attempt == 1:
+                    s.log(f"upstream timeout after {s.upstream_timeout:.0f}s ({type(e).__name__}); retrying once")
+                    continue
+                msg = json.dumps({"error": {"message": f"upstream timed out twice ({s.upstream_timeout:.0f}s each)",
+                                            "type": "upstream_timeout", "code": 504}})
+                return 504, msg.encode()
+            except httpx.HTTPError as e:
+                msg = json.dumps({"error": {"message": f"upstream unreachable: {type(e).__name__}",
+                                            "type": "upstream_error", "code": 502}})
+                return 502, msg.encode()
 
     def _record(self, status: int, body: bytes, latency: float) -> None:
         s = self.server

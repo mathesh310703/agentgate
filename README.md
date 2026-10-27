@@ -28,3 +28,12 @@ Every real model call is logged to `eval/cost_log.csv`; responses are cached on 
 - Total spend past $18 needs explicit confirmation (`AGENTGATE_CONFIRM_OVER_18=1`).
 - `max_tokens` is capped at 2000, reasoning included; screenshots are sent as JPEG at most 768 px wide.
 - Experiments use pilot mode (`agentlab/pilot.py`): 5 trials with cost and results printed; the full set only with `--full`.
+
+## Harness adapters (applied equally to baseline and defended runs)
+
+Benchmark agents talk to the model through the local proxy (`python -m agentlab.proxy`, `agentlab/proxy.py`). Two compatibility fixes there apply to every run, with or without a defense, so they do not favor either side:
+
+- **Tool-argument coercion.** For each tool call in a model response, the proxy looks up the function's parameter schema in the request's `tools`. If a parameter is declared `"type": "string"` but the model sent a number or boolean, it is converted to a string (`13` → `"13"`, `true` → `"true"`) and the fixed JSON is written back into `arguments`. Nothing else is changed. Each coercion is logged by parameter name and types only, never values (e.g. `coerced file_id int->str`).
+- **Upstream timeout.** Each upstream call times out after 90 s and is retried once; a second timeout returns HTTP 504 instead of stalling the run for minutes.
+
+Offline test (fake local upstream, no API calls): `.venv\Scripts\python tests/test_proxy_adapters.py`.

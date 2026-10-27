@@ -1,0 +1,11 @@
+# CUDA torch: install first on Windows/NVIDIA:
+#   pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cu126
+torch==2.14.1+cu126
+transformers==5.21.0
+openai==3.39.0
+python-dotenv==1.2.4
+pillow==13.0.0
+numpy==2.4.6
+opencv-python-headless==5.0.0.93
+playwright==1.64.1
+httpx==0.28.1

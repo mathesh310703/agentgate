@@ -17,6 +17,7 @@ class Record:
     norm: str
     field: str = ""     # structured tool results: the key the value sat under
     part: str = "text"  # "text" (unparsed string), "structured" or "free_text"
+    score: float = None  # injection score from the session's scorer (untrusted text and pixels only)
 
     @property
     def where(self) -> str:
@@ -24,8 +25,10 @@ class Record:
 
 
 class Session:
-    def __init__(self, user_request: str, policy: Policy):
+    def __init__(self, user_request: str, policy: Policy, scorer=None):
+        """scorer: optional callable text -> injection probability (detectors.PromptGuard, or a stub)."""
         self.policy = policy
+        self.scorer = scorer
         self.records: list = []
         self.add_user(user_request)
 
@@ -49,7 +52,16 @@ class Session:
 
     def _add(self, origin: Origin, text, source: str, field: str = "", part: str = "text") -> None:
         text = "" if text is None else str(text)
-        self.records.append(Record(origin, text, source, normalize(text), field, part))
+        rec = Record(origin, text, source, normalize(text), field, part)
+        # structured leaves (ids, addresses, dates) are typed values, not prose, so they are not scored
+        if self.scorer is not None and origin != Origin.USER and part != "structured":
+            rec.score = float(self.scorer(text))
+        self.records.append(rec)
+
+    def most_suspicious(self):
+        """The untrusted free-text record (prose, unparsed tool text or pixels) with the highest score."""
+        scored = [r for r in self.records if r.score is not None and r.part != "structured"]
+        return max(scored, key=lambda r: r.score, default=None)
 
     def find(self, value) -> list:
         needle = normalize(value)

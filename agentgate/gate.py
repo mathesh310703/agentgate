@@ -12,9 +12,11 @@ class Finding:
     arg: str
     value: str
     kind: str
-    verdict: str          # "ok" | "untrusted" | "unknown" | "unnamed"
+    verdict: str          # "ok" | "untrusted" | "unknown" | "unnamed" | "sender_only"
     origin: Origin = None  # most specific untrusted origin seen, if any
     source: str = ""
+    score: float = None    # injection score of the source record (or, for sender_only, of the worst text)
+    flagged: str = ""      # sender_only: the free-text record whose score triggered the rule
 
 
 @dataclass
@@ -69,13 +71,20 @@ class Gate:
                 recs = session.find(atom)
                 trusted = [r for r in recs if session.trusted_for(r, kind, atom)]
                 if trusted:
+                    suspect = self._sender_only(kind, trusted, session)
+                    if suspect is not None:
+                        f = Finding(arg, atom, kind, "sender_only", trusted[0].origin, trusted[0].where,
+                                    suspect.score, suspect.where)
+                        findings.append(f)
+                        bad.append(f)
+                        continue
                     findings.append(Finding(arg, atom, kind, "ok", source=trusted[0].where))
                     continue
                 untrusted = [r for r in recs if r.origin != Origin.USER]
                 if untrusted:
                     # name the most specific origin: pixels first, then text
                     worst = min(untrusted, key=lambda r: r.origin)
-                    f = Finding(arg, atom, kind, "untrusted", worst.origin, worst.where)
+                    f = Finding(arg, atom, kind, "untrusted", worst.origin, worst.where, worst.score)
                     findings.append(f)
                     bad.append(f)
                 elif self.policy.block_unknown:
@@ -102,12 +111,31 @@ class Gate:
         return Decision("allow", tool, "All sensitive arguments trace to your request or a trusted source.",
                         findings)
 
+    def _sender_only(self, kind, trusted, session):
+        """A recipient whose only trusted sources are attacker-chosen structured fields (sender, owner) is
+        not trusted when the session holds untrusted free text that scores as a likely injection.
+        Returns that free-text record, or None."""
+        if kind != "recipient":
+            return None
+        if not all(r.origin != Origin.USER and r.part == "structured" and r.field in self.policy.attacker_fields
+                   for r in trusted):
+            return None
+        worst = session.most_suspicious()
+        if worst is not None and worst.score >= self.policy.injection_threshold:
+            return worst
+        return None
+
     @staticmethod
     def _reason(tool: str, bad: list) -> str:
         parts = []
         for f in bad:
+            score = f" (injection score {f.score:.2f})" if f.score is not None else ""
             if f.verdict == "untrusted":
-                parts.append(f"{f.arg}='{f.value}' came from {f.origin.plain} ({f.source})")
+                parts.append(f"{f.arg}='{f.value}' came from {f.origin.plain} ({f.source}){score}")
+            elif f.verdict == "sender_only":
+                parts.append(f"{f.arg}='{f.value}' comes only from the '{f.source}' field, which whoever sent or "
+                             f"shared the item chooses, and text in this session looks like an injected "
+                             f"instruction ({f.flagged}, injection score {f.score:.2f})")
             elif f.verdict == "unnamed":
                 parts.append(f"{f.arg}='{f.value}' appears in your request only as a number (a date or amount), "
                              f"not as an id")

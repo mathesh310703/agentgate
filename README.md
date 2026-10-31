@@ -37,3 +37,16 @@ Benchmark agents talk to the model through the local proxy (`python -m agentlab.
 - **Upstream timeout.** Each upstream call times out after 90 s and is retried once; a second timeout returns HTTP 504 instead of stalling the run for minutes.
 
 Offline test (fake local upstream, no API calls): `.venv\Scripts\python tests/test_proxy_adapters.py`.
+
+## Layer 1 detector: Llama Prompt Guard 2
+
+**Built with Llama.** `agentgate/detectors.py` scores untrusted tool text and OCR text with
+[meta-llama/Llama-Prompt-Guard-2-22M](https://huggingface.co/meta-llama/Llama-Prompt-Guard-2-22M), run locally on CPU.
+The score is advisory: it is stored on each record, shown in block explanations, and used by one rule
+(a recipient taken only from an email's sender or a file's owner is blocked when the session holds text scoring 0.5 or higher).
+
+License note: Llama Prompt Guard 2 is licensed under the Llama 4 Community License,
+Copyright © Meta Platforms, Inc. All Rights Reserved. Use is subject to that license and Meta's
+Acceptable Use Policy. This repo does not include or redistribute the model weights; they are downloaded from
+Hugging Face after accepting the license there. Put your Hugging Face token in `.env` as `HF_TOKEN=` (never commit it).
+Offline tests use a stub scorer and need neither the model nor the token.

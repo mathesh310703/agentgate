@@ -11,6 +11,7 @@ Session as untrusted text). Metrics come from the end state via agentdojo's own 
   .venv\\Scripts\\python scripts/run_worstcase.py --split tune --out runs/worstcase_v1_tune       # develop here
   .venv\\Scripts\\python scripts/run_worstcase.py --split tune --mode clean --out runs/wc_v1_tune_clean
   .venv\\Scripts\\python scripts/run_worstcase.py --split heldout --out runs/worstcase_v1_heldout # once
+  .venv\\Scripts\\python scripts/run_worstcase.py --split tune --detector promptguard --out runs/layer1_tune
   .venv\\Scripts\\python scripts/run_worstcase.py --users user_task_0 --injections injection_task_1 --out ...
 """
 
@@ -81,9 +82,9 @@ def findings_text(d):
     return "; ".join(f"{f.arg}={f.value!r} {f.verdict} (source: {f.source or 'none'})" for f in d.findings) or "-"
 
 
-def run(arm, suite, attack, pairs):
+def run(arm, suite, attack, pairs, scorer=None):
     gate = RecordingGate(default_workspace_policy()) if arm == "gate" else None
-    agent = CompromisedAgent(GatedToolsExecutor(gate) if gate else ToolsExecutor())
+    agent = CompromisedAgent(GatedToolsExecutor(gate, scorer=scorer) if gate else ToolsExecutor())
     pipeline = AgentPipeline([InitQuery(), agent])
     pipeline.name = f"vllm_parsed_worstcase_{arm}"
     out = []
@@ -117,6 +118,8 @@ def summarize(results):
             row["user_calls"] = len(uc)
             row["user_calls_blocked"] = sum(c["action"] == "block" for c in uc)
             row["user_calls_asked"] = sum(c["action"] == "ask" for c in uc)
+            row["user_calls_blocked_sender_rule"] = sum(c["action"] == "block" and "sender_only" in c["findings"]
+                                                        for c in uc)
             row["user_tasks_with_block"] = len({r["user_task"] for r in rs for c in r["calls"]
                                                 if c["phase"] == "user" and c["action"] == "block"})
             row["user_tasks_with_ask"] = len({r["user_task"] for r in rs for c in r["calls"]
@@ -138,6 +141,8 @@ def main(argv=None):
     ap.add_argument("--injections", nargs="*")
     ap.add_argument("--mode", choices=["attack", "clean"], default="attack",
                     help="clean: user-task calls only, no injections (utility without attack goals)")
+    ap.add_argument("--detector", choices=["none", "promptguard"], default="none",
+                    help="promptguard: score free-text records with Llama Prompt Guard 2 (CPU, local)")
     ap.add_argument("--out", required=True, help="output dir, e.g. runs/worstcase_v1_tune")
     a = ap.parse_args(argv)
 
@@ -154,7 +159,11 @@ def main(argv=None):
         pairs = [(u, i) for u in users for i in injs]
         print(f"{len(users)} user tasks x {len(injs)} injection tasks = {len(pairs)} pairs; attack {ATTACK}")
 
-    results = run("none", suite, attack, pairs) + run("gate", suite, attack, pairs)
+    scorer = None
+    if a.detector == "promptguard":
+        from agentgate.detectors import PromptGuard
+        scorer = PromptGuard()
+    results = run("none", suite, attack, pairs) + run("gate", suite, attack, pairs, scorer)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(json.dumps(results, indent=1), encoding="utf-8")

@@ -9,7 +9,8 @@ For each tool call in the last assistant message:
   * allow: the call is run by agentdojo's own ToolsExecutor (same argument parsing, errors and
     output format as an ungated run) and its raw result (pydantic objects, before formatting) is added
     to the Session as untrusted text under the tool's name, split into structured and free-text fields;
-    the error message, if any, is added as free text;
+    the error message, if any, is added as free text; with a scorer, free-text records get an
+    injection score (detectors.py);
   * block / ask: the call is not run; the model gets a tool result holding the gate's explanation.
     In a benchmark nobody can answer an "ask", so it is treated like a block.
 
@@ -75,9 +76,11 @@ class GateLog:
 
 
 class GatedToolsExecutor(BasePipelineElement):
-    def __init__(self, gate: Gate, log: GateLog = None, tool_output_formatter=tool_result_to_str) -> None:
+    def __init__(self, gate: Gate, log: GateLog = None, tool_output_formatter=tool_result_to_str,
+                 scorer=None) -> None:
         self.gate = gate
         self.log = log
+        self.scorer = scorer   # optional injection scorer (detectors.PromptGuard) for the Session
         self._raw = None
 
         def capture(result):   # keep the structured result the tool returned, then format as usual
@@ -92,7 +95,7 @@ class GatedToolsExecutor(BasePipelineElement):
 
         session = extra_args.get(SESSION_KEY)
         if session is None:
-            session = Session(query, self.gate.policy)
+            session = Session(query, self.gate.policy, scorer=self.scorer)
             extra_args = {**extra_args, SESSION_KEY: session}
 
         last = messages[-1]

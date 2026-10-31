@@ -25,6 +25,11 @@ class Policy:
     structured_trust: frozenset = frozenset({"recipient", "id"})
     # keys whose values are prose: never a trusted source, even inside a structured result
     free_text_fields: frozenset = FREE_TEXT_FIELDS
+    # structured fields whose value is chosen by whoever sent or shared the object (an email's sender,
+    # a file's owner): a recipient that comes only from these is blocked when the session holds
+    # untrusted free text with an injection score at or above injection_threshold
+    attacker_fields: frozenset = frozenset({"sender", "owner"})
+    injection_threshold: float = 0.5
 
     def is_trusted_source(self, tool: str, kind: str) -> bool:
         return tool in self.trusted_for.get(kind, set())

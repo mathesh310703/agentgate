@@ -30,3 +30,13 @@ def contains_token(haystack_norm: str, needle_norm: str) -> bool:
         return False
     pattern = r"(?<![\w@.\-])" + re.escape(needle_norm) + r"(?![\w@\-]|\.\w)"
     return re.search(pattern, haystack_norm) is not None
+
+
+def squeeze(text: str) -> str:
+    """Remove all whitespace (for OCR text, where spaces are unreliable)."""
+    return re.sub(r"\s+", "", text)
+
+
+def is_address_like(value_norm: str) -> bool:
+    """An email address or URL: contains '@' or '://' and is at least 8 characters long."""
+    return len(value_norm) >= 8 and ("@" in value_norm or "://" in value_norm)

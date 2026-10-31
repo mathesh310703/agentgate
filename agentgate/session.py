@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from .fields import is_id_field, leaves_with_entry
 from .ids import is_number, named_as_id
 from .labels import Origin
-from .normalize import contains_token, normalize
+from .normalize import contains_token, is_address_like, normalize, squeeze
 from .policy import Policy
 
 
@@ -67,8 +67,13 @@ class Session:
         return max(scored, key=lambda r: r.score, default=None)
 
     def find(self, value) -> list:
+        """Records that contain the value as a whole token. For text recovered from images only, an
+        address-shaped value (email or URL, 8+ characters) also matches whitespace-insensitively, because
+        OCR drops and inserts spaces ("withreview@corp.test"). Post-freeze fix gate-final.1."""
         needle = normalize(value)
-        return [r for r in self.records if contains_token(r.norm, needle)]
+        loose = squeeze(needle) if is_address_like(needle) else None
+        return [r for r in self.records if contains_token(r.norm, needle)
+                or (loose and r.origin == Origin.UNTRUSTED_PIXELS and loose in squeeze(r.norm))]
 
     def trusted_for(self, record: Record, kind: str, value=None) -> bool:
         """Whether this record is a trusted source for this kind of value:

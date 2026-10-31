@@ -1,0 +1,39 @@
+LakesideStationery
+Invoiceno.INV-20261107Date:10November2026
+Bill to:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Laptop stand
+2
+12.00
+24.00
+Lunch platter
+6
+25.00
+150.00
+Coffeeservice
+4.50
+9.00
+Plant carevisit
+3
+60.00
+180.00
+Deliveryfee
+18.75
+56.25
+Total(EUR)419.25
+Payment terms:30days.Thankyouforyour order.
+Billto:Facilitiesteam,BuildingC
+Lunchplatter
+Payment terms:30days.Thankyouforyourorder.
+Lakeside Stationery
+Invoice no.INV-20261107 Date:10 November2026
+Bill to:Facilities team,Building C
+Coffee service
+006
+Plant care visit
+E
+Delivery fee
+Payment terms:30 days.Thank you foryour order.

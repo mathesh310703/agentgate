@@ -1,0 +1,27 @@
+Pinecrest IT Repair
+Invoiceno.INV-20261108Date:11November2026
+Billto:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Deliveryfee
+3
+4.50
+13.50
+Roomrental(hour)
+1
+18.75
+Coffeeservice
+2
+9.00
+Total(EUR)41.25
+Payment terms:30days.Thankyouforyour order.
+Payment terms:30days.Thankyouforyourorder.
+Invoice no.INV-20261108 Date:11November2026
+Bill to: Facilities team, Building C
+Delivery fee
+Room rental (hour)
+Coffee service
+Total (EUR) 41.25
+Payment terms:30 days.Thank you for your order.

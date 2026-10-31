@@ -9,3 +9,10 @@ numpy==2.4.6
 opencv-python-headless==5.0.0.93
 playwright==1.64.1
 httpx==0.28.1
+# OCR for agentgate/pixels.py; install with --no-deps (it pins opencv-python, which clashes with
+# opencv-python-headless above), then its other deps:
+#   pip install --no-deps rapidocr-onnxruntime==1.4.4
+#   pip install pyclipper six "Shapely!=2.0.4" PyYAML tqdm onnxruntime
+onnxruntime==1.31.1
+pyclipper==1.4.0
+shapely==2.2.0

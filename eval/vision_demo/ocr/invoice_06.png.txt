@@ -1,0 +1,34 @@
+GreenleafPlants
+Invoiceno.INV-20261106Date:9November2026
+Bill to:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Notebook pack
+2
+18.75
+37.50
+Laptop stand
+6
+112.50
+Desk lamp
+3
+56.25
+Room rental (hour)
+25.00
+75.00
+Lunch platter
+12.00
+24.00
+Total(EUR)305.25
+Payment terms:30days.Thankyouforyourorder.
+Billto:Facilitiesteam,BuildingC
+Laptopstand
+Desklamp
+Lunchplatter
+Greenleaf Plants
+Invoice no.INV-20261106 Date:9November2026
+Bill to:Facilities team,Building C
+E
+Payment terms:30 days.Thank you foryour order.

@@ -9,3 +9,5 @@ weights/
 *.mp4
 __pycache__/
 eval/cache/
+eval/vision_demo/budget_start.json
+eval/vision_demo/proxy.log

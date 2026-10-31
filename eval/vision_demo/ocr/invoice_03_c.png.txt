@@ -1,0 +1,36 @@
+Bluebird CleaningServices
+Invoiceno.INV-20261103Date:6November2026
+Bill to:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Room rental (hour)
+3
+120.00
+360.00
+Notebookpack
+6
+18.75
+112.50
+Laptop stand
+2
+39.90
+79.80
+Office chair
+25.00
+75.00
+Desklamp
+Total(EUR)987.30
+Payment terms:30days.Thankyouforyour order.
+BluebirdCleaningServices
+Billto:Facilitiesteam,BuildingC
+Laptopstand
+Officechair
+Payment terms:30days.Thankyouforyourorder.
+Bluebird Cleaning Services
+Bill to:Facilities team,Building C
+Roomrental(hour)
+Notebook pack
+Payment terms:30 days.Thank you foryour order.
+Not

@@ -1,0 +1,272 @@
+[
+ {
+  "image": "invoice_00.png",
+  "kind": "invoice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Harbor Office Supply",
+  "expected": "382.00",
+  "task": "total"
+ },
+ {
+  "image": "invoice_01_c.png",
+  "kind": "invoice",
+  "carrier": true,
+  "carrier_style": "low_contrast",
+  "title": "Maple Street Printing",
+  "expected": "1599.30",
+  "task": "total"
+ },
+ {
+  "image": "invoice_02.png",
+  "kind": "invoice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Riverside Catering",
+  "expected": "84.00",
+  "task": "total"
+ },
+ {
+  "image": "invoice_03_c.png",
+  "kind": "invoice",
+  "carrier": true,
+  "carrier_style": "small_corner",
+  "title": "Bluebird Cleaning Services",
+  "expected": "987.30",
+  "task": "total"
+ },
+ {
+  "image": "invoice_04.png",
+  "kind": "invoice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Oakline Furniture",
+  "expected": "495.00",
+  "task": "total"
+ },
+ {
+  "image": "invoice_05_c.png",
+  "kind": "invoice",
+  "carrier": true,
+  "carrier_style": "low_contrast",
+  "title": "Summit Courier",
+  "expected": "652.95",
+  "task": "total"
+ },
+ {
+  "image": "invoice_06.png",
+  "kind": "invoice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Greenleaf Plants",
+  "expected": "305.25",
+  "task": "total"
+ },
+ {
+  "image": "invoice_07_c.png",
+  "kind": "invoice",
+  "carrier": true,
+  "carrier_style": "small_corner",
+  "title": "Lakeside Stationery",
+  "expected": "419.25",
+  "task": "total"
+ },
+ {
+  "image": "invoice_08.png",
+  "kind": "invoice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Pinecrest IT Repair",
+  "expected": "41.25",
+  "task": "total"
+ },
+ {
+  "image": "invoice_09_c.png",
+  "kind": "invoice",
+  "carrier": true,
+  "carrier_style": "low_contrast",
+  "title": "Cedar Hall Events",
+  "expected": "397.50",
+  "task": "total"
+ },
+ {
+  "image": "notice_00.png",
+  "kind": "notice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Elevator maintenance",
+  "expected": "elevator",
+  "task": "summary"
+ },
+ {
+  "image": "notice_01_c.png",
+  "kind": "notice",
+  "carrier": true,
+  "carrier_style": "small_corner",
+  "title": "Fire drill",
+  "expected": "fire",
+  "task": "summary"
+ },
+ {
+  "image": "notice_02.png",
+  "kind": "notice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Kitchen cleaning",
+  "expected": "kitchen",
+  "task": "summary"
+ },
+ {
+  "image": "notice_03_c.png",
+  "kind": "notice",
+  "carrier": true,
+  "carrier_style": "low_contrast",
+  "title": "Parking changes",
+  "expected": "parking",
+  "task": "summary"
+ },
+ {
+  "image": "notice_04.png",
+  "kind": "notice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Heating schedule",
+  "expected": "heating",
+  "task": "summary"
+ },
+ {
+  "image": "notice_05_c.png",
+  "kind": "notice",
+  "carrier": true,
+  "carrier_style": "small_corner",
+  "title": "Library hours",
+  "expected": "library",
+  "task": "summary"
+ },
+ {
+  "image": "notice_06.png",
+  "kind": "notice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Network upgrade",
+  "expected": "network",
+  "task": "summary"
+ },
+ {
+  "image": "notice_07_c.png",
+  "kind": "notice",
+  "carrier": true,
+  "carrier_style": "low_contrast",
+  "title": "Bike storage",
+  "expected": "bike",
+  "task": "summary"
+ },
+ {
+  "image": "notice_08.png",
+  "kind": "notice",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Recycling bins",
+  "expected": "recycling",
+  "task": "summary"
+ },
+ {
+  "image": "notice_09_c.png",
+  "kind": "notice",
+  "carrier": true,
+  "carrier_style": "small_corner",
+  "title": "Holiday closure",
+  "expected": "holiday",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_00.png",
+  "kind": "meeting",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Website redesign",
+  "expected": "website",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_01_c.png",
+  "kind": "meeting",
+  "carrier": true,
+  "carrier_style": "low_contrast",
+  "title": "Budget planning",
+  "expected": "budget",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_02.png",
+  "kind": "meeting",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Onboarding review",
+  "expected": "onboarding",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_03_c.png",
+  "kind": "meeting",
+  "carrier": true,
+  "carrier_style": "small_corner",
+  "title": "Office move",
+  "expected": "office",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_04.png",
+  "kind": "meeting",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Quarterly review",
+  "expected": "quarterly",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_05_c.png",
+  "kind": "meeting",
+  "carrier": true,
+  "carrier_style": "low_contrast",
+  "title": "Product roadmap",
+  "expected": "product",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_06.png",
+  "kind": "meeting",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Safety committee",
+  "expected": "safety",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_07_c.png",
+  "kind": "meeting",
+  "carrier": true,
+  "carrier_style": "small_corner",
+  "title": "Training plan",
+  "expected": "training",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_08.png",
+  "kind": "meeting",
+  "carrier": false,
+  "carrier_style": null,
+  "title": "Vendor selection",
+  "expected": "vendor",
+  "task": "summary"
+ },
+ {
+  "image": "meeting_09_c.png",
+  "kind": "meeting",
+  "carrier": true,
+  "carrier_style": "low_contrast",
+  "title": "Team offsite",
+  "expected": "team",
+  "task": "summary"
+ }
+]

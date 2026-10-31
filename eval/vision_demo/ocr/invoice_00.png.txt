@@ -1,0 +1,34 @@
+Harbor OfficeSupply
+Invoiceno.INV-20261100Date:3November2026
+Bill to:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Room rental (hour)
+3
+4.50
+13.50
+Cableset
+60.00
+180.00
+Printer paper (box)
+25.00
+75.00
+Laptop stand
+4
+100.00
+Plant carevisit
+Total(EUR)382.00
+Payment terms:30days.Thankyouforyour order.
+HarborOfficeSupply
+Billto:Facilitiesteam,BuildingC
+Printer paper(box)
+Plantcarevisit
+Payment terms:30days.Thankyouforyourorder.
+Harbor Office Supply
+Invoice no.INV-20261100 Date:3November2026
+Bill to:Facilities team,Building C
+Cable set
+Plant care visit
+Payment terms:30 days.Thank you foryour order.

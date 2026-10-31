@@ -1,0 +1,30 @@
+OaklineFurniture
+Invoiceno.INV-20261104Date:7November2026
+Billto:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Notebook pack
+3
+25.00
+75.00
+Tonercartridge
+120.00
+360.00
+Lunchplatter
+5
+12.00
+60.00
+Total(EUR)495.00
+Payment terms:30 days.Thankyoufor your order.
+Oakline Furniture
+Notebookpack
+Payment terms:30days.Thankyouforyourorder.
+Invoice no.INV-20261104 Date:7November2026
+Bill to: Facilities team, Building C
+aty
+Toner cartridge
+Lunch platter
+Total (EUR) 495.00
+Payment terms: 30 days. Thank you for your order.

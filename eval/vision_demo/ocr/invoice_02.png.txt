@@ -1,0 +1,29 @@
+Riverside Catering
+Invoiceno.INV-20261102Date:5November2026
+Billto:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Laptop stand
+3
+4.50
+13.50
+Printerpaper(box)
+4
+12.00
+48.00
+Roomrental (hour)
+5
+22.50
+Total(EUR)84.00
+Payment terms:30days.Thankyouforyour order.
+Laptopstand
+Roomrental(hour)
+Payment terms:30days.Thankyouforyourorder.
+Invoice no.INV-20261102 Date:5November2026
+Bill to: Facilities team, Building C
+Printer paper (box)
+Room rental (hour)
+Total (EUR) 84.00
+Payment terms:30 days.Thank you for your order.

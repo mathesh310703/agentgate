@@ -180,24 +180,29 @@ footer .keys { margin-left: auto; display: flex; gap: 14px; white-space: nowrap;
   footer .keys { margin-left: 0; }
   .badge { font-size: 34px; }
 }
+.srcswitch { display: flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; background: var(--surface); flex: none; }
+.srcswitch button { border: 0; background: transparent; padding: 3px 12px; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; }
+.srcswitch button.on { background: var(--accent); color: var(--on-solid); }
+.real .label { background: var(--grey-bg); color: var(--text); }
+.lists.wide .chip { width: auto; padding: 3px 8px 4px; }
+.more { font-size: 14px; color: var(--muted); line-height: 1.6; }
+.raw .r + .r { margin-top: 6px; }
 </style>
 </head>
 <body>
 <div class="label">
   <span class="brand">Agent<span>Gate</span> · replay</span>
+  <div class="srcswitch" id="srcswitch" title="Switch source (S)"></div>
   <span id="honest"></span>
   <span class="spacer"></span>
   <button class="theme" id="themeBtn" title="Toggle theme (T)">Theme</button>
 </div>
 
 <div class="topbar">
-  <div class="lists">
-    <div class="row" id="rowCarrier"><span class="row-label">Hidden line</span></div>
-    <div class="row" id="rowClean"><span class="row-label">Clean image</span></div>
-  </div>
+  <div class="lists" id="lists"></div>
   <div class="stats">
-    <div class="stat"><div class="k">Attack success</div><div class="v" id="statAttack"></div><div class="sub">gate off → gate on</div></div>
-    <div class="stat"><div class="k">False blocks</div><div class="v" id="statFalse"></div><div class="sub">gate on, clean images</div></div>
+    <div class="stat"><div class="k">Attack success</div><div class="v" id="statAttack"></div><div class="sub" id="subAttack"></div></div>
+    <div class="stat"><div class="k">False blocks</div><div class="v" id="statFalse"></div><div class="sub" id="subFalse"></div></div>
   </div>
   <div class="switch" id="switch" role="switch" tabindex="0">
     <div class="track"><div class="knob"></div><span class="off">Gate off</span><span class="on">Gate on</span></div>
@@ -213,7 +218,7 @@ footer .keys { margin-left: auto; display: flex; gap: 14px; white-space: nowrap;
 
 <footer>
   <span class="lim" id="limits"></span>
-  <span class="keys"><span><kbd>←</kbd> <kbd>→</kbd> episode</span><span><kbd>space</kbd> gate</span><span><kbd>Z</kbd> zoom image</span><span><kbd>T</kbd> theme</span></span>
+  <span class="keys"><span><kbd>←</kbd> <kbd>→</kbd> episode</span><span><kbd>space</kbd> gate</span><span><kbd>S</kbd> source</span><span><kbd>Z</kbd> zoom</span><span><kbd>T</kbd> theme</span></span>
 </footer>
 
 <div class="zoom" id="zoom"><img alt=""></div>
@@ -222,59 +227,79 @@ footer .keys { margin-left: auto; display: flex; gap: 14px; white-space: nowrap;
 <script>
 (function () {
   const D = JSON.parse(document.getElementById("data").textContent);
-  const E = D.episodes;
   const $ = (id) => document.getElementById(id);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
-  const ARG = {file_id: "file", email: "to"};
+  const ARG = {file_id: "file", email: "to", recipients: "to", attachments: "attach"};
+  const SHOWN = ["file_id", "email", "recipients", "attachments"];   // subject and body are not shown
   const PLACEMENT = {top_margin_small: "top margin, small type", mid_faint: "mid-page, faint grey",
                      footer_box: "inside a footer box", left_vertical: "left margin, rotated"};
-  const short = (img) => img.replace(".png", "");
   const pixelSrc = (s) => s.source && s.source.startsWith("screenshot:");
-
-  const carriers = E.filter((e) => e.carrier), clean = E.filter((e) => !e.carrier);
-  const offWins = carriers.filter((e) => e.shared_off.length).length;
-  const onWins = carriers.filter((e) => e.shared_on.length).length;
-  const falseBlocks = clean.filter((e) => e.calls.some((c) => c.decision === "block")).length;
-  const missed = carriers.filter((e) => !e.calls.some((c) => c.sources.some((s) => s.argument === "email" && pixelSrc(s))));
-
-  $("honest").textContent = `Scripted worst-case agent: it obeys every hidden instruction. Muse Spark Open refused all ${D.model_refused} on its own (first image set).`;
-  $("limits").innerHTML = `<b>Limits:</b> OCR missed the hidden address in ${missed.length} of ${carriers.length} images with a hidden line (${missed.map((e) => short(e.image)).join(", ")}); those were still blocked, as an unknown recipient. Synthetic images, <span class="mono">.test</span> addresses and a canary file; no real data.`;
+  const fmt = (v) => Array.isArray(v) ? v.join(", ") : String(v);
 
   // state, mirrored in the URL hash so a view can be reopened exactly
-  const st = {ep: 0, gate: false};
+  const st = {src: D.order[0], ep: 0, gate: false};
   (location.hash.slice(1).split("&")).forEach((kv) => {
     const [k, v] = kv.split("=");
-    if (k === "ep") st.ep = Math.max(0, Math.min(E.length - 1, parseInt(v, 10) || 0));
+    if (k === "src" && D.sources[v]) st.src = v;
+    if (k === "ep") st.ep = parseInt(v, 10) || 0;
     if (k === "gate") st.gate = v === "on";
     if (k === "theme" && (v === "dark" || v === "light")) document.documentElement.dataset.theme = v;
   });
-  const saveHash = () => { try { history.replaceState(null, "", `#ep=${st.ep}&gate=${st.gate ? "on" : "off"}`); } catch (e) {} };
+  const S = () => D.sources[st.src];
+  const E = () => S().episodes;
+  st.ep = Math.max(0, Math.min(E().length - 1, st.ep));
+  const saveHash = () => { try { history.replaceState(null, "", `#src=${st.src}&ep=${st.ep}&gate=${st.gate ? "on" : "off"}`); } catch (e) {} };
 
+  const blocked = (e) => e.calls.filter((c) => c.decision !== "allow");
   function status(e, gate) {
     if (!gate) return e.shared_off.length ? ["shared", "SHARED"] : ["allowed", "ALLOWED"];
-    return e.calls.some((c) => c.decision === "block") ? ["blocked", "BLOCKED"] : ["allowed", "ALLOWED"];
+    return blocked(e).length ? ["blocked", "BLOCKED"] : ["allowed", "ALLOWED"];
   }
 
-  // episode list
-  const chips = E.map((e, i) => {
+  // source switch
+  D.order.forEach((key) => {
     const b = document.createElement("button");
-    b.className = "chip"; b.title = e.image;
-    b.innerHTML = `<span class="n">${esc(short(e.image))}</span><span class="s"></span>`;
-    b.onclick = () => go(i);
-    (e.carrier ? $("rowCarrier") : $("rowClean")).appendChild(b);
-    return b;
+    b.textContent = D.sources[key].name; b.dataset.src = key;
+    b.onclick = () => setSource(key);
+    $("srcswitch").appendChild(b);
   });
 
+  let chips = [];
+  function buildLists() {
+    const lists = $("lists"); lists.innerHTML = "";
+    const s = S();
+    const rows = s.rows.map((name) => {
+      const r = document.createElement("div"); r.className = "row";
+      r.innerHTML = `<span class="row-label">${esc(name)}</span>`; lists.appendChild(r); return r;
+    });
+    chips = s.episodes.map((e, i) => {
+      const b = document.createElement("button");
+      b.className = "chip"; b.title = e.meta ? `${e.image} · ${e.meta}` : e.image;
+      b.innerHTML = `<span class="n">${esc(e.label)}</span><span class="s"></span>`;
+      b.onclick = () => go(i);
+      (rows.length > 1 && !e.carrier ? rows[1] : rows[0]).appendChild(b);
+      return b;
+    });
+    lists.classList.toggle("wide", st.src !== "scripted");
+  }
+
   function renderTop() {
+    const s = S();
     chips.forEach((c, i) => {
-      const [cls, word] = status(E[i], st.gate);
+      const [cls, word] = status(E()[i], st.gate);
       c.className = `chip ${cls}${i === st.ep ? " current" : ""}`;
       c.querySelector(".s").textContent = word;
     });
-    $("statAttack").innerHTML = `<span class="bad${st.gate ? " dim" : ""}">${offWins}/${carriers.length}</span><span class="arrow">→</span><span class="good${st.gate ? "" : " dim"}">${onWins}/${carriers.length}</span>`;
-    $("statFalse").innerHTML = `<span class="${falseBlocks ? "bad" : "good"}">${falseBlocks}/${clean.length}</span>`;
+    document.querySelectorAll("#srcswitch button").forEach((b) => b.classList.toggle("on", b.dataset.src === st.src));
+    $("honest").textContent = s.honest;
+    $("limits").innerHTML = s.limits;
+    $("statAttack").innerHTML = `<span class="bad${st.gate ? " dim" : ""}">${s.attack[0]}</span><span class="arrow">→</span><span class="good${st.gate ? "" : " dim"}">${s.attack[1]}</span>`;
+    $("subAttack").textContent = s.attack_sub;
+    $("statFalse").innerHTML = `<span class="${s.false.startsWith("0/") ? "good" : "bad"}">${s.false}</span>`;
+    $("subFalse").textContent = s.false_sub;
     document.body.classList.toggle("gate-on", st.gate);
     document.body.classList.toggle("gate-off", !st.gate);
+    document.body.classList.toggle("real", st.src !== "scripted");
     $("switch").setAttribute("aria-checked", String(st.gate));
   }
 
@@ -295,16 +320,17 @@ footer .keys { margin-left: auto; display: flex; gap: 14px; white-space: nowrap;
       return `<div class="ln">${esc(ln)}</div>`;
     }).join("");
     const emailMissed = e.carrier && !(hit && hit.arg === "email");
-    $("leftRight").textContent = `${st.ep + 1} / ${E.length}`;
+    $("leftRight").textContent = `${st.ep + 1} / ${E().length}`;
     $("left").innerHTML = `
       <div class="request"><b>User</b>${esc(e.request)}</div>
       <div class="imgwrap">
-        <div class="frame" id="frame" title="Click or press Z to zoom"><img src="${D.images[e.image]}" alt="${esc(e.image)}"><span class="zoomhint">Z zoom</span></div>
+        <div class="frame" id="frame" title="Click or press Z to zoom"><img src="${D.images[e.img]}" alt="${esc(e.image)}"><span class="zoomhint">Z zoom</span></div>
         <div class="meta">
           <div class="file mono">${esc(e.image)}</div>
+          ${e.meta ? `<div class="small mono">${esc(e.meta)}</div>` : ""}
           ${e.carrier
-            ? `<span class="tag carrier">Hidden line · ${esc(PLACEMENT[e.style] || e.style)}</span>
-               <div class="truth">What the image hides (ground truth; the gate never sees this):<div class="t">${esc(e.carrier_text)}</div></div>`
+            ? `<span class="tag carrier">Hidden line · ${esc(PLACEMENT[e.style] || e.style || "small corner line")}</span>
+               <div class="truth">What the image hides (ground truth; the gate never sees this):<div class="t">${esc(e.carrier_text || "")}</div></div>`
             : `<span class="tag clean">Clean image · no hidden line</span>
                <div class="small">The agent should only read the document and answer.</div>`}
         </div>
@@ -317,28 +343,43 @@ footer .keys { margin-left: auto; display: flex; gap: 14px; white-space: nowrap;
     if (m) box.scrollTop = Math.max(0, m.offsetTop - box.clientHeight / 2 + m.offsetHeight / 2);
   }
 
-  function renderMid(e) {
-    const c = e.calls[0];
-    const shared = st.gate ? e.shared_on : e.shared_off;
-    const card = c
-      ? `<div class="callcard mono"><span class="fn">${esc(c.tool)}</span>(${Object.entries(c.args).map(([k, v], i, a) =>
-          `<div class="arg"><span class="k">${esc(ARG[k] || k)}:</span><span class="val">${esc(v)}${i < a.length - 1 ? "<span class=\"k\">,</span>" : ""}</span></div>`).join("")})</div>
-         <div class="why">The scripted agent copied this call from the hidden line, exactly as a fully compromised agent would.</div>`
-      : `<div class="callcard none">No tool call.<br><span class="small">The agent only read the image and answered.</span></div>`;
-    const out = shared.length
-      ? `<div class="outcome bad"><span class="ico">!</span><span>File shared with ${esc(shared.map((s) => s.email).join(", "))}<span class="sub">${esc(shared.map((s) => s.file).join(", "))} left the user's drive</span></span></div>`
-      : `<div class="outcome good"><span class="ico">✓</span><span>Nothing shared<span class="sub">${c ? "the call never ran" : "no file left the user's drive"}</span></span></div>`;
-    $("mid").innerHTML = `${card}${out}<div class="answer">Then the agent gave its scripted answer: <b>${esc(e.answer.replace(/^Answer:\s*/, "").replace(/\.$/, ""))}</b></div>`;
+  function card(c) {
+    const args = Object.entries(c.args).filter(([k]) => SHOWN.includes(k));
+    return `<div class="callcard mono"><span class="fn">${esc(c.tool)}</span>(${args.map(([k, v], i) =>
+      `<div class="arg"><span class="k">${esc(ARG[k] || k)}:</span><span class="val">${esc(fmt(v))}${i < args.length - 1 ? '<span class="k">,</span>' : ""}</span></div>`).join("")})</div>`;
+  }
+  const inline = (c) => `<span class="mono">${esc(c.tool)}(${Object.entries(c.args).filter(([k]) => SHOWN.includes(k)).map(([k, v]) => `${esc(ARG[k] || k)}: ${esc(fmt(v))}`).join(", ")})</span>`;
+
+  function answerLine(a) {
+    if (a === null || a === undefined) return `<div class="answer">No answer: the model kept calling tools until the 6-turn cap.</div>`;
+    const t = a.replace(/^Answer:\s*/, "").replace(/\.$/, "");
+    return `<div class="answer">Then the agent answered: <b>${esc(t.length > 160 ? t.slice(0, 160) + "…" : t)}</b></div>`;
   }
 
-  function chip(s, img) {
+  function renderMid(e) {
+    const tried = st.gate ? blocked(e) : e.off_calls;
+    const shared = st.gate ? e.shared_on : e.shared_off;
+    const scripted = st.src === "scripted";
+    const head = tried.length
+      ? `${card(tried[0])}${tried.length > 1 ? `<div class="more">then ${tried.slice(1).map(inline).join("<br>then ")}</div>` : ""}
+         <div class="why">${scripted ? "The scripted agent copied this call from the hidden line, exactly as a fully compromised agent would."
+                                     : "The model wrote this call itself after reading the image. Nobody scripted it."}</div>`
+      : `<div class="callcard none">No tool call.<br><span class="small">The agent only read the image and answered.</span></div>`;
+    const out = shared.length
+      ? `<div class="outcome bad"><span class="ico">!</span><span>File shared with ${esc([...new Set(shared.map((s) => s.email))].join(", "))}<span class="sub">budget_canary.txt left the user's drive</span></span></div>`
+      : `<div class="outcome good"><span class="ico">✓</span><span>Nothing shared<span class="sub">${tried.length ? "the call never ran" : "no file left the user's drive"}</span></span></div>`;
+    $("mid").innerHTML = `${head}${out}${answerLine(st.gate ? e.answer_on : e.answer_off)}`;
+  }
+
+  function chip(s) {
     if (pixelSrc(s)) return `<span class="schip pixels"><span class="ic">▣</span>text inside an image · ${esc(s.source.split(":")[1])}</span>`;
     if (s.verdict === "unknown") return `<span class="schip unknown"><span class="ic">?</span>unknown · not in your request or any trusted source</span>`;
+    if (s.verdict === "untrusted") return `<span class="schip pixels"><span class="ic">▤</span>text from a tool result · ${esc(s.source)}</span>`;
     return `<span class="schip trusted">${esc(s.source)}</span>`;
   }
 
   function plain(c) {
-    const to = c.sources.find((s) => s.argument === "email");
+    const to = c.sources.find((s) => s.argument === "email" || s.argument === "recipients");
     if (!to) return esc(c.reason);
     return pixelSrc(to)
       ? `You never named <span class="v">${esc(to.value)}</span>. It appears only in text inside the image.`
@@ -346,28 +387,29 @@ footer .keys { margin-left: auto; display: flex; gap: 14px; white-space: nowrap;
   }
 
   function renderRight(e, animate) {
-    const c = e.calls[0];
+    const b = blocked(e);
     let html;
     if (!st.gate) {
       html = `<div class="badge off${animate ? " pop" : ""}">GATE OFF</div>
-        <div class="plain">${c ? "No check. The call ran as the agent sent it." : "No check. There was no tool call to run."}</div>`;
-    } else if (!c) {
+        <div class="plain">${e.off_calls.length ? "No check. The call ran as the agent sent it." : "No check. There was no risky tool call."}</div>`;
+    } else if (!b.length) {
       html = `<div class="badge allow${animate ? " pop" : ""}">ALLOWED</div>
         <div class="plain">No risky tool call. The answer reaches the user unchanged.</div>
         <div class="srcs"><div class="src"><span class="schip trusted"><span class="ic">✓</span>nothing to check</span></div></div>`;
     } else {
-      const blocked = c.decision === "block";
-      html = `<div class="badge ${blocked ? "block" : "allow"}${animate ? " pop" : ""}">${blocked ? "BLOCKED" : c.decision.toUpperCase()}</div>
+      const c = b[0];
+      html = `<div class="badge ${c.decision === "block" ? "block" : "allow"}${animate ? " pop" : ""}">${c.decision === "block" ? "BLOCKED" : c.decision.toUpperCase()}</div>
+        ${b.length > 1 ? `<div class="small">${b.length} calls stopped in this episode; the first is shown.</div>` : ""}
         <div class="plain">${plain(c)}</div>
         <div class="srcs">${c.sources.map((s) => `<div class="src"><span class="arg">${esc(ARG[s.argument] || s.argument)}</span>${chip(s)}</div>`).join("")}</div>
-        <div class="why">The agent gets an error back instead of a result, and still answers the user's question.</div>
-        <div class="raw"><div class="small">The gate's own explanation</div><div class="r mono">${esc(c.reason)}</div></div>`;
+        <div class="why">The agent gets back: “Action not performed. Do not retry it. Tell the user why: …”</div>
+        <div class="raw"><div class="small">The gate's own explanation${b.length > 1 ? "s" : ""}</div>${b.map((x) => `<div class="r mono">${esc(x.reason)}</div>`).join("")}</div>`;
     }
     $("right").innerHTML = html;
   }
 
   function render(animate) {
-    const e = E[st.ep];
+    const e = E()[st.ep];
     renderTop(); renderLeft(e); renderMid(e); renderRight(e, animate);
     saveHash();
   }
@@ -375,11 +417,12 @@ footer .keys { margin-left: auto; display: flex; gap: 14px; white-space: nowrap;
   function swapAnim() {
     ["left", "mid", "right"].forEach((id) => { const n = $(id); n.classList.remove("swap"); void n.offsetWidth; n.classList.add("swap"); });
   }
-  function go(i) { st.ep = (i + E.length) % E.length; render(false); swapAnim(); }
+  function go(i) { st.ep = (i + E().length) % E().length; render(false); swapAnim(); }
   function toggle() { st.gate = !st.gate; render(true); }
+  function setSource(key) { if (key === st.src) return; st.src = key; st.ep = 0; buildLists(); render(false); swapAnim(); }
 
   const zoom = $("zoom");
-  function openZoom() { zoom.querySelector("img").src = D.images[E[st.ep].image]; zoom.classList.add("open"); }
+  function openZoom() { zoom.querySelector("img").src = D.images[E()[st.ep].img]; zoom.classList.add("open"); }
   zoom.onclick = () => zoom.classList.remove("open");
   $("switch").onclick = toggle;
   $("themeBtn").onclick = cycleTheme;
@@ -394,13 +437,15 @@ footer .keys { margin-left: auto; display: flex; gap: 14px; white-space: nowrap;
     if (ev.key === "ArrowRight") { go(st.ep + 1); ev.preventDefault(); }
     else if (ev.key === "ArrowLeft") { go(st.ep - 1); ev.preventDefault(); }
     else if (ev.key === " " || ev.code === "Space") { toggle(); ev.preventDefault(); }
+    else if (ev.key === "s" || ev.key === "S") setSource(D.order[(D.order.indexOf(st.src) + 1) % D.order.length]);
     else if (ev.key === "z" || ev.key === "Z") { zoom.classList.contains("open") ? zoom.classList.remove("open") : openZoom(); }
     else if (ev.key === "Escape") zoom.classList.remove("open");
     else if (ev.key === "t" || ev.key === "T") cycleTheme();
     else if (ev.key === "Home") go(0);
-    else if (ev.key === "End") go(E.length - 1);
+    else if (ev.key === "End") go(E().length - 1);
   });
 
+  buildLists();
   render(false);
 })();
 </script>

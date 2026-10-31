@@ -2,7 +2,8 @@
 
 The judge sees only trusted or typed data: the user's request, the tool name, the tool's sensitive
 arguments, and typed facts built from structured fields (kind, value, the tool and field the value came
-from, and for ids the numeric fields of the same listing entry, e.g. size). It never sees free text:
+from, and for ids the numeric fields of the same listing entry, e.g. size, plus the id and numeric fields
+of up to 50 other entries in that listing). It never sees free text:
 no bodies, subjects, descriptions, file contents or filenames, so an injection in those cannot reach it.
 
 It can only turn an "ask" into an "allow". A "block" never reaches it, and an "allow" is never changed.
@@ -38,16 +39,36 @@ SYSTEM = (
 )
 
 
+MAX_SIBLINGS = 50
+
+
+def _entry_numbers(session, entry: str) -> dict:
+    """Numeric, non-id structured fields of one listing entry (e.g. size)."""
+    return {r.field: r.text for r in session.records
+            if r.entry == entry and r.part == "structured" and not is_id_field(r.field) and NUMBER.fullmatch(r.text)}
+
+
+def _siblings(session, entry: str) -> list:
+    """The id and numeric fields of every other entry in the same tool output (listing), at most
+    MAX_SIBLINGS. Entries without an id field (e.g. a nested shared_with dict) are skipped."""
+    output = entry.split(":")[0] + ":"
+    ids = {}
+    for r in session.records:
+        if (r.entry.startswith(output) and r.entry != entry and r.part == "structured" and is_id_field(r.field)
+                and r.entry not in ids):
+            ids[r.entry] = r.text
+    return [{"id": i, **_entry_numbers(session, e)} for e, i in list(ids.items())[:MAX_SIBLINGS]]
+
+
 def build_facts(decision: Decision, session) -> list:
-    """Typed facts for the judge, from the gate's findings and structured session records only."""
+    """Typed facts for the judge, from the gate's findings and structured session records only:
+    numbers and ids, never names or prose."""
     facts = []
     for f in decision.findings:
         fact = {"argument": f.arg, "kind": f.kind, "value": f.value, "source": f.source or "none"}
         if f.kind == "id" and f.entry:
-            fact["same_entry_numbers"] = {
-                r.field: r.text for r in session.records
-                if r.entry == f.entry and r.part == "structured" and not is_id_field(r.field)
-                and NUMBER.fullmatch(r.text)}
+            fact["same_entry_numbers"] = _entry_numbers(session, f.entry)
+            fact["other_entries_in_listing"] = _siblings(session, f.entry)
         facts.append(fact)
     return facts
 

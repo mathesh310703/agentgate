@@ -34,7 +34,7 @@ class FakeHandler(BaseHTTPRequestHandler):
         pass
 
     def do_POST(self):
-        self.rfile.read(int(self.headers.get("Content-Length") or 0))
+        self.server.last = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)))
         self.server.hits += 1
         time.sleep(self.server.delay)
         body = json.dumps(self.server.reply).encode()
@@ -53,16 +53,19 @@ def _serve(srv):
     return srv
 
 
-def _run(reply: dict, delay: float = 0.0, timeout: float = proxy.UPSTREAM_TIMEOUT):
+def _run(reply: dict, delay: float = 0.0, timeout: float = proxy.UPSTREAM_TIMEOUT, model: str = llm.MODEL,
+         upstream_seen: list = None):
     llm.COST_LOG = Path(tempfile.mkdtemp()) / "cost_log.csv"
     up = _serve(FakeUpstream(reply, delay))
     log = io.StringIO()
     px = _serve(proxy.ProxyServer(("127.0.0.1", 0), key="test-key-not-real", dry_run=False,
                                   upstream=f"http://127.0.0.1:{up.server_port}/v1/chat/completions",
-                                  upstream_timeout=timeout, log=log))
+                                  upstream_timeout=timeout, log=log, model=model))
     try:
         r = httpx.post(f"http://127.0.0.1:{px.server_port}/v1/chat/completions", timeout=30, json={
             "model": "x", "messages": [{"role": "user", "content": "open file 13"}], "tools": TOOLS})
+        if upstream_seen is not None:
+            upstream_seen.append(getattr(up, "last", None))
         return r, up.hits, log.getvalue()
     finally:
         px.shutdown(); px.server_close(); up.shutdown(); up.server_close()
@@ -94,6 +97,35 @@ def test_correct_args_unchanged():
 def test_timeout_retried_once():
     r, hits, log = _run(_reply("{}"), delay=1.0, timeout=0.3)
     assert r.status_code == 504 and hits == 2 and "retrying once" in log
+
+
+def _usage_reply(model):
+    return {"id": "fake", "object": "chat.completion", "model": model, "choices": [{
+        "index": 0, "finish_reason": "stop", "message": {"role": "assistant", "content": "ok"}}],
+        "usage": {"prompt_tokens": 1_000_000, "completion_tokens": 1_000_000}}
+
+
+def _last_cost_row():
+    import csv
+    with open(llm.COST_LOG, newline="") as f:
+        return list(csv.DictReader(f))[-1]
+
+
+def test_model_option_forwards_and_prices_per_model():
+    seen = []
+    r, _, log = _run(_usage_reply("zai-org/GLM-5.3-Flash"), model="zai-org/GLM-5.3-Flash", upstream_seen=seen)
+    assert r.status_code == 200 and seen[0]["model"] == "zai-org/GLM-5.3-Flash"   # caller's "x" is replaced
+    row = _last_cost_row()
+    assert row["model"] == "zai-org/GLM-5.3-Flash" and abs(float(row["cost_usd"]) - (0.15 + 0.50)) < 1e-6, row
+
+
+def test_unknown_model_priced_at_most_expensive_known():
+    price, known = llm.price_for("some/unlisted-model")
+    assert not known and price == llm.UNKNOWN_PRICE
+    assert all(price[k] >= p[k] for p in llm.MODEL_PRICES.values() for k in price)
+    _run(_usage_reply("some/unlisted-model"), model="some/unlisted-model")
+    assert abs(float(_last_cost_row()["cost_usd"]) - (price["input"] + price["output"])) < 1e-6
+    assert llm.cost_of(1000, 0, 1000) == llm.cost_of(1000, 0, 1000, llm.MODEL)   # default stays Muse Spark
 
 
 if __name__ == "__main__":

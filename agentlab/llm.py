@@ -33,6 +33,27 @@ ROOT = Path(__file__).resolve().parent.parent
 BASE_URL = "https://inference.baseten.co/v1"
 MODEL = "meta-models/muse-spark-open-1026"
 PRICE_PER_M = {"input": 1.25, "cached_input": 0.15, "output": 4.25}  # baseten.co/pricing, Oct 2026
+# Other Baseten models, USD per 1M tokens, from GET /v1/models "pricing" (prompt, input_cache_read,
+# completion), read Oct 31, 2026. A model not listed here is priced at UNKNOWN_PRICE (see price_for).
+MODEL_PRICES = {
+    MODEL: PRICE_PER_M,
+    "meta-models/muse-spark-open": PRICE_PER_M,
+    "zai-org/GLM-5.3-Flash": {"input": 0.15, "cached_input": 0.015, "output": 0.50},
+    "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B": {"input": 0.20, "cached_input": 0.02, "output": 0.50},
+    "deepseek-ai/DeepSeek-V4.1-Flash-1017": {"input": 0.30, "cached_input": 0.03, "output": 1.20},
+    "deepseek-ai/DeepSeek-V4.1-Flash": {"input": 0.30, "cached_input": 0.03, "output": 1.20},
+    "zai-org/GLM-5.3": {"input": 1.40, "cached_input": 0.14, "output": 4.40},
+    "moonshotai/Kimi-K3": {"input": 3.00, "cached_input": 0.30, "output": 15.00},
+}
+# Unknown model: the most expensive known price, field by field.
+UNKNOWN_PRICE = {k: max(p[k] for p in MODEL_PRICES.values()) for k in PRICE_PER_M}
+
+
+def price_for(model: str) -> Tuple[dict, bool]:
+    """(USD per 1M tokens, known). An unknown model gets UNKNOWN_PRICE and known=False."""
+    if model in MODEL_PRICES:
+        return MODEL_PRICES[model], True
+    return UNKNOWN_PRICE, False
 STAGE_BUDGETS = {"dev": 5.0, "baseline": 15.0, "defense": 20.0, "benchmark": 30.0,
                  "arena": 20.0, "reserve": 10.0}
 CONFIRM_TOTAL_USD = 18.0
@@ -130,13 +151,13 @@ def total_spent() -> float:
     return sum(spend_by_stage().values())
 
 
-def cost_of(prompt_tokens: int, cached_tokens: int, completion_tokens: int) -> float:
-    p = PRICE_PER_M
+def cost_of(prompt_tokens: int, cached_tokens: int, completion_tokens: int, model: str = MODEL) -> float:
+    p = price_for(model)[0]
     return ((prompt_tokens - cached_tokens) * p["input"] + cached_tokens * p["cached_input"]
             + completion_tokens * p["output"]) / 1e6
 
 
-def worst_case_cost(messages: Sequence[dict], max_tokens: int) -> float:
+def worst_case_cost(messages: Sequence[dict], max_tokens: int, model: str = MODEL) -> float:
     """Upper-bound estimate: text at 1 token / 3 chars, each image as 28x28-px tiles, x2 margin,
     plus a full max_tokens of output."""
     from PIL import Image
@@ -151,7 +172,7 @@ def worst_case_cost(messages: Sequence[dict], max_tokens: int) -> float:
                 b64 = p["image_url"]["url"].split(",", 1)[1]
                 w, h = Image.open(io.BytesIO(base64.b64decode(b64))).size
                 tokens += math.ceil(w / 28) * math.ceil(h / 28)
-    return cost_of(int(2 * tokens) + 50, 0, max_tokens)
+    return cost_of(int(2 * tokens) + 50, 0, max_tokens, model)
 
 
 def check_budget(stage: str, est: float) -> None:
@@ -202,7 +223,7 @@ class SparkClient:
         if self.use_cache and path.exists():
             return Reply(**{**json.loads(path.read_text()), "cached": True})
 
-        check_budget(stage, worst_case_cost(messages, max_tokens))
+        check_budget(stage, worst_case_cost(messages, max_tokens, self.model))
 
         kwargs = {"model": self.model, "messages": list(messages), "max_tokens": max_tokens}
         if self.reasoning_effort:
@@ -214,7 +235,7 @@ class SparkClient:
         u = r.usage
         cached_tok = getattr(getattr(u, "prompt_tokens_details", None), "cached_tokens", 0) or 0
         reasoning = getattr(getattr(u, "completion_tokens_details", None), "reasoning_tokens", 0) or 0
-        cost = cost_of(u.prompt_tokens, cached_tok, u.completion_tokens)
+        cost = cost_of(u.prompt_tokens, cached_tok, u.completion_tokens, self.model)
         reply = Reply(text=r.choices[0].message.content or "", prompt_tokens=u.prompt_tokens,
                       completion_tokens=u.completion_tokens, reasoning_tokens=reasoning,
                       finish_reason=r.choices[0].finish_reason or "", latency_s=round(latency, 3),

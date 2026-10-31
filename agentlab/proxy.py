@@ -9,10 +9,11 @@ Point any OpenAI-compatible client at http://127.0.0.1:8000/v1 (any api_key stri
   locally (no upstream call, no cost). Other paths -> 404.
 * The Baseten key is read from .env only (not the environment) and is never logged; the caller's
   Authorization header is ignored. Log lines are additionally scrubbed of the key.
-* The model is forced to MODEL; max_tokens (and max_completion_tokens) are capped at 2000.
+* The model is forced to the server's model (--model, default llm.MODEL); max_tokens (and max_completion_tokens) are capped at 2000.
 * If Baseten rejects a request parameter (400/422 naming e.g. reasoning_effort or temperature),
   that parameter is dropped and the request retried once.
-* Budget: before forwarding, the worst-case cost is checked against the stage budget and the $18
+* Budget: priced per model (llm.price_for; an unknown model is priced at the most expensive known
+  price, and the proxy says so at startup). Before forwarding, the worst-case cost is checked against the stage budget and the $18
   total-spend confirmation; after each response the usage is logged with log_call(). Refusals
   return HTTP 402 with an explanation (the OpenAI SDK does not auto-retry 402).
 * Upstream timeout UPSTREAM_TIMEOUT (90 s); a timed-out call is retried once, then -> 504.
@@ -38,7 +39,6 @@ from agentlab import llm
 UPSTREAM = llm.BASE_URL + "/chat/completions"
 PATH = "/v1/chat/completions"
 MODELS_PATH = "/v1/models"
-MODELS_LIST = {"object": "list", "data": [{"id": llm.MODEL, "object": "model"}]}
 DROPPABLE = ["reasoning_effort", "temperature", "top_p", "parallel_tool_calls", "seed",
              "presence_penalty", "frequency_penalty", "logprobs", "top_logprobs", "stop"]
 DRY_RUN_LOG = llm.ROOT / "eval" / "cache" / "cost_log_dryrun.csv"
@@ -56,19 +56,21 @@ def read_env_key(env_path: Path) -> str:
 
 
 def estimate_cost(payload: dict) -> float:
-    """Worst case: request JSON at 1 token / 3 chars x2 (images as 28x28 tiles via llm), full output."""
+    """Worst case: request JSON at 1 token / 3 chars x2 (images as 28x28 tiles via llm), full output,
+    at the price of payload["model"]."""
+    model = payload.get("model") or llm.MODEL
     msgs = payload.get("messages") or []
     try:
-        msg_cost = llm.worst_case_cost(msgs, 0)
+        msg_cost = llm.worst_case_cost(msgs, 0, model)
     except Exception:  # unusual message shapes: fall back to raw size
-        msg_cost = llm.cost_of(int(2 * len(json.dumps(msgs)) / 3), 0, 0)
-    tools_cost = llm.cost_of(int(2 * len(json.dumps(payload.get("tools") or [])) / 3), 0, 0)
-    return msg_cost + tools_cost + llm.cost_of(0, 0, payload.get("max_tokens") or llm.MAX_TOKENS_CAP)
+        msg_cost = llm.cost_of(int(2 * len(json.dumps(msgs)) / 3), 0, 0, model)
+    tools_cost = llm.cost_of(int(2 * len(json.dumps(payload.get("tools") or [])) / 3), 0, 0, model)
+    return msg_cost + tools_cost + llm.cost_of(0, 0, payload.get("max_tokens") or llm.MAX_TOKENS_CAP, model)
 
 
-def prepare(payload: dict) -> dict:
+def prepare(payload: dict, model: str = llm.MODEL) -> dict:
     p = dict(payload)
-    p["model"] = llm.MODEL
+    p["model"] = model
     for k in ("max_tokens", "max_completion_tokens"):
         if p.get(k) is not None:
             p[k] = min(int(p[k]), llm.MAX_TOKENS_CAP)
@@ -138,8 +140,10 @@ class ProxyServer(ThreadingHTTPServer):
     allow_reuse_address = False
 
     def __init__(self, addr, *, key: Optional[str], dry_run: bool, stage: str = "baseline",
-                 upstream: str = UPSTREAM, upstream_timeout: float = UPSTREAM_TIMEOUT, log=sys.stderr):
+                 upstream: str = UPSTREAM, upstream_timeout: float = UPSTREAM_TIMEOUT, log=sys.stderr,
+                 model: str = llm.MODEL):
         super().__init__(addr, Handler)
+        self.model = model
         self.key, self.dry_run, self.stage, self.upstream, self.logf = key, dry_run, stage, upstream, log
         self.upstream_timeout = upstream_timeout
         self.lock = threading.Lock()  # budget check + log as one step
@@ -169,9 +173,10 @@ class Handler(BaseHTTPRequestHandler):
         self._send(status, json.dumps({"error": {"message": message, "type": etype, "code": status}}).encode())
 
     def do_GET(self):
+        s = self.server
         if self.path.rstrip("/") == MODELS_PATH:  # answered locally: no upstream call, no cost
             self.server.log("200 GET /v1/models (local)")
-            return self._send(200, json.dumps(MODELS_LIST).encode())
+            return self._send(200, json.dumps({"object": "list", "data": [{"id": s.model, "object": "model"}]}).encode())
         self._error(404, "only POST /v1/chat/completions and GET /v1/models are served", "not_found")
 
     def do_POST(self):
@@ -185,7 +190,7 @@ class Handler(BaseHTTPRequestHandler):
         if payload.get("stream"):
             return self._error(400, "streaming is not supported by this proxy", "invalid_request")
 
-        p = prepare(payload)
+        p = prepare(payload, s.model)
         est = estimate_cost(p)
         try:
             with s.lock:
@@ -257,9 +262,9 @@ class Handler(BaseHTTPRequestHandler):
         cached = int((u.get("prompt_tokens_details") or {}).get("cached_tokens") or 0)
         reasoning = int((u.get("completion_tokens_details") or {}).get("reasoning_tokens") or 0)
         finish = ((data.get("choices") or [{}])[0].get("finish_reason")) or ""
-        cost = llm.cost_of(prompt, cached, completion)
+        cost = llm.cost_of(prompt, cached, completion, s.model)
         with s.lock:
-            llm.log_call(s.stage, "proxy-dry-run" if s.dry_run else "proxy", llm.MODEL, prompt, cached,
+            llm.log_call(s.stage, "proxy-dry-run" if s.dry_run else "proxy", s.model, prompt, cached,
                          completion, reasoning, finish, latency, cost)
             spent = llm.spend_by_stage().get(s.stage, 0.0)
         s.log(f"200 in={prompt} out={completion} (reasoning {reasoning}) ${cost:.5f} {latency:.2f}s; "
@@ -273,6 +278,7 @@ def main(argv=None) -> int:
     ap.add_argument("--stage", default="baseline", choices=list(llm.STAGE_BUDGETS))
     ap.add_argument("--env", default=str(llm.ROOT / ".env"))
     ap.add_argument("--dry-run", action="store_true", help="fake responses; no network; separate cost log")
+    ap.add_argument("--model", default=llm.MODEL, help=f"Baseten model id to forward to (default {llm.MODEL})")
     a = ap.parse_args(argv)
 
     if a.dry_run:
@@ -280,7 +286,10 @@ def main(argv=None) -> int:
         key = None
     else:
         key = read_env_key(Path(a.env))
-    srv = ProxyServer((a.host, a.port), key=key, dry_run=a.dry_run, stage=a.stage)
+    srv = ProxyServer((a.host, a.port), key=key, dry_run=a.dry_run, stage=a.stage, model=a.model)
+    price, known = llm.price_for(a.model)
+    srv.log(f"model {a.model}: ${price['input']}/M in, ${price['output']}/M out"
+            + ("" if known else " (price unknown: using the most expensive known price)"))
     srv.log(f"listening on http://{a.host}:{a.port}/v1 ({'DRY RUN' if a.dry_run else 'forwarding to Baseten'}); "
             f"stage {a.stage}; cost log {llm.COST_LOG}")
     try:

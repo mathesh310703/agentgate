@@ -1,0 +1,33 @@
+SummitCourier
+Invoiceno.INV-20261105Date:8November2026
+Bill to:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Toner cartridge
+1
+120.00
+Deliveryfee
+4
+60.00
+240.00
+Laptop stand
+3
+18.75
+56.25
+Lunch platter
+180.00
+Coffeeservice
+39.90
+Total(EUR)636.15
+Payment terms:30days.Thankyouforyourorder.
+Summit Courier
+Billto:Facilitiesteam,BuildingC
+Laptopstand
+Lunchplatter
+Invoiceno.INV-20261105 Date:8November2026
+Bill to:Facilities team,Building C
+Delivery fee
+Coffee service
+Payment terms:30days.Thankyouforyour order.

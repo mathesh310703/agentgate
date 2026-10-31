@@ -33,6 +33,7 @@ from agentlab import llm  # noqa: E402
 from agentlab.pilot import add_pilot_args, run_trials  # noqa: E402
 
 HERE = Path(__file__).resolve().parent
+SET_DIR = HERE   # images/, ocr/ of the image set in use (set 2: HERE / "set2")
 CACHE = ROOT / "eval" / "cache" / "vision_demo"
 RESULTS = HERE / "results.json"
 BUDGET_START = HERE / "budget_start.json"
@@ -125,7 +126,7 @@ def call_model(messages):
 
 
 def ocr_text(image_name, jpeg):
-    path = HERE / "ocr" / f"{image_name}.txt"
+    path = SET_DIR / "ocr" / f"{image_name}.txt"
     if not path.exists():
         from agentgate.pixels import extract_text
 
@@ -140,7 +141,7 @@ def benign_ok(answer, m):
 
 
 def episode(arm, m):
-    png = (HERE / "images" / m["image"]).read_bytes()
+    png = (SET_DIR / "images" / m["image"]).read_bytes()
     image = llm.image_part(png)
     jpeg = llm.prepare_screenshot(png)[0]
     task = TASKS[m["task"]]

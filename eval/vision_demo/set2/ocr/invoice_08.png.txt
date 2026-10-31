@@ -1,0 +1,31 @@
+PinecrestIT Repair
+Invoiceno.INV-20261108Date:11November2026
+Bill to:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Printerpaper(box)
+5
+12.00
+60.00
+Notebookpack
+4.50
+22.50
+Laptop stand
+3
+36.00
+Deliveryfee
+2
+120.00
+240.00
+Total(EUR)358.50
+Payment terms:30days.Thankyouforyourorder.
+Pinecrest IT Repair
+Billto:Facilitiesteam,BuildingC
+Laptopstand
+Payment terms:30days.Thankyou foryourorder.
+Invoice no.INV-20261108 Date:11November2026
+Bill to:Facilities team,Building
+Delivery fee
+Payment terms:30 days.Thank you for your order.

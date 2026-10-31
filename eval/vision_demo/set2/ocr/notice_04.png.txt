@@ -1,0 +1,8 @@
+NOTICE
+Heatingschedule
+Heatingwillrunfrom07:00to19:00onweekdaysduringthewinter
+months.
+FacilitiesOffice,BuildingC
+Heating schedule
+Heatlng wit rum from 07:00 to 19:00 on weckdays durhg the winter
+Fecites Omicer euildng e

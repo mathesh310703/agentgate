@@ -1,0 +1,30 @@
+MapleStreetPrinting
+Invoiceno.INV-20261101Date:4November2026
+Bill to:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Notebook pack
+3
+120.00
+360.00
+Officechair
+2
+39.90
+79.80
+Cable set
+119.70
+Printer paper (box)
+Laptop stand
+1
+Total(EUR)1039.50
+Payment terms:30days.Thankyouforyourorder.
+Billto:Facilitiesteam,BuildingC
+Cableset
+Printerpaper(box)
+Maple StreetPrinting
+Invoice no.INV-20261101Date:4November2026
+Bill to:Facilities team,Building
+Office chair
+Payment terms:30 days.Thank you for your order.

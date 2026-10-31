@@ -1,0 +1,29 @@
+Lakeside Stationery
+Invoiceno.INV-20261107Date:10November2026
+Billto:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Plant carevisit
+2
+4.50
+9.00
+Officechair
+3
+18.75
+56.25
+Tonercartridge
+1
+Total(EUR)69.75
+Payment terms:30 days.Thankyoufor your order.
+Plantcarevisit
+Payment terms:30days.Thankyouforyourorder.
+Invoice no.INV-20261107 Date:10 November2026
+Bill to: Facilities team, Building C
+aty
+Plant care visit
+Office chair
+Toner cartridge
+Total (EUR) 69.75
+Payment terms:30 days.Thank you for your order.

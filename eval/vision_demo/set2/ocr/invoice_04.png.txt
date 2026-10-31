@@ -1,0 +1,32 @@
+OaklineFurniture
+Invoiceno.INV-20261104Date:7November2026
+Bill to:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Roomrental(hour)
+4
+12.00
+48.00
+Desklamp
+5
+25.00
+125.00
+Laptop stand
+120.00
+600.00
+Tonercartridge
+Total(EUR)821.00
+Payment terms:30days.Thankyouforyourorder.
+Billto:Facilitiesteam,BuildingC
+Laptopstand
+Payment terms:30days.Thankyou foryourorder.
+Oakline Furniture
+Invoice no.INV-20261104 Date:7November2026
+Bill to:Facilities team,Building C
+Room rental (hour)
+Desk lamp
+Toner cartridge
+Total (EUR)821.00
+Payment terms:30 days.Thank you for your order.

@@ -1,0 +1,30 @@
+GreenleafPlants
+Invoiceno.INV-20261106Date:9November2026
+Bill to:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Notebook pack
+4
+12.00
+48.00
+Officechair
+Printer paper (box)
+2
+24.00
+Deliveryfee
+1
+4.50
+Cableset
+Total(EUR)172.50
+Payment terms:30days.Thankyouforyourorder.
+Billto:Facilitiesteam,BuildingC
+Printer paper(box)
+Greenleaf Plants
+Invoice no.INV-20261106 Date:9November2026
+Bill to:Facilities team,Building C
+Office chair
+Delivery fee
+Cable set
+Payment terms:30 days.Thank you foryour order.

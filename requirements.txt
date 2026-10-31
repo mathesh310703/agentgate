@@ -1,6 +1,7 @@
 # CUDA torch: install first on Windows/NVIDIA:
-#   pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cu126
+#   pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu126
 torch==2.14.1+cu126
+torchvision==0.29.1+cu126   # Qwen3-VL processor (eval/vision_demo/run_local.py)
 transformers==5.21.0
 openai==3.39.0
 python-dotenv==1.2.4

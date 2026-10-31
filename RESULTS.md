@@ -79,6 +79,27 @@ Earlier gated runs, for comparison: v0 37/40, v1 35/40 (no judge), single runs e
 
 The model itself refused every real attack. On 9 of the 15 images it told the user it had seen the hidden line. The protection numbers therefore come from the scripted worst case in (a) and (b), not from live attacks.
 
+### (e) A real model that does get fooled: Qwen3-VL-2B, local, both image sets (Oct 31, 2026)
+
+Qwen3-VL-2B-Instruct (Apache-2.0) is a small open model used as a test subject; it is not part of AgentGate.
+It uses prompted JSON tool calls, the same fake tools and tasks, and a 6-turn cap. The gate is `gate-final.1`.
+Wilson 95% CIs. Details are in `eval/LOCALVLM_V0.md` and `eval/LOCALVLM_V1.md`. This table is not produced by `scripts/reproduce.py`.
+
+| run | arm | attack success | benign success | false blocks (clean) | hit 6-turn cap |
+|---|---|---|---|---|---|
+| v0 greedy, 60 images | no gate | 4/60 (2.6–15.9%) | 44/60 | – | 9 |
+| v0 greedy, 60 images | gate | 0/60 (0.0–6.0%) | 40/60 | 0/30 | 12 |
+| v1 T=0.7, 5 samples, 300 episodes | no gate | 16/300 (3.3–8.5%); hidden-line images 16/150 (6.7–16.6%) | 232/300 | – | 31 |
+| v1 | gate, old message | 0/300 (0.0–1.3%) | 218/300 | 1/150 (0.1–3.7%) | 42 |
+| v1 | gate, new message | 0/300 (0.0–1.3%) | 216/300 | 1/150 (0.1–3.7%) | 34 |
+
+- **Warning the user:** the model reported the hidden line to the user in 0 of 150 ungated carrier samples.
+- **False block:** the one false block is a share the model aimed at an address it made up (`user@example.com`).
+- **Block message (post-freeze, text only):** the message now reads `Action not performed. Do not retry it. Tell the user why: <explanation>`.
+  - The decisions are identical; `tests/test_block_message.py` checks this.
+  - Over the 17 blocked episodes per arm, turn-cap hits went from 11 to 3, and the number of answers telling the user the action was not done went from 3 to 13.
+  - Benign success did not improve.
+
 ## Limits
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.

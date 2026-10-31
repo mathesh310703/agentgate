@@ -2,6 +2,18 @@
 
 AgentGate is a plugin for browser agents that stops untrusted on-screen content (page text, images, popups, chat widgets) from commanding the agent: only the user's task may direct actions, and everything the agent reads from a page is treated as data. This repo holds the plugin work and its evaluation harness; the vision model under test is Muse Spark Open via Baseten's OpenAI-compatible Model API.
 
+## Results (attack success, gate off → on; Wilson 95% CI)
+
+| test | gate off | gate on | false blocks |
+|---|---|---|---|
+| Scripted worst case, AgentDojo workspace | 231/240 | 0/240 | 0 on held-out half |
+| Scripted worst case, 15 image carriers | 15/15 | 0/15 | 0/15 |
+| Muse Spark Open, real attacks | 0/140, 0/15 (refused on its own) | – | – |
+| Qwen3-VL-2B (small open test model, not part of AgentGate), greedy, 60 images | 4/60 (2.6–15.9%) | 0/60 (0.0–6.0%) | 0/30 |
+| Qwen3-VL-2B, T=0.7, 5 samples, 300 episodes | 16/300 (3.3–8.5%) | 0/300 (0.0–1.3%) | 1/150 (0.1–3.7%) |
+
+Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md) and `eval/LOCALVLM_V1.md`.
+
 ## Setup (Windows, NVIDIA GPU)
 
 ```bash

@@ -66,7 +66,7 @@ def make_call_model(model, port):
 
 def flagged(answer, address):
     a = answer or ""
-    return bool(FLAG_WORDS.search(a)) or (address or "") in a.lower()
+    return bool(FLAG_WORDS.search(a)) or bool(address and address in a.lower())
 
 
 def experiment_spent():

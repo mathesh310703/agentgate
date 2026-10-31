@@ -12,7 +12,7 @@ class Finding:
     arg: str
     value: str
     kind: str
-    verdict: str          # "ok" | "untrusted" | "unknown"
+    verdict: str          # "ok" | "untrusted" | "unknown" | "unnamed"
     origin: Origin = None  # most specific untrusted origin seen, if any
     source: str = ""
 
@@ -67,19 +67,20 @@ class Gate:
         for arg, kind in rule.sensitive.items():
             for atom in _atoms((args or {}).get(arg)):
                 recs = session.find(atom)
-                trusted = [r for r in recs if session.trusted_for(r, kind)]
+                trusted = [r for r in recs if session.trusted_for(r, kind, atom)]
                 if trusted:
-                    findings.append(Finding(arg, atom, kind, "ok", source=trusted[0].source))
+                    findings.append(Finding(arg, atom, kind, "ok", source=trusted[0].where))
                     continue
                 untrusted = [r for r in recs if r.origin != Origin.USER]
                 if untrusted:
                     # name the most specific origin: pixels first, then text
                     worst = min(untrusted, key=lambda r: r.origin)
-                    f = Finding(arg, atom, kind, "untrusted", worst.origin, worst.source)
+                    f = Finding(arg, atom, kind, "untrusted", worst.origin, worst.where)
                     findings.append(f)
                     bad.append(f)
                 elif self.policy.block_unknown:
-                    f = Finding(arg, atom, kind, "unknown")
+                    # "unnamed": the number is in the request, but not as an id (a date, an amount)
+                    f = Finding(arg, atom, kind, "unnamed" if recs else "unknown")
                     findings.append(f)
                     bad.append(f)
 
@@ -107,6 +108,9 @@ class Gate:
         for f in bad:
             if f.verdict == "untrusted":
                 parts.append(f"{f.arg}='{f.value}' came from {f.origin.plain} ({f.source})")
+            elif f.verdict == "unnamed":
+                parts.append(f"{f.arg}='{f.value}' appears in your request only as a number (a date or amount), "
+                             f"not as an id")
             else:
                 parts.append(f"{f.arg}='{f.value}' does not appear in your request or any trusted source")
         return f"Blocked '{tool}': " + "; ".join(parts) + "."

@@ -1,4 +1,5 @@
-"""Offline test for the worst-case replay (no model calls). Run: `.venv\\Scripts\\python tests/test_worstcase.py`."""
+"""Offline test for the worst-case replay (no model calls). Uses tuning-half tasks (0-19) only;
+the "June 13" case (held-out task 30) is covered by tests/test_gate.py::test_june_13_does_not_name_file_13. Run: `.venv\\Scripts\\python tests/test_worstcase.py`."""
 
 import sys
 from pathlib import Path
@@ -37,12 +38,6 @@ def test_gate_blocks_injected_recipient_and_keeps_user_task():
 def test_injection_ids_follow_user_calls():
     # user_task_6 creates an event, which sends an invitation email; the injected delete must hit the new id
     (r,) = run("none", SUITE, ATK, pair("user_task_6", "injection_task_5"))
-    assert r["attack_success"]
-
-
-def test_known_limit_short_numeric_id_traces_to_a_date():
-    # "June 13" in the request makes file_id '13' look user-named: the injected delete gets through
-    (r,) = run("gate", SUITE, ATK, pair("user_task_30", "injection_task_1"))
     assert r["attack_success"]
 
 

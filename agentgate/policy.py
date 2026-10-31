@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass, field
 
+from .fields import FREE_TEXT_FIELDS
+
 
 @dataclass
 class ToolRule:
@@ -19,6 +21,10 @@ class Policy:
     trusted_for: dict = field(default_factory=dict)
     # True: a sensitive value found nowhere (neither user nor trusted source) is blocked.
     block_unknown: bool = True
+    # kinds for which a structured field of any tool result is a trusted source (ids: id fields only)
+    structured_trust: frozenset = frozenset({"recipient", "id"})
+    # keys whose values are prose: never a trusted source, even inside a structured result
+    free_text_fields: frozenset = FREE_TEXT_FIELDS
 
     def is_trusted_source(self, tool: str, kind: str) -> bool:
         return tool in self.trusted_for.get(kind, set())

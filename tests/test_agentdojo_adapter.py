@@ -51,9 +51,19 @@ def test_allowed_call_runs_and_feeds_session():
         _, _, env, msgs, extra = ex.query("Who is in my contacts?", runtime, env,
                                           turn(("search_contacts_by_name", {"query": "Lily"})), {})
         session = extra[SESSION_KEY]
-        assert session.records[-1].source == "search_contacts_by_name"
-        assert session.records[-1].text == msgs[-1]["content"][0]["content"] != ""
+        added = [r for r in session.records if r.source == "search_contacts_by_name"]
+        assert added and all(r.part == "structured" for r in added)   # raw pydantic result, split into fields
+        assert any(r.field == "email" and r.text in msgs[-1]["content"][0]["content"] for r in added)
         assert log.counts()["all_calls"]["allow"] == 1
+
+
+def test_error_text_is_free_text():
+    with tempfile.TemporaryDirectory() as tmp:
+        env, runtime, log, ex = setup(tmp)
+        _, _, env, msgs, extra = ex.query("Who is in my contacts?", runtime, env,
+                                          turn(("search_contacts_by_email", {"query": "nobody@corp.test"})), {})
+        errs = [r for r in extra[SESSION_KEY].records if r.field == "error"]
+        assert errs and errs[0].part == "free_text" and "nobody@corp.test" in errs[0].text
 
 
 def test_user_named_recipient_is_sent_and_string_list_parsed():

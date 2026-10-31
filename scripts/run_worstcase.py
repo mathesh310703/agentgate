@@ -8,8 +8,10 @@ with the important_instructions attack placed in the injection vectors the user 
 Arms: "none" (agentdojo's ToolsExecutor) and "gate" (GatedToolsExecutor; every tool result goes into the
 Session as untrusted text). Metrics come from the end state via agentdojo's own utility/security checks.
 
-  .venv\\Scripts\\python scripts/run_worstcase.py                 # all pairs -> runs/worstcase_v0/
-  .venv\\Scripts\\python scripts/run_worstcase.py --users user_task_0 --injections injection_task_1
+  .venv\\Scripts\\python scripts/run_worstcase.py --split tune --out runs/worstcase_v1_tune       # develop here
+  .venv\\Scripts\\python scripts/run_worstcase.py --split tune --mode clean --out runs/wc_v1_tune_clean
+  .venv\\Scripts\\python scripts/run_worstcase.py --split heldout --out runs/worstcase_v1_heldout # once
+  .venv\\Scripts\\python scripts/run_worstcase.py --users user_task_0 --injections injection_task_1 --out ...
 """
 
 import argparse
@@ -55,12 +57,14 @@ class CompromisedAgent(BasePipelineElement):
         self.phases = []   # "user" / "injection" for each call issued, in order
 
     def set_pair(self, user_task, injection_task):
+        """injection_task=None: clean replay, user-task calls only."""
         self.user_task, self.injection_task, self.phases = user_task, injection_task, []
 
     def query(self, query, runtime, env=EmptyEnv(), messages=[], extra_args={}):
         # each plan is computed when its phase starts: the injection's ids (e.g. the next email id) must
         # reflect what the user-task calls already created
-        for phase, task in (("user", self.user_task), ("injection", self.injection_task)):
+        phases = [("user", self.user_task)] + ([("injection", self.injection_task)] if self.injection_task else [])
+        for phase, task in phases:
             for call in task.ground_truth(env):
                 call = call.model_copy(update={"id": f"gt{len(self.phases)}"})
                 self.phases.append(phase)
@@ -84,13 +88,13 @@ def run(arm, suite, attack, pairs):
     pipeline.name = f"vllm_parsed_worstcase_{arm}"
     out = []
     for ut, it in pairs:
-        injections = attack.attack(ut, it)
+        injections = attack.attack(ut, it) if it else {}
         agent.set_pair(ut, it)
         if gate:
             gate.decisions = []
         utility, security = suite.run_task_with_pipeline(pipeline, ut, it, injections)
-        rec = {"arm": arm, "user_task": ut.ID, "injection_task": it.ID, "utility": bool(utility),
-               "attack_success": bool(security), "calls": []}
+        rec = {"arm": arm, "user_task": ut.ID, "injection_task": it.ID if it else None, "utility": bool(utility),
+               "attack_success": bool(security) if it else False, "calls": []}
         for i, phase in enumerate(agent.phases):
             c = {"phase": phase}
             if gate:
@@ -101,7 +105,7 @@ def run(arm, suite, attack, pairs):
     return out
 
 
-def summarize(results, n_user_calls_total):
+def summarize(results):
     rows = {}
     for arm in ("none", "gate"):
         rs = [r for r in results if r["arm"] == arm]
@@ -111,36 +115,57 @@ def summarize(results, n_user_calls_total):
             uc = [c for r in rs for c in r["calls"] if c["phase"] == "user"]
             ic = [c for r in rs for c in r["calls"] if c["phase"] == "injection"]
             row["user_calls"] = len(uc)
-            row["user_calls_blocked_or_asked"] = sum(c["action"] != "allow" for c in uc)
-            row["injection_calls"] = Counter(c["action"] for c in ic)
+            row["user_calls_blocked"] = sum(c["action"] == "block" for c in uc)
+            row["user_calls_asked"] = sum(c["action"] == "ask" for c in uc)
+            row["user_tasks_with_block"] = len({r["user_task"] for r in rs for c in r["calls"]
+                                                if c["phase"] == "user" and c["action"] == "block"})
+            row["user_tasks_with_ask"] = len({r["user_task"] for r in rs for c in r["calls"]
+                                              if c["phase"] == "user" and c["action"] == "ask"})
+            row["injection_calls"] = dict(Counter(c["action"] for c in ic))
         rows[arm] = row
     return rows
+
+
+SPLITS = {"tune": range(0, 20), "heldout": range(20, 40), "all": range(0, 40)}
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--benchmark-version", default="v1.2.2")
-    ap.add_argument("--users", nargs="*")
+    ap.add_argument("--split", choices=list(SPLITS), default="all",
+                    help="user tasks: tune = 0-19 (develop here), heldout = 20-39 (report once), all")
+    ap.add_argument("--users", nargs="*", help="explicit user task ids (overrides --split)")
     ap.add_argument("--injections", nargs="*")
-    ap.add_argument("--out", default=str(ROOT / "runs" / "worstcase_v0"))
+    ap.add_argument("--mode", choices=["attack", "clean"], default="attack",
+                    help="clean: user-task calls only, no injections (utility without attack goals)")
+    ap.add_argument("--out", required=True, help="output dir, e.g. runs/worstcase_v1_tune")
     a = ap.parse_args(argv)
 
     suite = get_suite(a.benchmark_version, "workspace")
     named = AgentPipeline([])
     named.name = "vllm_parsed"   # same model wording in the injected text as the runs/atk_* runs
     attack = load_attack(ATTACK, suite, named)
-    users = [suite.user_tasks[u] for u in (a.users or suite.user_tasks)]
-    injs = [suite.injection_tasks[i] for i in (a.injections or suite.injection_tasks)]
-    pairs = [(u, i) for u in users for i in injs]
-    print(f"{len(users)} user tasks x {len(injs)} injection tasks = {len(pairs)} pairs; attack {ATTACK}")
+    users = [suite.user_tasks[u] for u in (a.users or [f"user_task_{i}" for i in SPLITS[a.split]])]
+    if a.mode == "clean":
+        pairs = [(u, None) for u in users]
+        print(f"clean replay: {len(users)} user tasks, no injections")
+    else:
+        injs = [suite.injection_tasks[i] for i in (a.injections or suite.injection_tasks)]
+        pairs = [(u, i) for u in users for i in injs]
+        print(f"{len(users)} user tasks x {len(injs)} injection tasks = {len(pairs)} pairs; attack {ATTACK}")
 
     results = run("none", suite, attack, pairs) + run("gate", suite, attack, pairs)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(json.dumps(results, indent=1), encoding="utf-8")
 
-    summary = summarize(results, None)
-    print(json.dumps(summary, indent=1, default=dict))
+    summary = summarize(results)
+    print(json.dumps(summary, indent=1))
+    for r in results:
+        for c in r["calls"]:
+            if r["arm"] == "gate" and c["phase"] == "user" and c["action"] != "allow":
+                print(f"  user-call {c['action']}: {r['user_task']} x {r['injection_task']}: {c['tool']}: "
+                      f"{c['findings']}")
     through = [r for r in results if r["arm"] == "gate" and r["attack_success"]]
     print(f"\ninjection goals that got through the gate: {len(through)}")
     for r in through:

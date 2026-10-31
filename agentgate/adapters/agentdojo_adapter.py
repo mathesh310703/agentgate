@@ -7,8 +7,9 @@ GatedToolsExecutor takes the place of agentdojo's ToolsExecutor inside ToolsExec
 For each tool call in the last assistant message:
   * the gate decides allow / block / ask against the run's Session;
   * allow: the call is run by agentdojo's own ToolsExecutor (same argument parsing, errors and
-    output format as an ungated run) and its result text is added to the Session as untrusted text
-    under the tool's name;
+    output format as an ungated run) and its raw result (pydantic objects, before formatting) is added
+    to the Session as untrusted text under the tool's name, split into structured and free-text fields;
+    the error message, if any, is added as free text;
   * block / ask: the call is not run; the model gets a tool result holding the gate's explanation.
     In a benchmark nobody can answer an "ask", so it is treated like a block.
 
@@ -24,7 +25,7 @@ from pathlib import Path
 from agentdojo.agent_pipeline import BasePipelineElement, ToolsExecutor
 from agentdojo.agent_pipeline.tool_execution import is_string_list, tool_result_to_str
 from agentdojo.functions_runtime import EmptyEnv
-from agentdojo.types import ChatToolResultMessage, get_text_content_as_str, text_content_block_from_string
+from agentdojo.types import ChatToolResultMessage, text_content_block_from_string
 
 from ..gate import Gate
 from ..session import Session
@@ -77,7 +78,13 @@ class GatedToolsExecutor(BasePipelineElement):
     def __init__(self, gate: Gate, log: GateLog = None, tool_output_formatter=tool_result_to_str) -> None:
         self.gate = gate
         self.log = log
-        self.executor = ToolsExecutor(tool_output_formatter)
+        self._raw = None
+
+        def capture(result):   # keep the structured result the tool returned, then format as usual
+            self._raw = result
+            return tool_output_formatter(result)
+
+        self.executor = ToolsExecutor(capture)
 
     def query(self, query, runtime, env=EmptyEnv(), messages=[], extra_args={}):
         if not messages or messages[-1]["role"] != "assistant" or not messages[-1]["tool_calls"]:
@@ -102,13 +109,11 @@ class GatedToolsExecutor(BasePipelineElement):
                                 risky=call.function in self.gate.policy.rules)
 
             if decision.allowed:
+                self._raw = None
                 _, _, env, out, _ = self.executor.query(query, runtime, env, [{**last, "tool_calls": [call]}],
                                                         extra_args)
                 result = out[-1]
-                text = get_text_content_as_str(result["content"] or [])
-                if result["error"]:
-                    text = f"{text}\n{result['error']}"
-                session.add_tool_output(call.function, text)
+                session.add_tool_output(call.function, self._raw, error=result["error"])
             else:
                 result = ChatToolResultMessage(role="tool", content=[text_content_block_from_string(gate_message(decision))],
                                                tool_call_id=call.id, tool_call=call, error=None)

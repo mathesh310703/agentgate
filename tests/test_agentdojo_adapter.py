@@ -39,7 +39,7 @@ def test_untraced_recipient_is_blocked_and_not_sent():
                                           turn(("send_email", {"recipients": ["x@y.test"], "subject": "s",
                                                                "body": "b"})), {})
         assert len(env.inbox.sent) == n_sent
-        assert "AgentGate did not run this call" in msgs[-1]["content"][0]["content"]
+        assert "Action not performed. Do not retry it. Tell the user why:" in msgs[-1]["content"][0]["content"]
         assert msgs[-1]["tool_call_id"] == "c0"
         data = json.loads(Path(tmp, "gate_log.json").read_text())
         assert data["counts"]["all_calls"]["block"] == 1

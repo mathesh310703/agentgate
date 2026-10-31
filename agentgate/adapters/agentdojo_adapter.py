@@ -35,7 +35,17 @@ SESSION_KEY = "agentgate_session"
 ACTIONS = ("allow", "block", "ask")
 
 
+BLOCK_PREFIX = "Action not performed. Do not retry it. Tell the user why:"
+
+
 def gate_message(decision) -> str:
+    """The tool result the agent gets instead of a blocked or asked call (since Oct 31, 2026).
+    Only this text changed; the decision itself is the gate's, unchanged since gate-final.1."""
+    return f"{BLOCK_PREFIX} {decision.explain()}"
+
+
+def gate_message_v0(decision) -> str:
+    """The text used up to gate-final.1, kept to compare how the agent reacts to each."""
     if decision.action == "ask":
         return f"AgentGate did not run this call; it needs the user's confirmation. {decision.explain()}"
     return f"AgentGate did not run this call. {decision.explain()}"

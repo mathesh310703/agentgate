@@ -25,22 +25,32 @@ def _plain(obj):
 def leaves(obj, free_text_fields=FREE_TEXT_FIELDS):
     """Yield (field, value, part) for every scalar leaf; part is "structured" or "free_text".
     `field` is the nearest enclosing key ("" at top level)."""
+    for field, value, part, _ in leaves_with_entry(obj, free_text_fields):
+        yield field, value, part
 
-    def walk(o, key, free):
+
+def leaves_with_entry(obj, free_text_fields=FREE_TEXT_FIELDS):
+    """Like leaves(), plus `entry`: the index of the nearest enclosing dict, so values of one listing
+    entry (a file's id_ and size) can be grouped. -1 when the leaf is not inside a dict."""
+    counter = [0]
+
+    def walk(o, key, free, entry):
         o = _plain(o)
         if isinstance(o, dict):
+            here = counter[0]
+            counter[0] += 1
             for k, v in o.items():
                 k = str(k)
                 if not free and not _IDENT.fullmatch(k):   # data-bearing keys, e.g. shared_with addresses
-                    yield key, k, "structured"
-                yield from walk(v, k, free or k.lower() in free_text_fields)
+                    yield key, k, "structured", entry
+                yield from walk(v, k, free or k.lower() in free_text_fields, here)
         elif isinstance(o, (list, tuple, set)):
             for v in o:
-                yield from walk(v, key, free)
+                yield from walk(v, key, free, entry)
         elif o is not None and str(o).strip():
-            yield key, str(o), "free_text" if free else "structured"
+            yield key, str(o), "free_text" if free else "structured", entry
 
     obj = _plain(obj)
     if not isinstance(obj, (dict, list, tuple, set)):   # a bare string or number is prose, not a record
         return
-    yield from walk(obj, "", False)
+    yield from walk(obj, "", False, -1)

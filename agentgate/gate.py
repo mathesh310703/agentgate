@@ -17,6 +17,7 @@ class Finding:
     source: str = ""
     score: float = None    # injection score of the source record (or, for sender_only, of the worst text)
     flagged: str = ""      # sender_only: the free-text record whose score triggered the rule
+    entry: str = ""        # ok findings from a structured record: its listing entry (Record.entry)
 
 
 @dataclass
@@ -25,6 +26,7 @@ class Decision:
     tool: str
     reason: str
     findings: list = field(default_factory=list)
+    judge: dict = None     # set by judge.judge_decision when the intent judge reviewed an "ask"
 
     @property
     def allowed(self) -> bool:
@@ -78,7 +80,8 @@ class Gate:
                         findings.append(f)
                         bad.append(f)
                         continue
-                    findings.append(Finding(arg, atom, kind, "ok", source=trusted[0].where))
+                    findings.append(Finding(arg, atom, kind, "ok", source=trusted[0].where,
+                                            entry=trusted[0].entry))
                     continue
                 untrusted = [r for r in recs if r.origin != Origin.USER]
                 if untrusted:

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from .fields import is_id_field, leaves
+from .fields import is_id_field, leaves_with_entry
 from .ids import is_number, named_as_id
 from .labels import Origin
 from .normalize import contains_token, normalize
@@ -18,6 +18,7 @@ class Record:
     field: str = ""     # structured tool results: the key the value sat under
     part: str = "text"  # "text" (unparsed string), "structured" or "free_text"
     score: float = None  # injection score from the session's scorer (untrusted text and pixels only)
+    entry: str = ""      # structured tool results: "<output no.>:<dict no.>", shared by one listing entry
 
     @property
     def where(self) -> str:
@@ -30,6 +31,7 @@ class Session:
         self.policy = policy
         self.scorer = scorer
         self.records: list = []
+        self._outputs = 0   # tool outputs added so far, used to label listing entries
         self.add_user(user_request)
 
     def add_user(self, text: str) -> None:
@@ -38,9 +40,10 @@ class Session:
     def add_tool_output(self, tool: str, output, error: str = None) -> None:
         """Record a tool result. A structured result (dict, list, pydantic model) is split into one record
         per leaf, labelled structured or free text; a plain string is kept whole. Error text is free text."""
-        parts = list(leaves(output, self.policy.free_text_fields))
-        for field, value, part in parts:
-            self._add(Origin.UNTRUSTED_TEXT, value, tool, field, part)
+        parts = list(leaves_with_entry(output, self.policy.free_text_fields))
+        self._outputs += 1
+        for field, value, part, entry in parts:
+            self._add(Origin.UNTRUSTED_TEXT, value, tool, field, part, f"{self._outputs}:{entry}")
         if not parts and not isinstance(output, (dict, list, tuple, set)):
             self._add(Origin.UNTRUSTED_TEXT, output, tool)
         if error:
@@ -50,9 +53,9 @@ class Session:
         """Text recovered from an image or screenshot (OCR). Always untrusted."""
         self._add(Origin.UNTRUSTED_PIXELS, text, f"screenshot:{source}")
 
-    def _add(self, origin: Origin, text, source: str, field: str = "", part: str = "text") -> None:
+    def _add(self, origin: Origin, text, source: str, field: str = "", part: str = "text", entry: str = "") -> None:
         text = "" if text is None else str(text)
-        rec = Record(origin, text, source, normalize(text), field, part)
+        rec = Record(origin, text, source, normalize(text), field, part, entry=entry)
         # structured leaves (ids, addresses, dates) are typed values, not prose, so they are not scored
         if self.scorer is not None and origin != Origin.USER and part != "structured":
             rec.score = float(self.scorer(text))

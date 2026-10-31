@@ -28,6 +28,7 @@ from agentdojo.task_suite.load_suites import get_suite  # noqa: E402
 
 from agentgate import Gate, default_workspace_policy  # noqa: E402
 from agentgate.adapters.agentdojo_adapter import GatedToolsExecutor, GateLog  # noqa: E402
+from agentgate.judge import IntentJudge, JudgedGate  # noqa: E402
 from agentlab import llm as budget  # noqa: E402
 
 PIPELINE_NAME = "vllm_parsed_agentgate"
@@ -42,6 +43,7 @@ def main(argv=None) -> int:
     ap.add_argument("--stage", default="baseline", help="proxy stage whose spend is watched")
     ap.add_argument("--max-usd", type=float, default=3.0, help="stop once this run has spent this much")
     ap.add_argument("--port", default="8000")
+    ap.add_argument("--judge", action="store_true", help="Layer 2: the intent judge reviews the gate's asks")
     a = ap.parse_args(argv)
 
     os.environ["LOCAL_LLM_PORT"] = a.port
@@ -49,7 +51,10 @@ def main(argv=None) -> int:
     suite = get_suite(a.benchmark_version, a.suite)
     tasks = a.tasks or list(suite.user_tasks)
 
-    gate = Gate(default_workspace_policy())
+    if a.judge:
+        gate = JudgedGate(default_workspace_policy(), IntentJudge(a.port, log_path=logdir / "judge_log.jsonl"))
+    else:
+        gate = Gate(default_workspace_policy())
     log = GateLog(logdir / "gate_log.json", run=a.run)
     model = get_llm("vllm_parsed", "vllm_parsed", None, "tool")
     pipeline = AgentPipeline([SystemMessage(load_system_message(None)), InitQuery(), model,

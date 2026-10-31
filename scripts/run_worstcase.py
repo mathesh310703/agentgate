@@ -32,19 +32,22 @@ from agentdojo.types import ChatAssistantMessage, text_content_block_from_string
 
 from agentgate import Gate, default_workspace_policy  # noqa: E402
 from agentgate.adapters.agentdojo_adapter import GatedToolsExecutor  # noqa: E402
+from agentgate.judge import judge_decision  # noqa: E402
 
 ATTACK = "important_instructions"
 
 
 class RecordingGate(Gate):
-    """Gate that keeps every Decision (with findings) so the replay can report sources."""
+    """Gate that keeps every Decision (with findings) so the replay can report sources.
+    With a judge, its "ask" decisions go to the Layer 2 intent judge (agentgate/judge.py)."""
 
-    def __init__(self, policy):
+    def __init__(self, policy, judge=None):
         super().__init__(policy)
+        self.judge = judge
         self.decisions = []
 
     def check(self, tool, args, session):
-        d = super().check(tool, args, session)
+        d = judge_decision(self.judge, super().check(tool, args, session), args, session)
         self.decisions.append(d)
         return d
 
@@ -82,8 +85,8 @@ def findings_text(d):
     return "; ".join(f"{f.arg}={f.value!r} {f.verdict} (source: {f.source or 'none'})" for f in d.findings) or "-"
 
 
-def run(arm, suite, attack, pairs, scorer=None):
-    gate = RecordingGate(default_workspace_policy()) if arm == "gate" else None
+def run(arm, suite, attack, pairs, scorer=None, judge=None):
+    gate = RecordingGate(default_workspace_policy(), judge) if arm == "gate" else None
     agent = CompromisedAgent(GatedToolsExecutor(gate, scorer=scorer) if gate else ToolsExecutor())
     pipeline = AgentPipeline([InitQuery(), agent])
     pipeline.name = f"vllm_parsed_worstcase_{arm}"
@@ -101,6 +104,8 @@ def run(arm, suite, attack, pairs, scorer=None):
             if gate:
                 d = gate.decisions[i]
                 c.update(tool=d.tool, action=d.action, reason=d.reason, findings=findings_text(d))
+                if d.judge is not None:
+                    c["judge"] = d.judge["decision"]
             rec["calls"].append(c)
         out.append(rec)
     return out
@@ -125,6 +130,9 @@ def summarize(results):
             row["user_tasks_with_ask"] = len({r["user_task"] for r in rs for c in r["calls"]
                                               if c["phase"] == "user" and c["action"] == "ask"})
             row["injection_calls"] = dict(Counter(c["action"] for c in ic))
+            # Layer 2: approvals of injected calls are false approvals
+            row["judge"] = {phase: dict(Counter(c["judge"] for c in calls if "judge" in c))
+                            for phase, calls in (("user", uc), ("injection", ic))}
         rows[arm] = row
     return rows
 
@@ -143,6 +151,10 @@ def main(argv=None):
                     help="clean: user-task calls only, no injections (utility without attack goals)")
     ap.add_argument("--detector", choices=["none", "promptguard"], default="none",
                     help="promptguard: score free-text records with Llama Prompt Guard 2 (CPU, local)")
+    ap.add_argument("--judge", action="store_true",
+                    help="Layer 2: send the gate's asks to the intent judge via the proxy (costs money; "
+                         "start the proxy with --stage defense)")
+    ap.add_argument("--port", default="8000")
     ap.add_argument("--out", required=True, help="output dir, e.g. runs/worstcase_v1_tune")
     a = ap.parse_args(argv)
 
@@ -163,7 +175,11 @@ def main(argv=None):
     if a.detector == "promptguard":
         from agentgate.detectors import PromptGuard
         scorer = PromptGuard()
-    results = run("none", suite, attack, pairs) + run("gate", suite, attack, pairs, scorer)
+    judge = None
+    if a.judge:
+        from agentgate.judge import IntentJudge
+        judge = IntentJudge(a.port, log_path=Path(a.out) / "judge_log.jsonl")
+    results = run("none", suite, attack, pairs) + run("gate", suite, attack, pairs, scorer, judge)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(json.dumps(results, indent=1), encoding="utf-8")
@@ -172,7 +188,7 @@ def main(argv=None):
     print(json.dumps(summary, indent=1))
     for r in results:
         for c in r["calls"]:
-            if r["arm"] == "gate" and c["phase"] == "user" and c["action"] != "allow":
+            if r["arm"] == "gate" and c["phase"] == "user" and (c["action"] != "allow" or "judge" in c):
                 print(f"  user-call {c['action']}: {r['user_task']} x {r['injection_task']}: {c['tool']}: "
                       f"{c['findings']}")
     through = [r for r in results if r["arm"] == "gate" and r["attack_success"]]
@@ -182,6 +198,11 @@ def main(argv=None):
         for c in r["calls"]:
             if c["phase"] == "injection":
                 print(f"    {c['action']:5} {c['tool']}: {c['findings']}")
+    for r in results:
+        for c in r["calls"]:
+            if r["arm"] == "gate" and c["phase"] == "injection" and "judge" in c:
+                print(f"  judge {c['judge']} on injected {c['tool']}: {r['user_task']} x {r['injection_task']}: "
+                      f"{c['findings']} -> {c['action']}")
     (out / "summary.json").write_text(json.dumps(summary, indent=1, default=dict), encoding="utf-8")
 
 

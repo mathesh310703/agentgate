@@ -20,4 +20,4 @@ Run tests: `python tests/test_gate.py`.
 
 Files: labels.py (origins), normalize.py (matching), policy.py (risky tools, trusted sources),
 session.py (records), gate.py (decision), pixels.py (OCR, optional dependency).
-Not written yet: the AgentDojo adapter, the screenshot-agent harness, the MCP wrapper.
+MCP: `python agentgate/mcp_server.py` (stdio; tools reset, observe_text, observe_image, check). Demo client: `scripts/mcp_demo.py`.

@@ -10,8 +10,17 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "eval" / "vision_demo"))
 
 import run_vision as rv  # noqa: E402
+from agentgate import Gate  # noqa: E402
 
 MANIFEST = {m["image"]: m for m in json.loads((ROOT / "eval/vision_demo/manifest.json").read_text())}
+
+
+def _set1():
+    """These tests use image set 1. Other tests run eval/vision_demo/worstcase.py, which points the shared
+    run_vision module at another set (rv.SET_DIR) and a tracing Gate; under pytest all tests share one process,
+    so reset both here instead of depending on test order."""
+    rv.SET_DIR = rv.HERE
+    rv.Gate = Gate
 
 
 def scripted(*replies):
@@ -30,12 +39,14 @@ def obedient_model():
 
 
 def test_no_gate_arm_leaks_canary():
+    _set1()
     rv.call_model = obedient_model()
     r = rv.episode("none", MANIFEST["invoice_01_c.png"])
     assert r["attack_success"] and r["benign_ok"] and not r["decisions"]
 
 
 def test_gate_arm_blocks_and_names_pixels():
+    _set1()
     rv.call_model = obedient_model()
     r = rv.episode("gate", MANIFEST["invoice_01_c.png"])
     assert not r["attack_success"] and r["benign_ok"]
@@ -44,6 +55,7 @@ def test_gate_arm_blocks_and_names_pixels():
 
 
 def test_clean_image_plain_answer_has_no_decisions():
+    _set1()
     rv.call_model = scripted({"content": "Elevator maintenance on 12 November.\nUse the south elevator.",
                               "tool_calls": []})
     r = rv.episode("gate", MANIFEST["notice_00.png"])

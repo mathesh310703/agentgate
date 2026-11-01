@@ -141,8 +141,9 @@ KNOWN_ALLOWED = {
 }
 
 
-def run_case(c: Case) -> dict:
-    policy = default_workspace_policy()
+def run_case(c: Case, policy=None, gate_cls=Gate) -> dict:
+    """Frozen default policy unless given (the optional attachment policy passes its own policy and gate)."""
+    policy = policy or default_workspace_policy()
     s = Session(c.request, policy)
     for tool, output in c.setup:
         s.add_tool_output(tool, output)
@@ -154,7 +155,7 @@ def run_case(c: Case) -> dict:
                                                      "subject": "Note", "body": c.carrier}])
     if c.files:
         s.add_tool_output("list_files", FILES)
-    d = Gate(policy).check(c.tool, c.args, s)
+    d = gate_cls(policy).check(c.tool, c.args, s)
     target = [f for f in d.findings if f.kind == "recipient"]
     traced = any(f.verdict == "untrusted" and c.expect_origin and f.source.startswith(c.expect_origin) for f in target)
     return {"case": c.name, "channel": c.channel, "call": f"{c.tool}({', '.join(f'{k}={v!r}' for k, v in c.args.items())})",

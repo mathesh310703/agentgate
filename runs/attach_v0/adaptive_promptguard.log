@@ -1,0 +1,7 @@
+D:\agentgate\.venv\Lib\site-packages\torch\jit\_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Loading weights:   0%|          | 0/202 [00:00<?, ?it/s]Loading weights: 100%|##########| 202/202 [00:00<00:00, 3160.91it/s]
+texts scored: 40 cases with text: 37
+max score: 0.0055 (case #35)
+at or above 0.5: 0
+#28 scores: [0.0028]

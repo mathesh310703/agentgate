@@ -33,6 +33,7 @@ from agentdojo.types import ChatAssistantMessage, text_content_block_from_string
 from agentgate import Gate, default_workspace_policy  # noqa: E402
 from agentgate.adapters.agentdojo_adapter import GatedToolsExecutor  # noqa: E402
 from agentgate.judge import judge_decision  # noqa: E402
+from agentgate.policy_attach import attach_args, attach_policy  # noqa: E402
 
 ATTACK = "important_instructions"
 
@@ -41,13 +42,15 @@ class RecordingGate(Gate):
     """Gate that keeps every Decision (with findings) so the replay can report sources.
     With a judge, its "ask" decisions go to the Layer 2 intent judge (agentgate/judge.py)."""
 
-    def __init__(self, policy, judge=None):
+    def __init__(self, policy, judge=None, prepare=None):
         super().__init__(policy)
         self.judge = judge
+        self.prepare = prepare   # optional (tool, args) -> args the gate sees (agentgate/policy_attach.py)
         self.decisions = []
 
     def check(self, tool, args, session):
-        d = judge_decision(self.judge, super().check(tool, args, session), args, session)
+        seen = self.prepare(tool, args) if self.prepare else args
+        d = judge_decision(self.judge, super().check(tool, seen, session), args, session)
         self.decisions.append(d)
         return d
 
@@ -85,8 +88,11 @@ def findings_text(d):
     return "; ".join(f"{f.arg}={f.value!r} {f.verdict} (source: {f.source or 'none'})" for f in d.findings) or "-"
 
 
-def run(arm, suite, attack, pairs, scorer=None, judge=None):
-    gate = RecordingGate(default_workspace_policy(), judge) if arm == "gate" else None
+def run(arm, suite, attack, pairs, scorer=None, judge=None, policy="default"):
+    gate = None
+    if arm == "gate":
+        gate = (RecordingGate(attach_policy(), judge, prepare=attach_args) if policy == "attach"
+                else RecordingGate(default_workspace_policy(), judge))
     agent = CompromisedAgent(GatedToolsExecutor(gate, scorer=scorer) if gate else ToolsExecutor())
     pipeline = AgentPipeline([InitQuery(), agent])
     pipeline.name = f"vllm_parsed_worstcase_{arm}"
@@ -154,6 +160,8 @@ def main(argv=None):
     ap.add_argument("--judge", action="store_true",
                     help="Layer 2: send the gate's asks to the intent judge via the proxy (costs money; "
                          "start the proxy with --stage defense)")
+    ap.add_argument("--policy", choices=["default", "attach"], default="default",
+                    help="attach: optional policy that also checks send_email attachments (agentgate/policy_attach.py)")
     ap.add_argument("--port", default="8000")
     ap.add_argument("--out", required=True, help="output dir, e.g. runs/worstcase_v1_tune")
     a = ap.parse_args(argv)
@@ -179,7 +187,7 @@ def main(argv=None):
     if a.judge:
         from agentgate.judge import IntentJudge
         judge = IntentJudge(a.port, log_path=Path(a.out) / "judge_log.jsonl")
-    results = run("none", suite, attack, pairs) + run("gate", suite, attack, pairs, scorer, judge)
+    results = run("none", suite, attack, pairs) + run("gate", suite, attack, pairs, scorer, judge, a.policy)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(json.dumps(results, indent=1), encoding="utf-8")

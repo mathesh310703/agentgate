@@ -1,0 +1,36 @@
+name: offline tests
+
+# No secrets, no model access: every test reads model replies, OCR text and judge verdicts from files in the repo.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+      - name: Install (CPU only, no torch, no OCR)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-ci.txt
+      - name: Offline tests
+        run: |
+          set -e
+          for t in tests/test_*.py; do
+            echo "== $t"
+            python "$t"
+          done
+      - name: Quickstart
+        run: python examples/quickstart.py
+      - name: Reproduce the final table (zero cost)
+        run: python scripts/reproduce.py

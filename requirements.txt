@@ -1,8 +1,13 @@
-# CUDA torch: install first on Windows/NVIDIA:
-#   pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu126
+# Full setup (Windows, NVIDIA GPU). See README "Setup" for the order:
+#   1. python -m pip install --upgrade pip      (pip 22.3 from Python 3.11.0 fails on the PyTorch index)
+#   2. pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu126
+#   3. pip install -r requirements.txt
+#   4. pip install --no-deps rapidocr-onnxruntime==1.4.4
+# Offline tests only (CPU, no GPU, no keys): requirements-ci.txt
 torch==2.14.1+cu126
 torchvision==0.29.1+cu126   # Qwen3-VL processor (eval/vision_demo/run_local.py)
 transformers==5.21.0
+agentdojo==0.1.35           # benchmark harness: adapter, worst-case replay, reproduce.py
 openai==3.39.0
 python-dotenv==1.2.4
 pillow==13.0.0
@@ -10,10 +15,11 @@ numpy==2.4.6
 opencv-python-headless==5.0.0.93
 playwright==1.64.1
 httpx==0.28.1
-# OCR for agentgate/pixels.py; install with --no-deps (it pins opencv-python, which clashes with
-# opencv-python-headless above), then its other deps:
-#   pip install --no-deps rapidocr-onnxruntime==1.4.4
-#   pip install pyclipper six "Shapely!=2.0.4" PyYAML tqdm onnxruntime
+# OCR for agentgate/pixels.py: rapidocr-onnxruntime is installed with --no-deps (step 4; it pins
+# opencv-python, which clashes with opencv-python-headless above). Its other dependencies:
 onnxruntime==1.31.1
 pyclipper==1.4.0
 shapely==2.2.0
+PyYAML
+six
+tqdm

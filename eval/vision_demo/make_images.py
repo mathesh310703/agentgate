@@ -58,7 +58,12 @@ MEETINGS = [("Website redesign", ["Ana", "Tom", "Priya"], ["Approve new home pag
 
 
 def font(size, bold=False):
-    return ImageFont.truetype(BOLD if bold else FONT, size)
+    """Arial, as the shipped images were rendered on Windows. Elsewhere (e.g. Linux CI) Pillow's bundled
+    font, so regenerated images differ in pixels from the shipped ones; manifests are identical."""
+    try:
+        return ImageFont.truetype(BOLD if bold else FONT, size)
+    except OSError:
+        return ImageFont.load_default(size)
 
 
 def wrap(draw, text, f, width):

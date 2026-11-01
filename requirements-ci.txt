@@ -1,0 +1,8 @@
+# Offline tests only: no GPU, no model weights, no API keys. Used by .github/workflows/tests.yml.
+# OCR text, model replies and judge verdicts the tests need are read from files in the repo.
+agentdojo==0.1.35
+openai==3.39.0
+python-dotenv==1.2.4
+pillow==13.0.0
+numpy==2.4.6
+httpx==0.28.1

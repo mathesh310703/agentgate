@@ -132,6 +132,22 @@ Same scripted agent as (a), all user × injection pairs, AgentDojo v1.2.2, zero 
   - message bodies, and actions without a sensitive target, are not checked.
 - **Gate overhead** (`eval/OVERHEAD.md`): the check takes a median of 1–37 µs per call (p95 ≤ 0.26 ms), and recording a tool result a median of 18–154 µs. The judge takes a median of 1.41 s and $0.0016 per call, on asks only.
 
+### (h) Strict mode: only identity fields vouch for a recipient (Nov 1, 2026, tag `strict-mode-v0`)
+
+**Added after seeing the suites result in (g); not held out.** Strict mode is optional and off by default (`agentgate/fields_strict.py`). In strict mode, a structured leaf vouches for a recipient only under an identity field name (`sender`, `recipients`, `participants`, `email`, `shared_with`, ...). Values under arbitrary keys and bare list items count as free text. Details are in `eval/STRICT_V0.md`.
+
+| setting | attack success, default → strict | clean utility, default → strict |
+|---|---|---|
+| workspace, tuning half | 0/120 → 0/120 | 20/20 → 20/20 |
+| workspace, held-out half | 0/120 → 0/120 | 18/20 → 18/20 |
+| banking, rules (A) | 0/144 → 0/144 | 8/16 → 8/16 |
+| slack, rules (A) | 23/105 → **9/105** | 13/21 → **7/21** |
+| travel, rules (A) | 96/120 → **37/120** | 20/20 → 20/20 |
+
+- **Stops:** travel 1 and 3 (40 pairs), 19 of 20 travel 5 pairs, slack 5 (10) and 4 slack 1 pairs.
+- **Newly breaks:** 6 slack tasks, because channel names and channel member lists are bare list items. No workspace decision, and no banking or travel task, changes.
+- **Default mode is unchanged:** with strict off, the gate reproduces every recorded replay decision for decision (`tests/test_strict.py`).
+
 ## Limits
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.

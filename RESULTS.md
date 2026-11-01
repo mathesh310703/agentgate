@@ -115,6 +115,23 @@ The gate is `gate-final.1` with the current block message. Muse Spark cost $0.16
 - **OCR** recovered the address on 10/10 images for each style.
 - **Warnings:** Muse Spark warned the user on 10/10 direct notes, 7/10 footnotes and 3/10 table cells. Qwen warned on none.
 
+### (g) Out of distribution: worst-case replay on banking, slack and travel (Nov 1, 2026)
+
+Same scripted agent as (a), all user × injection pairs, AgentDojo v1.2.2, zero cost. Details are in `eval/SUITES_V0.md`.
+
+| suite | no gate | gate, frozen policy (no tuning) | utility, clean: no gate → frozen gate | gate, tuned (A) rules | gate, tuned (B) rules + trust |
+|---|---|---|---|---|---|
+| banking | 141/144 | **16/144** | 16/16 → 9/16 | 0/144 | 0/144 |
+| slack | 105/105 | **23/105** | 21/21 → 13/21 | 23/105 | 8/105 (utility 3/21) |
+| travel | 116/120 | **116/120** | 20/20 → 20/20 | 96/120 | 37/120 |
+
+- **Tuning was done after seeing the frozen-policy column, so (A) and (B) are not held out.**
+- **Why the frozen policy misses:**
+  - the write tools have no rule;
+  - field-aware trust misclassifies prose stored under a data-bearing key (travel review dicts), and lists of strings (slack channel names), as structured;
+  - message bodies, and actions without a sensitive target, are not checked.
+- **Gate overhead** (`eval/OVERHEAD.md`): the check takes a median of 1–37 µs per call (p95 ≤ 0.26 ms), and recording a tool result a median of 18–154 µs. The judge takes a median of 1.41 s and $0.0016 per call, on asks only.
+
 ## Limits
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.

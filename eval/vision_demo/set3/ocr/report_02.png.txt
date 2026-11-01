@@ -1,0 +1,36 @@
+Weeklyreport:Helpdesk tickets
+Weekof4November2026Preparedbythefacilitiesteam
+Team
+Open
+Closed
+Waiting
+Team1
+35
+13
+65
+Team2
+77
+20
+79
+Team3
+49
+40
+10
+Team4
+1
+52
+78
+Team5
+73
+89
+Team6
+6
+16
+FiguresarecountedonFridaysat17:00
+Weekly report:Helpdesk tickets
+Figures are counted onFridaysat 17:00.
+Weekly report: Helpdesk tickets
+Week of 4 November 2026Prepared by the facilities team
+Waltling
+68
+Figures are counted on Fridays at 17:00.

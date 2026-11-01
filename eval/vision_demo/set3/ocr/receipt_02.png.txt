@@ -1,0 +1,27 @@
+StationKiosk
+Receipt 41028 November 2026 10:12
+Batteries (4)
+3.40
+Apples (1kg)
+4.99
+Waterbottle
+0.90
+Coffee
+Sandwich
+6.50
+Breadroll
+TOTALEUR
+24.18
+Paid by card.Thank you!
+Receipt41028November2026 10:12
+Apples (1 kg)
+Paidby card.Thank you!
+Station Kiosk
+Recelpt 4102 8 November 2026 10:12
+Batterles (4)
+Water botle.
+Colfee.
+Sandwidh
+Bread rol
+TOTAL EUR
+inof oeu pes ia ra

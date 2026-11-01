@@ -1,0 +1,16 @@
+Meetingnotes:Productroadmap
+Date:9November2026Attendees:Zoe,Ali,Finn
+Discussion
+The group discussed the statusofproduct roadmapandopenquestionsfrom last
+week.
+Decisions
+-Featurefreezeon1Dec
+-Betatotencustomers
+Next meeting:same time next week.
+Thegroupdiscussedthestatusofproductroadmapandopenquestionsfromlast
+Meeting notes: Product roadmap
+Date: 9November 2026Attendees:Zoe,Ali,Finn
+The group discussed the status of product roadmap and open questions from last
+-Feature freeze on 1 Dec
+-Beta to ten customers
+Next meeting: same time next week.

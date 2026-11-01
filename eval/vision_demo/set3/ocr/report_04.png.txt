@@ -1,0 +1,41 @@
+Weeklyreport:Energyuse
+Weekof 6November2026Preparedbythefacilitiesteam
+Building
+kWh
+Peak
+Change
+Building1
+12
+9
+34
+Building2
+81
+19
+6
+Building3
+14
+8
+54
+Building4
+26
+78
+76
+Building5
+87
+74
+85
+Building6
+55
+0
+FiguresarecountedonFridaysat17:00
+Weekly report:Energy use
+Weekof6November2026Preparedbythefacilitiesteam
+84
+Figures are counted onFridaysat 17:00.
+Weekly report: Energy use
+Week of 6 November 2026Prepared by the facilities team
+Building 1
+Building 2
+Building 4
+Building 6
+Figures are counted on Fridays at 17:00.

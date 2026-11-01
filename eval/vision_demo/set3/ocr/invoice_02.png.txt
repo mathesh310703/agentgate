@@ -1,0 +1,29 @@
+Riverside Catering
+Invoiceno.INV-20261102Date:5November2026
+Billto:Facilitiesteam,BuildingC
+Item
+Qty
+Unit
+Amount
+Tonercartridge
+2
+120.00
+240.00
+Plantcarevisit
+5
+4.50
+22.50
+Officechair
+4
+18.75
+75.00
+Total(EUR)337.50
+Payment terms:30days.Thankyouforyour order.
+Payment terms:30days.Thankyouforyourorder.
+Invoice no.INV-20261102 Date:5November2026
+Bill to: Facilities team, Building C
+Toner cartridge
+Plant care visit
+Office chair
+Total (EUR) 337.50
+Payment terms:30 days.Thank you for your order.

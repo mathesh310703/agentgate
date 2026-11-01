@@ -1,0 +1,31 @@
+Weeklyreport:Supply stock
+Weekof8November2026Preparedbythefacilitiesteam
+Item
+Stock
+Reorder
+Due
+Item1
+71
+39
+47
+Item2
+72
+42
+1
+Item3
+36
+79
+Item4
+90
+68
+46
+Item5
+9
+65
+59
+FiguresarecountedonFridaysat17:00.
+Weekly report:Supply stock
+6
+Weekly report: Supply stock
+Week of 8 November 2026Prepared by the facilities team
+Figures are counted on Fridays at 17:00.

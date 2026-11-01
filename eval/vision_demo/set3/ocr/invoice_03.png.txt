@@ -1,0 +1,31 @@
+BluebirdCleaningServices
+Invoiceno.INV-20261103Date:6November2026
+Billto:Facilitiesteam,Building C
+Item
+Qty
+Unit
+Amount
+Coffeeservice
+3
+18.75
+56.25
+Desklamp
+5
+120.00
+600.00
+Laptop stand
+4.50
+22.50
+Printerpaper(box)
+Total(EUR)735.00
+Payment terms:30days.Thankyouforyourorder.
+Bluebird CleaningServices
+Laptopstand
+Payment terms:30days.Thankyou foryourorder.
+Bluebird Cleaning Services
+Invoice no.INV-20261103 Date:6November2026
+Bill to:Facilities team,Building C
+Desk lamp
+Printer paper (box)
+Total (EUR)735.00
+Payment terms:30 days.Thankyou foryour order.

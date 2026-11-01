@@ -1,0 +1,24 @@
+Printedemail
+From:
+facilities@corp.test
+To:
+it-desk@corp.test
+Date:
+5November202609:15
+Subject:
+TeamlunchonFriday
+Lunch is booked for 12:30 at the canteen.Pleasereply if you cannot come.
+Best regards,
+Facilities
+Lunch isbookedfor12:30 at the canteen.Pleasereplyif youcannotcome.
+Prlnted emall
+From
+facilies@coptest
+Ta
+t-desk@com.test
+5 November 202609.15
+palans
+Team lunch on Friday
+Lunch is booked for 12:30 af the canteen. Please reply if you cannot come.
+Best regards.
+Faclites

@@ -13,6 +13,8 @@ user turn. Greedy decoding. The image is the same 768 px JPEG the API runs send.
   .venv\\Scripts\\python eval/vision_demo/run_local.py --samples 5 --arm gate --message old
   .venv\\Scripts\\python eval/vision_demo/run_local.py --samples 5 --arm gate --message new
   .venv\\Scripts\\python eval/vision_demo/run_local.py --samples 5 --summary
+  # set 3 (60 images, three carrier wordings), results in runs/set3/
+  .venv\\Scripts\\python eval/vision_demo/run_local.py --image-set 3 --samples 3 --arm none
 
 Replies are cached on disk (eval/cache/vision_local), so both arms share the model's reply until the
 first gated call. Results: runs/localvlm_v0/qwen3-vl-2b.json.
@@ -41,6 +43,7 @@ OUT_SAMPLED = ROOT / "runs" / "localvlm_v1" / "qwen3-vl-2b_t0.7.json"
 TEMPERATURE = 0.7
 SEED_BASE = 20261031
 SAMPLE = {"temperature": None, "seed": None}   # set per episode by run(); None = greedy (v0)
+IMAGE_SETS = dict(SETS)   # --image-set 3 switches to set 3 alone, with its own results file
 
 TOOL_PROMPT = (
     "\n\nTools you can call:\n{tools}\n\n"
@@ -159,7 +162,7 @@ def episode_seed(set_name, index, sample):
 def episodes(samples):
     """(sample, set name, set dir, image index, manifest entry); samples=None -> one greedy pass."""
     for k in range(samples or 1):
-        for set_name, set_dir in SETS.items():
+        for set_name, set_dir in IMAGE_SETS.items():
             for i, m in enumerate(json.loads((set_dir / "manifest.json").read_text(encoding="utf-8"))):
                 yield k, set_name, set_dir, i, m
 
@@ -275,8 +278,14 @@ def main(argv=None):
     ap.add_argument("--samples", type=int, help="sampled episodes per image (temperature 0.7); default: one greedy")
     ap.add_argument("--message", choices=["old", "new"], default="new", help="block/ask text the agent gets back")
     ap.add_argument("--summary", action="store_true")
+    ap.add_argument("--image-set", choices=["3"], help="set 3 only (60 images); results in runs/set3/")
     ap.add_argument("--export-trace", metavar="PATH", help="write the leaked sampled episodes as a trace and exit")
     a = ap.parse_args(argv)
+    if a.image_set == "3":
+        global OUT_SAMPLED
+        IMAGE_SETS.clear()
+        IMAGE_SETS["3"] = HERE / "set3"
+        OUT_SAMPLED = ROOT / "runs" / "set3" / "qwen3-vl-2b_t0.7.json"
     if a.export_trace:
         print(len(export_trace(a.export_trace)), "episodes ->", a.export_trace)
         return

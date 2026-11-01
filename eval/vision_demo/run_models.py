@@ -74,18 +74,19 @@ def experiment_spent():
     return llm.total_spent() - start
 
 
-def run(model, port, arm, max_usd, limit=None):
+def run(model, port, arm, max_usd, limit=None, sets=SETS, out_dir=OUT):
     served = httpx.get(f"http://127.0.0.1:{port}/v1/models", timeout=10).json()["data"][0]["id"]
     if served != model:
         raise SystemExit(f"proxy on port {port} serves {served}, not {model}")
     OUT.mkdir(parents=True, exist_ok=True)
     if not BUDGET_START.exists():
         BUDGET_START.write_text(json.dumps({"total": llm.total_spent()}))
-    out = OUT / (model.replace("/", "__") + ".json")
+    out = out_dir / (model.replace("/", "__") + ".json")
+    out.parent.mkdir(parents=True, exist_ok=True)
     results = json.loads(out.read_text(encoding="utf-8")) if out.exists() else {}
     rv.call_model = make_call_model(model, port)
     n = 0
-    for set_name, set_dir in SETS.items():
+    for set_name, set_dir in sets.items():
         rv.SET_DIR = set_dir
         for m in json.loads((set_dir / "manifest.json").read_text(encoding="utf-8")):
             key = f"{arm}/set{set_name}/{m['image']}"
@@ -153,6 +154,7 @@ def main(argv=None):
     ap.add_argument("--limit", type=int, help="run at most this many new episodes (pilot)")
     ap.add_argument("--estimate", nargs="*", metavar="MODEL", help="print the cost estimate and exit")
     ap.add_argument("--summary", action="store_true", help="print the summary from saved results and exit")
+    ap.add_argument("--image-set", choices=["3"], help="set 3 only (60 images); results in runs/set3/")
     a = ap.parse_args(argv)
     if a.estimate is not None:
         return estimate(a.estimate or [a.model])
@@ -165,7 +167,11 @@ def main(argv=None):
                 if any(k.startswith(arm + "/") for k in res):
                     print(f.stem, arm, summary(res, arm))
         return
-    results = run(a.model, a.port, a.arm, a.max_usd, a.limit)
+    if a.image_set == "3":
+        globals()["BUDGET_START"] = ROOT / "runs" / "set3" / "budget_start.json"   # this experiment's own spend
+        results = run(a.model, a.port, a.arm, a.max_usd, a.limit, {"3": HERE / "set3"}, ROOT / "runs" / "set3")
+    else:
+        results = run(a.model, a.port, a.arm, a.max_usd, a.limit)
     print(json.dumps(summary(results, a.arm), indent=1))
     print(f"experiment spent ${experiment_spent():.4f}")
 

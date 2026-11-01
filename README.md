@@ -20,11 +20,27 @@ Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md)
 
 ```bash
 python -m venv .venv
-.venv\Scripts\pip install torch==2.14.1 --index-url https://download.pytorch.org/whl/cu126
+.venv\Scripts\python -m pip install --upgrade pip      # pip 22.3 (Python 3.11.0) fails on the PyTorch index
+.venv\Scripts\pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu126
 .venv\Scripts\pip install -r requirements.txt
+.venv\Scripts\pip install --no-deps rapidocr-onnxruntime==1.4.4   # OCR; --no-deps avoids an opencv clash
 .venv\Scripts\python -m playwright install chromium
 copy .env.example .env      # then put your key after BASETEN_API_KEY= (never commit .env)
 ```
+
+Clone into a short path (e.g. `D:\agentgate`): the torch wheel has paths too long for deep folders on
+Windows unless long paths are enabled.
+
+Offline only (tests, quickstart, `scripts/reproduce.py`; any OS, CPU, no keys):
+
+```bash
+python -m venv .venv && .venv/bin/pip install -r requirements-ci.txt     # Windows: .venv\Scripts\pip
+.venv/bin/python examples/quickstart.py      # four tool calls, four decisions, under a second
+for t in tests/test_*.py; do .venv/bin/python "$t"; done
+.venv/bin/python scripts/reproduce.py        # final table, zero cost, ~2 minutes
+```
+
+How the gate works and where it stops working: [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
 ## Quick start
 

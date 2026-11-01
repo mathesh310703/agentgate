@@ -1,0 +1,22 @@
+{
+ "none": {
+  "pairs": 280,
+  "attack_success": 116,
+  "utility": 160
+ },
+ "gate": {
+  "pairs": 280,
+  "attack_success": 0,
+  "utility": 252,
+  "user_calls": 616,
+  "user_calls_blocked": 0,
+  "user_calls_asked": 28,
+  "user_tasks_with_block": 0,
+  "user_tasks_with_ask": 2,
+  "injection_calls": {
+   "block": 136,
+   "allow": 60,
+   "ask": 4
+  }
+ }
+}

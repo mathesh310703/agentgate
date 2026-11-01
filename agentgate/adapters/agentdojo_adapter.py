@@ -28,8 +28,8 @@ from agentdojo.agent_pipeline.tool_execution import is_string_list, tool_result_
 from agentdojo.functions_runtime import EmptyEnv
 from agentdojo.types import ChatToolResultMessage, text_content_block_from_string
 
+from ..fields_strict import make_session
 from ..gate import Gate
-from ..session import Session
 
 SESSION_KEY = "agentgate_session"
 ACTIONS = ("allow", "block", "ask")
@@ -87,10 +87,11 @@ class GateLog:
 
 class GatedToolsExecutor(BasePipelineElement):
     def __init__(self, gate: Gate, log: GateLog = None, tool_output_formatter=tool_result_to_str,
-                 scorer=None) -> None:
+                 scorer=None, strict: bool = False) -> None:
         self.gate = gate
         self.log = log
         self.scorer = scorer   # optional injection scorer (detectors.PromptGuard) for the Session
+        self.strict = strict   # strict mode (agentgate/fields_strict.py): only identity fields vouch for recipients
         self._raw = None
 
         def capture(result):   # keep the structured result the tool returned, then format as usual
@@ -105,7 +106,7 @@ class GatedToolsExecutor(BasePipelineElement):
 
         session = extra_args.get(SESSION_KEY)
         if session is None:
-            session = Session(query, self.gate.policy, scorer=self.scorer)
+            session = make_session(query, self.gate.policy, scorer=self.scorer, strict=self.strict)
             extra_args = {**extra_args, SESSION_KEY: session}
 
         last = messages[-1]

@@ -65,9 +65,9 @@ def replayable(suite, injection_task) -> bool:
     return len(injection_task.ground_truth(env)) > 0
 
 
-def run(arm, suite, attack, pairs, policy, judge=None):
+def run(arm, suite, attack, pairs, policy, judge=None, strict=False):
     gate = TimedGate(policy, judge) if arm == "gate" else None
-    agent = CompromisedAgent(GatedToolsExecutor(gate) if gate else ToolsExecutor())
+    agent = CompromisedAgent(GatedToolsExecutor(gate, strict=strict) if gate else ToolsExecutor())
     pipeline = AgentPipeline([InitQuery(), agent])
     pipeline.name = f"vllm_parsed_worstcase_{arm}"
     out = []
@@ -103,6 +103,9 @@ def main(argv=None):
                     help="suites: agentgate/policy_suites.py level 'rules'; suites_trust: level 'rules_trust'", default="default")
     ap.add_argument("--mode", choices=["attack", "clean"], default="attack")
     ap.add_argument("--benchmark-version", default="v1.2.2")
+    ap.add_argument("--strict", action="store_true", help="strict mode (agentgate/fields_strict.py)")
+    ap.add_argument("--split", choices=["all", "tune", "heldout"], default="all",
+                    help="user tasks: tune = first half, heldout = second half (workspace: 0-19 / 20-39)")
     ap.add_argument("--judge", action="store_true", help="send asks to the intent judge via the proxy (costs money)")
     ap.add_argument("--port", default="8000")
     ap.add_argument("--out", required=True)
@@ -113,11 +116,15 @@ def main(argv=None):
     named.name = "vllm_parsed"
     attack = load_attack(ATTACK, suite, named)
     users = list(suite.user_tasks.values())
+    if a.split != "all":
+        half = len(users) // 2
+        users = sorted(users, key=lambda u: int(u.ID.split("_")[-1]))
+        users = users[:half] if a.split == "tune" else users[half:]
     injs = list(suite.injection_tasks.values())
     rep = {i.ID: replayable(suite, i) for i in injs}
     pairs = [(u, None) for u in users] if a.mode == "clean" else [(u, i) for u in users for i in injs]
     print(f"{a.suite}: {len(users)} user tasks x {len(injs)} injection tasks; replayable goals "
-          f"{sum(rep.values())}/{len(injs)}; mode {a.mode}; policy {a.policy}")
+          f"{sum(rep.values())}/{len(injs)}; mode {a.mode}; policy {a.policy}; strict {a.strict}; split {a.split}")
 
     judge = None
     if a.judge:
@@ -125,7 +132,7 @@ def main(argv=None):
         judge = IntentJudge(a.port, log_path=Path(a.out) / "judge_log.jsonl")
     policy = policy_for(a.policy, a.suite)
     none, _ = run("none", suite, attack, pairs, policy)
-    gated, timings = run("gate", suite, attack, pairs, policy, judge)
+    gated, timings = run("gate", suite, attack, pairs, policy, judge, a.strict)
     results = none + gated
     for r in results:
         r["replayable"] = bool(rep.get(r["injection_task"], False)) if r["injection_task"] else None

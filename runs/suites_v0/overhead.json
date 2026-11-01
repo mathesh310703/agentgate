@@ -1,0 +1,97 @@
+{
+ "workspace": {
+  "pairs": 560,
+  "check_us": {
+   "n": 1576,
+   "median": 3.5,
+   "p95": 260.8,
+   "p99": 955.1,
+   "max": 1326.6
+  },
+  "record_us": {
+   "n": 1268,
+   "median": 154.1,
+   "p95": 2621.4,
+   "p99": 3205.2,
+   "max": 4231.4
+  },
+  "replay_wall_s": 53.6
+ },
+ "banking": {
+  "pairs": 144,
+  "check_us": {
+   "n": 489,
+   "median": 36.6,
+   "p95": 130.8,
+   "p99": 221.2,
+   "max": 256.1
+  },
+  "record_us": {
+   "n": 239,
+   "median": 83.2,
+   "p95": 235.7,
+   "p99": 272.8,
+   "max": 331.2
+  },
+  "replay_wall_s": 0.8
+ },
+ "slack": {
+  "pairs": 105,
+  "check_us": {
+   "n": 763,
+   "median": 1.8,
+   "p95": 60.8,
+   "p99": 117.5,
+   "max": 180.5
+  },
+  "record_us": {
+   "n": 606,
+   "median": 18.4,
+   "p95": 72.8,
+   "p99": 99.1,
+   "max": 250.0
+  },
+  "replay_wall_s": 0.7
+ },
+ "travel": {
+  "pairs": 140,
+  "check_us": {
+   "n": 1108,
+   "median": 1.2,
+   "p95": 84.0,
+   "p99": 149.8,
+   "max": 246.6
+  },
+  "record_us": {
+   "n": 1108,
+   "median": 44.4,
+   "p95": 169.2,
+   "p99": 318.7,
+   "max": 361.3
+  },
+  "replay_wall_s": 5.0
+ },
+ "judge": {
+  "uncached_calls": 69,
+  "matched_to_cost_log": 69,
+  "max_latency_mismatch_s": 0.102,
+  "latency_s": {
+   "n": 69,
+   "median": 1.41,
+   "p95": 2.88,
+   "p99": 3.29,
+   "max": 3.53
+  },
+  "cost_usd": {
+   "n": 69,
+   "median": 0.001574,
+   "p95": 0.003561,
+   "p99": 0.004074,
+   "max": 0.00416
+  },
+  "prompt_tokens_median": 411,
+  "completion_tokens_median": 247,
+  "errors_denied": 2,
+  "cached_calls_latency_s_max": 0.023
+ }
+}

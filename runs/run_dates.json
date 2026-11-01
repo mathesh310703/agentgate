@@ -1,0 +1,14 @@
+{
+ "runs/worstcase_v1_tune/summary.json": "Oct 31, 2026",
+ "runs/worstcase_v1_tune_clean/summary.json": "Oct 31, 2026",
+ "runs/worstcase_v1_heldout/summary.json": "Oct 31, 2026",
+ "runs/worstcase_v1_heldout_clean/summary.json": "Oct 31, 2026",
+ "runs/final_tune_judge/summary.json": "Oct 31, 2026",
+ "runs/final_tune_judge_clean/summary.json": "Oct 31, 2026",
+ "runs/layer2b_heldout/summary.json": "Oct 31, 2026",
+ "runs/layer2b_heldout_clean/summary.json": "Oct 31, 2026",
+ "runs/final_live/summary.json": "Oct 31, 2026",
+ "eval/vision_demo/results.json": "Oct 31, 2026",
+ "eval/vision_demo/ocr": "Oct 31, 2026",
+ "eval/vision_demo/set2/ocr": "Oct 31, 2026"
+}

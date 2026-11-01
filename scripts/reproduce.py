@@ -28,7 +28,14 @@ sys.path.insert(0, str(ROOT))
 RUNS = ROOT / "runs"
 
 
+RUN_DATES = RUNS / "run_dates.json"   # when each cached input was made; a fresh clone has new file times
+
+
 def day(path) -> str:
+    rel = Path(path).resolve().relative_to(ROOT).as_posix()
+    dates = load(RUN_DATES) if RUN_DATES.exists() else {}
+    if rel in dates:
+        return dates[rel]
     return datetime.fromtimestamp(Path(path).stat().st_mtime).strftime("%b %d, %Y")
 
 

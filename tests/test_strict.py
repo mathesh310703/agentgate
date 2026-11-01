@@ -23,6 +23,15 @@ RECORDED = [("runs/suites_v0/workspace_default_attack", "workspace", "default"),
               for p in ("default", "suites") for m in ("attack", "clean")]]
 
 
+def _undo_cp1252(text):
+    """AgentDojo opens its YAML data without an encoding, so on Windows 'Café' is read as 'CafÃ©'. The recorded
+    replays were made on Windows; this maps such text back to UTF-8 so the comparison holds on any OS."""
+    try:
+        return text.encode("cp1252").decode("utf-8")
+    except UnicodeError:
+        return text
+
+
 def _decisions(results):
     """(pair, call no., tool, action, reason); reasons that cite a last_modified field are dropped, because
     AgentDojo sets those timestamps from the wall clock during the replay (a minute such as ':34' can match an id)."""
@@ -31,7 +40,7 @@ def _decisions(results):
         if r["arm"] != "gate":
             continue
         for i, c in enumerate(r["calls"]):
-            reason = None if "last_modified" in c["reason"] else c["reason"]
+            reason = None if "last_modified" in c["reason"] else _undo_cp1252(c["reason"])
             out.append((r["user_task"], r["injection_task"], i, c["tool"], c["action"], reason))
     return out
 

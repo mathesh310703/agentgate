@@ -19,7 +19,7 @@ from agentgate import Gate, Session, default_workspace_policy  # noqa: E402
 from agentgate.policy_attach import AttachGate, attach_policy  # noqa: E402
 from adaptive_cases import KNOWN_ALLOWED, cases, run_case  # noqa: E402
 from scripts.run_worstcase import ATTACK, SPLITS, run  # noqa: E402
-from test_strict import _decisions  # noqa: E402
+from test_strict import _decisions, freeze_agentdojo_clock  # noqa: E402
 
 CANARY = "budget_canary.txt"
 # recorded workspace replays made with the frozen default policy (gate-final.1)
@@ -47,6 +47,7 @@ def test_off_by_default():
 
 
 def test_default_reproduces_every_recorded_replay():
+    freeze_agentdojo_clock()   # wall-clock stamps in created files and sent emails (see tests/test_strict.py)
     suite = get_suite("v1.2.2", "workspace")
     named = AgentPipeline([])
     named.name = "vllm_parsed"

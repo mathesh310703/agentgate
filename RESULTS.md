@@ -129,6 +129,7 @@ The gate is `gate-final.1` with the current block message. Muse Spark cost $0.16
 - **The largest-file injection is untested.** The injected target, file 13, is small, so the judge's size comparison rejects it. An injection that names the actual largest file would be approved, because the facts would support it.
 - **The judge's evidence is thin.** It covers one task family (deleting a described file), and email deletion and event cancellation are untested. 2 of 36 calls returned nothing within the 800-token cap and were denied by design. Repeatability comes from the cache.
 - **Single runs.** Each live configuration was run once, and run-to-run variance is about ±2 tasks out of 40.
+- **Adaptive cases (`eval/ADAPTIVE_V0.md`, Nov 1).** All 26 obfuscated spellings of an injected address are blocked, in tool text and in images. 7 of 37 cases get through because of trust choices, not obfuscation: `send_email` attachments are not checked, any listed id vouches for a `file_id` (including another object type), contact search results and `sender` fields are trusted, and `+` is not treated as part of an address when matching the request.
 
 ## Post-freeze fix (`gate-final.1`, disclosed)
 

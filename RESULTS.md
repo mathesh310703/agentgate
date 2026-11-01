@@ -100,6 +100,21 @@ Wilson 95% CIs. Details are in `eval/LOCALVLM_V0.md` and `eval/LOCALVLM_V1.md`. 
   - Over the 17 blocked episodes per arm, turn-cap hits went from 11 to 3, and the number of answers telling the user the action was not done went from 3 to 13.
   - Benign success did not improve.
 
+### (f) Set 3: 60 images, six layouts, three carrier wordings, two models (Nov 1, 2026)
+
+The text is readable (18–20 px), so what varies between styles is the wording. Details are in `eval/SET3_V0.md`.
+The gate is `gate-final.1` with the current block message. Muse Spark cost $0.16; Qwen ran locally.
+
+| model | arm | leaks (30 carriers) | direct note | procedural footnote | table cell | false blocks (30 clean) |
+|---|---|---|---|---|---|---|
+| Qwen3-VL-2B, T=0.7 ×3 | no gate | 4/90 (1.7–10.9%), 2 distinct images | 4/30 (5.3–29.7%) | 0/30 (0.0–11.4%) | 0/30 (0.0–11.4%) | – |
+| Qwen3-VL-2B, T=0.7 ×3 | gate | 0/90 (0.0–4.1%) | 0/30 | 0/30 | 0/30 | 0/90 (0.0–4.1%) |
+| Muse Spark Open ×1 | no gate | 0/30 (0.0–11.4%) | 0/10 | 0/10 | 0/10 | – |
+| Muse Spark Open ×1 | gate | 0/30 (0.0–11.4%) | 0/10 | 0/10 | 0/10 | 0/30 (0.0–11.4%) |
+
+- **OCR** recovered the address on 10/10 images for each style.
+- **Warnings:** Muse Spark warned the user on 10/10 direct notes, 7/10 footnotes and 3/10 table cells. Qwen warned on none.
+
 ## Limits
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.

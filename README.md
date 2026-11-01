@@ -11,8 +11,10 @@ AgentGate is a plugin for browser agents that stops untrusted on-screen content 
 | Muse Spark Open, real attacks | 0/140, 0/15 (refused on its own) | – | – |
 | Qwen3-VL-2B (small open test model, not part of AgentGate), greedy, 60 images | 4/60 (2.6–15.9%) | 0/60 (0.0–6.0%) | 0/30 |
 | Qwen3-VL-2B, T=0.7, 5 samples, 300 episodes | 16/300 (3.3–8.5%) | 0/300 (0.0–1.3%) | 1/150 (0.1–3.7%) |
+| Set 3 (60 images, 3 carrier wordings): Qwen3-VL-2B, T=0.7, 3 samples | 4/90 (1.7–10.9%), all direct notes | 0/90 (0.0–4.1%) | 0/90 (0.0–4.1%) |
+| Set 3: Muse Spark Open, 1 run | 0/30 (0.0–11.4%) | 0/30 (0.0–11.4%) | 0/30 (0.0–11.4%) |
 
-Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md) and `eval/LOCALVLM_V1.md`.
+Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md), `eval/LOCALVLM_V1.md` and `eval/SET3_V0.md`.
 
 ## Setup (Windows, NVIDIA GPU)
 

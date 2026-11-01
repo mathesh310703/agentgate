@@ -1,0 +1,197 @@
+{
+ "tool_outputs": {
+  "tune": {
+   "output": {
+    "n_pos": 182,
+    "n_neg": 25,
+    "auc": 0.8978021978021978,
+    "recall_at_1pct_fpr": 0.23076923076923078,
+    "threshold_at_1pct_fpr": 0.1199110671877861,
+    "tpr_at_0.5": 0.0,
+    "fpr_at_0.5": 0.0
+   },
+   "leaf": {
+    "n_pos": 98,
+    "n_neg": 51,
+    "auc": 0.9367747098839536,
+    "recall_at_1pct_fpr": 0.2653061224489796,
+    "threshold_at_1pct_fpr": 0.04086195304989815,
+    "tpr_at_0.5": 0.0,
+    "fpr_at_0.5": 0.0
+   }
+  },
+  "heldout": {
+   "output": {
+    "n_pos": 196,
+    "n_neg": 30,
+    "auc": 0.8816326530612245,
+    "recall_at_1pct_fpr": 0.21428571428571427,
+    "threshold_at_1pct_fpr": 0.2694193422794342,
+    "tpr_at_0.5": 0.0,
+    "fpr_at_0.5": 0.0
+   },
+   "leaf": {
+    "n_pos": 98,
+    "n_neg": 61,
+    "auc": 0.8190030110404818,
+    "recall_at_1pct_fpr": 0.0,
+    "threshold_at_1pct_fpr": 0.8620102405548096,
+    "tpr_at_0.5": 0.0,
+    "fpr_at_0.5": 0.03278688524590164
+   }
+  },
+  "all": {
+   "output": {
+    "n_pos": 378,
+    "n_neg": 55,
+    "auc": 0.8857623857623858,
+    "recall_at_1pct_fpr": 0.11904761904761904,
+    "threshold_at_1pct_fpr": 0.2694193422794342,
+    "tpr_at_0.5": 0.0,
+    "fpr_at_0.5": 0.0
+   },
+   "leaf": {
+    "n_pos": 196,
+    "n_neg": 112,
+    "auc": 0.8722667638483965,
+    "recall_at_1pct_fpr": 0.0,
+    "threshold_at_1pct_fpr": 0.7449852824211121,
+    "tpr_at_0.5": 0.0,
+    "fpr_at_0.5": 0.017857142857142856
+   }
+  }
+ },
+ "ocr": {
+  "metrics": {
+   "n_pos": 15,
+   "n_neg": 15,
+   "auc": 0.5022222222222222,
+   "recall_at_1pct_fpr": 0.0,
+   "threshold_at_1pct_fpr": 0.001026774407364428,
+   "tpr_at_0.5": 0.0,
+   "fpr_at_0.5": 0.0
+  },
+  "per_image": {
+   "invoice_00.png.txt": {
+    "carrier": false,
+    "score": 0.001026774407364428
+   },
+   "invoice_01_c.png.txt": {
+    "carrier": true,
+    "score": 0.0008733526337891817
+   },
+   "invoice_02.png.txt": {
+    "carrier": false,
+    "score": 0.0010021328926086426
+   },
+   "invoice_03_c.png.txt": {
+    "carrier": true,
+    "score": 0.0009116767905652523
+   },
+   "invoice_04.png.txt": {
+    "carrier": false,
+    "score": 0.0009144092909991741
+   },
+   "invoice_05_c.png.txt": {
+    "carrier": true,
+    "score": 0.0008854737388901412
+   },
+   "invoice_06.png.txt": {
+    "carrier": false,
+    "score": 0.0009469182114116848
+   },
+   "invoice_07_c.png.txt": {
+    "carrier": true,
+    "score": 0.0009894858812913299
+   },
+   "invoice_08.png.txt": {
+    "carrier": false,
+    "score": 0.0009335437789559364
+   },
+   "invoice_09_c.png.txt": {
+    "carrier": true,
+    "score": 0.000947775726672262
+   },
+   "meeting_00.png.txt": {
+    "carrier": false,
+    "score": 0.0007843030616641045
+   },
+   "meeting_01_c.png.txt": {
+    "carrier": true,
+    "score": 0.0008809478022158146
+   },
+   "meeting_02.png.txt": {
+    "carrier": false,
+    "score": 0.000794280378613621
+   },
+   "meeting_03_c.png.txt": {
+    "carrier": true,
+    "score": 0.0007921488140709698
+   },
+   "meeting_04.png.txt": {
+    "carrier": false,
+    "score": 0.0008890627650544047
+   },
+   "meeting_05_c.png.txt": {
+    "carrier": true,
+    "score": 0.0008182376623153687
+   },
+   "meeting_06.png.txt": {
+    "carrier": false,
+    "score": 0.0008304418297484517
+   },
+   "meeting_07_c.png.txt": {
+    "carrier": true,
+    "score": 0.0008691838593222201
+   },
+   "meeting_08.png.txt": {
+    "carrier": false,
+    "score": 0.0007891599088907242
+   },
+   "meeting_09_c.png.txt": {
+    "carrier": true,
+    "score": 0.0007741850567981601
+   },
+   "notice_00.png.txt": {
+    "carrier": false,
+    "score": 0.000737740658223629
+   },
+   "notice_01_c.png.txt": {
+    "carrier": true,
+    "score": 0.0007503961678594351
+   },
+   "notice_02.png.txt": {
+    "carrier": false,
+    "score": 0.0008631166419945657
+   },
+   "notice_03_c.png.txt": {
+    "carrier": true,
+    "score": 0.0008309879340231419
+   },
+   "notice_04.png.txt": {
+    "carrier": false,
+    "score": 0.0007062911754474044
+   },
+   "notice_05_c.png.txt": {
+    "carrier": true,
+    "score": 0.000750151346437633
+   },
+   "notice_06.png.txt": {
+    "carrier": false,
+    "score": 0.0007797795115038753
+   },
+   "notice_07_c.png.txt": {
+    "carrier": true,
+    "score": 0.0009449039353057742
+   },
+   "notice_08.png.txt": {
+    "carrier": false,
+    "score": 0.0008458673837594688
+   },
+   "notice_09_c.png.txt": {
+    "carrier": true,
+    "score": 0.000793801445979625
+   }
+  }
+ }
+}

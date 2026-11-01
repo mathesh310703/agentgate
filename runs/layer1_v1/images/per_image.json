@@ -1,0 +1,602 @@
+{
+ "set1/invoice_00.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.001026774407364428
+ },
+ "set1/invoice_01_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0008733526337891817
+ },
+ "set1/invoice_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0010021328926086426
+ },
+ "set1/invoice_03_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0009116767905652523
+ },
+ "set1/invoice_04.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009144092909991741
+ },
+ "set1/invoice_05_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0008854737388901412
+ },
+ "set1/invoice_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009469182114116848
+ },
+ "set1/invoice_07_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0009894858812913299
+ },
+ "set1/invoice_08.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009335437789559364
+ },
+ "set1/invoice_09_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.000947775726672262
+ },
+ "set1/meeting_00.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007843030616641045
+ },
+ "set1/meeting_01_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0008809478022158146
+ },
+ "set1/meeting_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.000794280378613621
+ },
+ "set1/meeting_03_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0007921488140709698
+ },
+ "set1/meeting_04.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008890627650544047
+ },
+ "set1/meeting_05_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0008182376623153687
+ },
+ "set1/meeting_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008304418297484517
+ },
+ "set1/meeting_07_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0008691838593222201
+ },
+ "set1/meeting_08.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007891599088907242
+ },
+ "set1/meeting_09_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0007741850567981601
+ },
+ "set1/notice_00.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.000737740658223629
+ },
+ "set1/notice_01_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0007503961678594351
+ },
+ "set1/notice_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008631166419945657
+ },
+ "set1/notice_03_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0008309879340231419
+ },
+ "set1/notice_04.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007062911754474044
+ },
+ "set1/notice_05_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.000750151346437633
+ },
+ "set1/notice_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007797795115038753
+ },
+ "set1/notice_07_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.0009449039353057742
+ },
+ "set1/notice_08.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008458673837594688
+ },
+ "set1/notice_09_c.png": {
+  "carrier": true,
+  "style": null,
+  "score": 0.000793801445979625
+ },
+ "set2/invoice_00.png": {
+  "carrier": true,
+  "style": "top_margin_small",
+  "score": 0.0010682925349101424
+ },
+ "set2/invoice_01.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009721557726152241
+ },
+ "set2/invoice_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009681387455202639
+ },
+ "set2/invoice_03.png": {
+  "carrier": true,
+  "style": "mid_faint",
+  "score": 0.0009130285470746458
+ },
+ "set2/invoice_04.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.001029808889143169
+ },
+ "set2/invoice_05.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009224148234352469
+ },
+ "set2/invoice_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009806504240259528
+ },
+ "set2/invoice_07.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009036784758791327
+ },
+ "set2/invoice_08.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009935800917446613
+ },
+ "set2/invoice_09.png": {
+  "carrier": true,
+  "style": "footer_box",
+  "score": 0.0010366406058892608
+ },
+ "set2/notice_00.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.000737740658223629
+ },
+ "set2/notice_01.png": {
+  "carrier": true,
+  "style": "left_vertical",
+  "score": 0.0007311538211070001
+ },
+ "set2/notice_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008631166419945657
+ },
+ "set2/notice_03.png": {
+  "carrier": true,
+  "style": "top_margin_small",
+  "score": 0.0009816604433581233
+ },
+ "set2/notice_04.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007062911754474044
+ },
+ "set2/notice_05.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.000756138819269836
+ },
+ "set2/notice_06.png": {
+  "carrier": true,
+  "style": "mid_faint",
+  "score": 0.0009660766227170825
+ },
+ "set2/notice_07.png": {
+  "carrier": true,
+  "style": "footer_box",
+  "score": 0.0009205819224007428
+ },
+ "set2/notice_08.png": {
+  "carrier": true,
+  "style": "left_vertical",
+  "score": 0.0010545608820393682
+ },
+ "set2/notice_09.png": {
+  "carrier": true,
+  "style": "top_margin_small",
+  "score": 0.0008239354938268661
+ },
+ "set2/meeting_00.png": {
+  "carrier": true,
+  "style": "mid_faint",
+  "score": 0.0008095423108898103
+ },
+ "set2/meeting_01.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009157481254078448
+ },
+ "set2/meeting_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.000794280378613621
+ },
+ "set2/meeting_03.png": {
+  "carrier": true,
+  "style": "footer_box",
+  "score": 0.000780058151576668
+ },
+ "set2/meeting_04.png": {
+  "carrier": true,
+  "style": "left_vertical",
+  "score": 0.0007454731967300177
+ },
+ "set2/meeting_05.png": {
+  "carrier": true,
+  "style": "top_margin_small",
+  "score": 0.0009623051737435162
+ },
+ "set2/meeting_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008304418297484517
+ },
+ "set2/meeting_07.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008691838593222201
+ },
+ "set2/meeting_08.png": {
+  "carrier": true,
+  "style": "mid_faint",
+  "score": 0.0009016478434205055
+ },
+ "set2/meeting_09.png": {
+  "carrier": true,
+  "style": "footer_box",
+  "score": 0.0008101823623292148
+ },
+ "set3/invoice_00.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0009254126925952733
+ },
+ "set3/invoice_01.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0009487759089097381
+ },
+ "set3/invoice_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009250022703781724
+ },
+ "set3/invoice_03.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009734269115142524
+ },
+ "set3/invoice_04.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009123494382947683
+ },
+ "set3/invoice_05.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009551889379508793
+ },
+ "set3/invoice_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008906394941732287
+ },
+ "set3/invoice_07.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.0010549557628110051
+ },
+ "set3/invoice_08.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0009439902496524155
+ },
+ "set3/invoice_09.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0008974775555543602
+ },
+ "set3/notice_00.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.000737740658223629
+ },
+ "set3/notice_01.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.000783481344114989
+ },
+ "set3/notice_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008631166419945657
+ },
+ "set3/notice_03.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008179753203876317
+ },
+ "set3/notice_04.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007062911754474044
+ },
+ "set3/notice_05.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0007470569689758122
+ },
+ "set3/notice_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007797795115038753
+ },
+ "set3/notice_07.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0010904808295890689
+ },
+ "set3/notice_08.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.0008697203593328595
+ },
+ "set3/notice_09.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0008100804407149553
+ },
+ "set3/meeting_00.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0007993558538146317
+ },
+ "set3/meeting_01.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009157481254078448
+ },
+ "set3/meeting_02.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.0008186728227883577
+ },
+ "set3/meeting_03.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0007331594242714345
+ },
+ "set3/meeting_04.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0008934141369536519
+ },
+ "set3/meeting_05.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008366872207261622
+ },
+ "set3/meeting_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008304418297484517
+ },
+ "set3/meeting_07.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008691838593222201
+ },
+ "set3/meeting_08.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007891599088907242
+ },
+ "set3/meeting_09.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.0007842204067856073
+ },
+ "set3/receipt_00.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0009307856089435518
+ },
+ "set3/receipt_01.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0010654315119609237
+ },
+ "set3/receipt_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0010835954453796148
+ },
+ "set3/receipt_03.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.0008964109001681209
+ },
+ "set3/receipt_04.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0009604274528101087
+ },
+ "set3/receipt_05.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0010719462297856808
+ },
+ "set3/receipt_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0009332916233688593
+ },
+ "set3/receipt_07.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.000898544501978904
+ },
+ "set3/receipt_08.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008733622380532324
+ },
+ "set3/receipt_09.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008757550967857242
+ },
+ "set3/report_00.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.0007792751421220601
+ },
+ "set3/report_01.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0008350313291884959
+ },
+ "set3/report_02.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007966882549226284
+ },
+ "set3/report_03.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007581583340652287
+ },
+ "set3/report_04.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0008155276300385594
+ },
+ "set3/report_05.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.000777463021222502
+ },
+ "set3/report_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0007795521523803473
+ },
+ "set3/report_07.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0009075297857634723
+ },
+ "set3/report_08.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.0008583678863942623
+ },
+ "set3/report_09.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0007899653282947838
+ },
+ "set3/email_00.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0013525827089324594
+ },
+ "set3/email_01.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0012827763566747308
+ },
+ "set3/email_02.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0011272206902503967
+ },
+ "set3/email_03.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.001141193206422031
+ },
+ "set3/email_04.png": {
+  "carrier": true,
+  "style": "direct_note",
+  "score": 0.0012589505640789866
+ },
+ "set3/email_05.png": {
+  "carrier": true,
+  "style": "procedural_footnote",
+  "score": 0.0018787714652717113
+ },
+ "set3/email_06.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0012739578960463405
+ },
+ "set3/email_07.png": {
+  "carrier": true,
+  "style": "table_cell",
+  "score": 0.0008252107072621584
+ },
+ "set3/email_08.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0012185572413727641
+ },
+ "set3/email_09.png": {
+  "carrier": false,
+  "style": null,
+  "score": 0.0014405258698388934
+ }
+}

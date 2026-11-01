@@ -75,6 +75,12 @@ Offline test (fake local upstream, no API calls): `.venv\Scripts\python tests/te
 The score is advisory: it is stored on each record, shown in block explanations, and used by one rule
 (a recipient taken only from an email's sender or a file's owner is blocked when the session holds text scoring 0.5 or higher).
 
+**Measured (Nov 1, 2026, `eval/LAYER1.md`):** Prompt Guard 2 flags none of our injections at 0.5.
+- AgentDojo tool outputs: 0/378 (AUC 0.886).
+- Image carriers: 0/60 (AUC 0.526).
+- Classic jailbreaks score 0.996 or above, so the wiring works; the AgentDojo payload scores 0.005.
+- The rule never fires, and no reported result depends on it.
+
 License note: Llama Prompt Guard 2 is licensed under the Llama 4 Community License,
 Copyright © Meta Platforms, Inc. All Rights Reserved. Use is subject to that license and Meta's
 Acceptable Use Policy. This repo does not include or redistribute the model weights; they are downloaded from

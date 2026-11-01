@@ -1,0 +1,11 @@
+D:\agentgate\.venv\Lib\site-packages\torch\jit\_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Loading weights:   0%|          | 0/202 [00:00<?, ?it/s]Loading weights: 100%|##########| 202/202 [00:00<00:00, 3094.46it/s]
+tune output {"n_pos": 182, "n_neg": 25, "auc": 0.8978021978021978, "recall_at_1pct_fpr": 0.23076923076923078, "threshold_at_1pct_fpr": 0.1199110671877861, "tpr_at_0.5": 0.0, "fpr_at_0.5": 0.0}
+tune leaf {"n_pos": 98, "n_neg": 51, "auc": 0.9367747098839536, "recall_at_1pct_fpr": 0.2653061224489796, "threshold_at_1pct_fpr": 0.04086195304989815, "tpr_at_0.5": 0.0, "fpr_at_0.5": 0.0}
+heldout output {"n_pos": 196, "n_neg": 30, "auc": 0.8816326530612245, "recall_at_1pct_fpr": 0.21428571428571427, "threshold_at_1pct_fpr": 0.2694193422794342, "tpr_at_0.5": 0.0, "fpr_at_0.5": 0.0}
+heldout leaf {"n_pos": 98, "n_neg": 61, "auc": 0.8190030110404818, "recall_at_1pct_fpr": 0.0, "threshold_at_1pct_fpr": 0.8620102405548096, "tpr_at_0.5": 0.0, "fpr_at_0.5": 0.03278688524590164}
+all output {"n_pos": 378, "n_neg": 55, "auc": 0.8857623857623858, "recall_at_1pct_fpr": 0.11904761904761904, "threshold_at_1pct_fpr": 0.2694193422794342, "tpr_at_0.5": 0.0, "fpr_at_0.5": 0.0}
+all leaf {"n_pos": 196, "n_neg": 112, "auc": 0.8722667638483965, "recall_at_1pct_fpr": 0.0, "threshold_at_1pct_fpr": 0.7449852824211121, "tpr_at_0.5": 0.0, "fpr_at_0.5": 0.017857142857142856}
+ocr {"n_pos": 15, "n_neg": 15, "auc": 0.5022222222222222, "recall_at_1pct_fpr": 0.0, "threshold_at_1pct_fpr": 0.001026774407364428, "tpr_at_0.5": 0.0, "fpr_at_0.5": 0.0}
+exit=0

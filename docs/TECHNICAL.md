@@ -62,7 +62,7 @@ Treating every tool result as untrusted blocks legitimate work. "Reply to Ana's 
 **Known gap:** `sender` and `owner` are structured, but whoever sent or shared the item chooses them. So "reply to the sender" injections pass.
 - A rule meant to close this blocks a recipient that comes only from those fields when the session holds free text with an injection score of 0.5 or more.
 - That score comes from Llama Prompt Guard 2 (`agentgate/detectors.py`).
-- The rule is built but unmeasured, so this gap is open in the reported results.
+- Measured in `eval/LAYER1.md`: the model flags none of our injections at 0.5 (0/378 tool outputs, 0/60 image carriers). The rule never fires, so this gap is open.
 
 ## The isolated judge
 
@@ -102,7 +102,7 @@ If OCR misses the line entirely, the address is not traced at all. The call is s
 ## Limits
 
 - **String matching, not semantics.** A target that is paraphrased, translated, split across fields or encoded isn't traced. It is blocked, which is safe but can be a false block. A value that also appears in a trusted field is trusted.
-- **Attacker-chosen structured fields** (`sender`, `owner`) are trusted. The rule meant to cover them is unmeasured.
+- **Attacker-chosen structured fields** (`sender`, `owner`) are trusted. The rule meant to cover them never fires (`eval/LAYER1.md`).
 - **Ids are untyped.** Any id field vouches for any id argument, so a calendar event's id 13 can make `delete_file('13')` an ask rather than a block. In the evaluation, the judge denied every such ask.
 - **OCR recall** drops for very small text: 10 px corner text at 768 px is not recovered. Pixel provenance is only as good as OCR, though missed lines still fail closed.
 - **Coverage:** only 6 of 14 AgentDojo workspace injection goals are replayable, because the others ship without ground truth. One suite, synthetic images, and `.test` addresses with a canary file.

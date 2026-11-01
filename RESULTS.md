@@ -3,7 +3,11 @@
 The final configuration is the deterministic gate plus the Layer 2 intent judge, which reviews only the gate's "ask" decisions.
 - The gate was frozen as git tag `gate-final`, then given one disclosed post-freeze fix, tag `gate-final.1`. The fix is pixel matching only, and is described under "Post-freeze fix" below.
 - The tables (a), (c) and (d) are identical under both tags; (b) is shown under both.
-- The Layer 1 detector (Prompt Guard 2) is built, but it is off and unmeasured: the model is gated on Hugging Face and no token was available. The one score-based rule therefore never fires.
+- The Layer 1 detector (Prompt Guard 2) was measured on Nov 1, 2026 (`eval/LAYER1.md`), and it flags none of our injections at the fixed 0.5 threshold.
+  - It flags 0/378 injected AgentDojo tool outputs (AUC 0.886) and 0/60 image carriers (AUC 0.526, chance).
+  - It does score classic "ignore previous instructions" jailbreaks at 0.996 or above, while the AgentDojo payload scores 0.005.
+  - The one score-based rule therefore never fires; with the detector on, both replay halves make identical decisions.
+  - No result below depends on it.
 - The model under test is Muse Spark Open (Baseten), reached through the budget proxy.
 
 **Headline:**
@@ -152,7 +156,7 @@ Same scripted agent as (a), all user × injection pairs, AgentDojo v1.2.2, zero 
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.
 - **The held-out half is not fully blind.** The v0 analysis looked at all 40 tasks, and the v1 fixes were motivated by failures mostly in tasks 20–39. Development and tuning used tasks 0–19 only, and the held-out half was run once per version.
-- **Sender and owner fields are trusted.** An email's `sender` and a file's `owner` count as structured, and so trusted, recipients. Both are chosen by whoever sent or shared the item, so "reply to the sender" injections pass. AgentDojo puts injections only in free text, so this is not exercised. The Layer 1 rule meant to cover it is unmeasured (no HF token).
+- **Sender and owner fields are trusted.** An email's `sender` and a file's `owner` count as structured, and so trusted, recipients. Both are chosen by whoever sent or shared the item, so "reply to the sender" injections pass. AgentDojo puts injections only in free text, so this is not exercised. The Layer 1 rule meant to cover it never fires: Prompt Guard 2 scores no injection in our tests at 0.5 or above (`eval/LAYER1.md`).
 - **Ids are not typed.** Any id field vouches for any id argument. For example, a calendar event id 13 made the injected `delete_file('13')` an ask rather than a block. The judge denied it.
 - **Matching is on strings.** Provenance uses whole-token matching of normalized strings, which has three consequences:
   - paraphrased, split or encoded values are untraced, and are blocked as unknown;

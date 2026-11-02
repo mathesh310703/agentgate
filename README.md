@@ -2,6 +2,17 @@
 
 AgentGate is a plugin for browser agents that stops untrusted on-screen content (page text, images, popups, chat widgets) from commanding the agent: only the user's task may direct actions, and everything the agent reads from a page is treated as data. This repo holds the plugin work and its evaluation harness; the vision model under test is Muse Spark Open via Baseten's OpenAI-compatible Model API.
 
+## What is new here
+
+Text gates with provenance already exist ([docs/RELATED_WORK.md](docs/RELATED_WORK.md)). AgentGate adds three things:
+- **Provenance through pixels, as a drop-in.** Text recovered from an image enters the session as untrusted pixels (`Session.add_pixels`, or `observe_image` on the MCP server). A share aimed at an address found only in an image is blocked, and the block names the image.
+- **A second image reader that can only make the gate stricter.** An optional model transcript joins the OCR text as untrusted data. It traces more planted addresses to their image (60/60 vs 50/60) and changed no decision. Tests check that it never moves a decision towards allow.
+- **An evaluation that assumes the model is fooled.** A scripted agent obeys every injection (worst-case replay): 231/240 attacks succeed ungated on AgentDojo workspace, 0/240 gated. A small real model that does fail shows the same on images: Qwen3-VL-2B leaks 16/300 ungated, 0/300 gated.
+
+## Runs on Meta open-weight models
+
+The model under test is Muse Spark Open (`meta-models/muse-spark-open-1026`), served through Baseten partner inference. The proxy pins the model id on every request (`prepare()` in `agentlab/proxy.py`, default `llm.MODEL`) and logs it per call in the `model` column of `eval/cost_log.csv`.
+
 ## Results (attack success, gate off → on; Wilson 95% CI)
 
 | test | gate off | gate on | false blocks |
@@ -105,7 +116,5 @@ Hugging Face after accepting the license there. Put your Hugging Face token in `
 Offline tests use a stub scorer and need neither the model nor the token.
 
 **Meta tooling used:**
-- **Muse Spark Open** (through Baseten): the model under test, the intent judge, and the optional image reader. The reader traces 60/60 planted addresses vs 50/60 for OCR, and changes no decision (`eval/READER_V0.md`).
-- **Llama Prompt Guard 2 22M:** measured, flags none of our injections at 0.5.
-- **Llama Guard 3 1B:** not measured; this account has no access (`eval/LLAMAGUARD_V0.md`).
-- **Llama 3.2 11B Vision:** not run; no access, and its licence page withholds multimodal rights from people domiciled in the EU (`eval/LLAMAVLM_V0.md`).
+- **Muse Spark Open** (through Baseten): the agent under test, the intent judge, and the optional image reader. The planted address is traced to the image on 60/60 carriers with the reader, vs 50/60 with OCR alone; no gate decision changes (`eval/READER_V0.md`).
+- **Llama Prompt Guard 2 22M:** measured, flags none of our injections at 0.5 (`eval/LAYER1.md`).

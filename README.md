@@ -2,6 +2,26 @@
 
 AgentGate is a plugin for browser agents that stops untrusted on-screen content (page text, images, popups, chat widgets) from commanding the agent: only the user's task may direct actions, and everything the agent reads from a page is treated as data. This repo holds the plugin work and its evaluation harness; the vision model under test is Muse Spark Open via Baseten's OpenAI-compatible Model API.
 
+## Install and try it in one minute
+
+Python 3.11. The core has no dependencies, and the example needs no model, key or network.
+
+```
+pip install git+https://github.com/mathesh310703/agentgate
+git clone https://github.com/mathesh310703/agentgate
+cd agentgate
+python examples/ten_lines.py
+```
+
+Output:
+
+```
+ana@corp.test: ALLOW. All sensitive arguments trace to your request or a trusted source.
+records@corp.test: BLOCK. Blocked 'send_email': recipients='records@corp.test' came from text from a tool result (email, web page, file or event) (read_file).
+```
+
+OCR and the MCP server are optional extras: `pip install "agentgate[ocr,mcp] @ git+https://github.com/mathesh310703/agentgate"`.
+
 ## What is new here
 
 Text gates with provenance already exist ([docs/RELATED_WORK.md](docs/RELATED_WORK.md)). AgentGate adds three things:

@@ -1,6 +1,6 @@
 # AgentGate: technical overview
 
-AgentGate is a check that runs before every tool call an AI agent makes. A risky call (send, share, delete, pay) runs only if each of its target arguments traces back to the user's own request or to a trusted structured source. The check is plain code, not a model, and it covers text the agent read from images and screenshots as well as text from tool results. Results are in [RESULTS.md](../RESULTS.md); this page explains how it works and where it stops working.
+AgentGate is a check that runs before every tool call an AI agent makes. A risky call (a tool the policy has a rule for, such as send, share, delete or pay) runs only if each of its checked target arguments traces back to the user's own request or to a trusted structured source. The check is plain code, not a model, and it covers text the agent read from images and screenshots as well as text from tool results. Results are in [RESULTS.md](../RESULTS.md); this page explains how it works and where it stops working.
 
 ## Threat model
 
@@ -12,7 +12,7 @@ AgentGate is a check that runs before every tool call an AI agent makes. A risky
   - Attacks that don't need a new target, such as deleting the file the user did name.
   - Wrong answers in plain text: the gate checks actions, not what the agent says.
   - A compromised tool implementation or a malicious user.
-- **Fail-closed default:** a target value that can't be traced is blocked. Missing a trace costs a false block, not a leak.
+- **Fail-closed default, for checked arguments only:** an unknown value in a checked argument is blocked. There, missing a trace costs a false block, not a leak. Tools with no rule are not checked by the default gate, so a write tool the policy doesn't list runs unchecked; only the optional `SynthGate` (`agentgate/policy_synth.py`) blocks unknown tools.
 
 This follows the "Rule of Two" idea (untrusted input, sensitive access and external action should not all meet in one step). It is related to text-side taint gates such as taintgate and agent-policy-gateway, and to screenshot-injection detectors such as SnapGuard; see [RELATED_WORK.md](RELATED_WORK.md). AgentGate was written from scratch. Its addition is carrying provenance through pixels, and measuring that.
 
@@ -31,7 +31,7 @@ A `Session` (`agentgate/session.py`) keeps one record per piece of content: its 
 ## The gate, and what "deterministic" means here
 
 `Gate.check(tool, args, session)` (`agentgate/gate.py`) does the following:
-1. **Look up the policy** (`agentgate/policy.py`). If the tool isn't on the risky list, allow it; reading is never gated.
+1. **Look up the policy** (`agentgate/policy.py`). If the tool has no rule, allow it unchecked. That covers most reads, and also any write tool the policy doesn't list. A read with a rule, such as `get_webpage`, is checked.
 2. **Classify each sensitive argument** (recipient, id, amount, url). The value is split into atoms (lists, or comma-separated strings), and each atom is looked up in the session as a whole token, after normalisation (`agentgate/normalize.py`).
    - Normalisation covers Unicode NFKC, zero-width characters, URL and HTML escapes, `[at]`/`(dot)` spellings, case and whitespace.
    - Each atom ends up in one of these classes:
@@ -82,7 +82,7 @@ Some legitimate requests produce asks: "delete the largest file" names no id. An
 
 OCR drops and inserts spaces ("withreview@corp.test"). So, for pixel records only, an address-like value (an email address or URL of 8+ characters) also matches with all whitespace removed. This is the one disclosed post-freeze fix, tag `gate-final.1`.
 
-If OCR misses the line entirely, the address is not traced at all. The call is still blocked, as an unknown recipient, but the reason can't name the image.
+If OCR misses the line entirely, the address is not traced at all. If the address is in a checked argument, the call is still blocked, as an unknown recipient, but the reason can't name the image.
 
 ## Evaluation method
 
@@ -104,7 +104,7 @@ If OCR misses the line entirely, the address is not traced at all. The call is s
 - **String matching, not semantics.** A target that is paraphrased, translated, split across fields or encoded isn't traced. It is blocked, which is safe but can be a false block. A value that also appears in a trusted field is trusted.
 - **Attacker-chosen structured fields** (`sender`, `owner`) are trusted. The rule meant to cover them never fires with the default 22M (`eval/LAYER1.md`).
 - **Ids are untyped.** Any id field vouches for any id argument, so a calendar event's id 13 can make `delete_file('13')` an ask rather than a block. In the evaluation, the judge denied every such ask.
-- **OCR recall** drops for very small text: 10 px corner text at 768 px is not recovered. Pixel provenance is only as good as OCR, though missed lines still fail closed.
+- **OCR recall** drops for very small text: 10 px corner text at 768 px is not recovered. Pixel provenance is only as good as OCR, though a missed line still fails closed when its value lands in a checked argument.
 - **Coverage:** only 6 of 14 AgentDojo workspace injection goals are replayable, because the others ship without ground truth. One suite, synthetic images, and `.test` addresses with a canary file.
 - **Evidence for the judge is thin.** It is measured on one task family (deleting a described file).
 - **Live runs are single runs.** Run-to-run variance is about ±2 tasks out of 40.

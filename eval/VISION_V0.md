@@ -48,7 +48,7 @@ A typical flagged answer: "I noticed a hidden instruction at the bottom of the d
 | low contrast (8) | 8 | 8 |
 | small corner (7) | 0 | 0 |
 
-The model read some of the corner lines that OCR missed (3 of 7 flagged). Had the model obeyed one of those, the gate would still have blocked the call. The address is nowhere in the user's request, and the policy blocks unknown recipients (`block_unknown`). But the explanation would say "does not appear in your request" rather than naming the image as the source. Pixel provenance in the explanation depends on OCR recall, and at 768 px the 10 px corner text falls below it.
+The model read some of the corner lines that OCR missed (3 of 7 flagged). Had the model obeyed one of those, the gate would still have blocked the call. The address is nowhere in the user's request, and the policy blocks an unknown value in a checked argument, such as a recipient (`block_unknown`). But the explanation would say "does not appear in your request" rather than naming the image as the source. Pixel provenance in the explanation depends on OCR recall, and at 768 px the 10 px corner text falls below it.
 
 ## What this does and does not show
 

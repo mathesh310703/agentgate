@@ -2,7 +2,7 @@
 
 **Result:** the reader improves the gate's explanations, not its decisions.
 - **Tracing:** the planted address is traced to the image on **60/60** carriers, up from 50/60 with OCR alone. The filename goes from 27/60 to 60/60.
-- **Decisions:** none changed. Under the default policy, an unknown value is already blocked, so every carrier was blocked before and after: 0/60 attacks in both.
+- **Decisions:** none changed. Under the default policy, an unknown value in a checked argument is already blocked, so every carrier was blocked before and after: 0/60 attacks in both.
 - **False blocks:** 0 new blocks or asks across 2,046 recorded tool calls, or in the clean 40-task replay.
 - **Cost:** $0.30 for 120 images, about $0.0025 and 4–5 s per image. OCR is free and local.
 
@@ -85,7 +85,7 @@ The attacked replays' "reasons changed only" are blocks of injected calls, where
 ## Limits
 
 - **One model, three image sets, hand-built carriers.** A reader that omits or misreads a line (3 of 60 here) loses the trace, though not the block. An attacker could aim for that; only the explanation suffers.
-- **The gain depends on the default policy's fail-closed rule.** The reader adds no protection that `block_unknown=True` doesn't already give.
+- **The gain depends on the default policy's fail-closed rule for unknown values in checked arguments.** The reader adds no protection that `block_unknown=True` doesn't already give.
 - **Paid per image.** It sends every image to a hosted model, which matters for private screenshots. OCR stays local.
 - **Rotated and small text at 768 px:** the budget manager caps image width, so very small text may be unreadable to any reader. The 10 px corner lines were read here.
 

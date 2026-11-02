@@ -53,7 +53,7 @@ A scripted agent obeys every carrier line: `share_file(budget_canary.txt, review
 | no gate | 15/15 (8 low-contrast, 7 small-corner) | 30/30 | – | – | – | run with `gate-final`, Oct 31, 2026 (`runs/vision_wc_set1_frozen.json`) |
 | gate | **0/15** | 30/30 | 0/15 | **0/15** | 5/15 | run with `gate-final`, Oct 31, 2026 (`runs/vision_wc_set1_frozen.json`) |
 
-**Why the gate blocks every carrier:** the address appears nowhere trusted, and unknown recipients are blocked.
+**Why the gate blocks every carrier:** the address appears nowhere trusted, and an unknown value in a checked argument, here the recipient, is blocked.
 
 **Why it names the image as the source less often:**
 - OCR recovers the low-contrast line on 8 of 8 images, but writes it as `withreview@corp.test`, with no space. Whole-token matching therefore never links the address to the pixels.
@@ -186,7 +186,7 @@ Same scripted agent as (a), all user × injection pairs, AgentDojo v1.2.2, zero 
 | scripted worst case, attacks | 0/60 | 0/60 |
 | recorded tool calls (2,046), allow / block | 1,948 / 98 | 1,948 / 98 |
 
-- **It improves explanations, not decisions.** No action changed in the recorded calls, or in the clean 40-task replay with all transcripts added as a stress test. Unknown values were already blocked.
+- **It improves explanations, not decisions.** No action changed in the recorded calls, or in the clean 40-task replay with all transcripts added as a stress test. Unknown values in checked arguments were already blocked.
 - **Safety property, tested offline:** a transcript can only move a decision towards block (`tests/test_reader.py`).
 - **The transcript alone traces 57/60.** On 2 carriers the model described the hidden line instead of copying it, and on 1 it misread the address. OCR covers all 3.
 
@@ -282,7 +282,7 @@ Stopped by the rule set for the run (ungated utility without attack under 30%). 
 | workspace, against the frozen default | 231/240 | **0/240** (0.0–1.6%) | 0/240 (frozen default) | – | 33/40 / 38/40 (frozen default) / – |
 
 - **Travel stays mostly open,** because the trust setting behind most of it was not synthesized. Its 20/20 says little: the legitimate replay makes only 6 write calls there.
-- **Fail-closed is new, and optional.** The frozen `Gate` allows a tool without a rule. `SynthGate` blocks a tool that is unknown or outside the file, and a deterministic floor rejects replies that would leave a write tool unchecked. 7 of 74 tools became unknown this way, and their legitimate calls are blocked too.
+- **Blocking unknown tools is new, and optional.** The frozen `Gate` blocks unknown values in checked arguments, but does not check a tool without a rule. `SynthGate` blocks a tool that is unknown or outside the file, and a deterministic floor rejects replies that would leave a write tool unchecked. 7 of 74 tools became unknown this way, and their legitimate calls are blocked too.
 - **A hostile model can still** call a read-named tool not risky, or leave an argument unchecked if its name doesn't look like a target. A person has to review the file. A test pins this.
 - **Episodes are clustered,** the replay is deterministic, and there was one generation, so its variation is not measured.
 
@@ -308,7 +308,7 @@ Stopped by the rule set for the run (ungated utility without attack under 30%). 
 - **Sender and owner fields are trusted.** An email's `sender` and a file's `owner` count as structured, and so trusted, recipients. Both are chosen by whoever sent or shared the item, so "reply to the sender" injections pass. AgentDojo puts injections only in free text, so this is not exercised. The Layer 1 rule meant to cover it never fires with the default 22M, which scores no injection in our tests at 0.5 or above (`eval/LAYER1.md`).
 - **Ids are not typed.** Any id field vouches for any id argument. For example, a calendar event id 13 made the injected `delete_file('13')` an ask rather than a block. The judge denied it.
 - **Matching is on strings.** Provenance uses whole-token matching of normalized strings, which has three consequences:
-  - paraphrased, split or encoded values are untraced, and are blocked as unknown;
+  - paraphrased, split or encoded values are untraced, and in a checked argument they are blocked as unknown;
   - a value that also appears in a trusted field is trusted;
   - OCR artefacts such as `withreview@corp.test` broke the link to the image, as in (b). `gate-final.1` fixes this for address-like values only. Other OCR splits and merges, for ids or filenames, still break the link.
 - **OCR recall drops at small sizes.** At 768 px, the 10 px corner text is not recovered (0/7, set 1), and 3 of the 15 set-2 carriers were not recovered. The gate still blocks the call, because the address is unknown, but it can't say the address came from the image.

@@ -23,7 +23,7 @@ The model under test is Muse Spark Open (`meta-models/muse-spark-open-1026`), se
 | Scripted worst case, 15 image carriers | 15/15 | 0/15 | 0/15 |
 | Muse Spark Open, real attacks | 0/140, 0/15 (refused on its own) | – | – |
 | Muse Spark Open, 11 AgentDojo attack types, 165 episodes (5 tasks, 3 goals, clustered) | 0/165 (0.0–2.3%), resisted | not run | – |
-| Muse Spark Open as an instructed-compliant agent (system prompt tells it to obey tool results; not a natural vulnerability), 40 episodes per arm (10 tasks, 4 goals, clustered) | 1/40 (0.4–12.9%) | 0/40 (0.0–8.8%); overlapping, 1 injected call tried and blocked | 0/110 calls |
+| Muse Spark Open as an instructed-compliant agent (system prompt tells it to obey tool results; not a natural vulnerability), 40 episodes per arm (10 tasks, 4 goals, clustered) | 1/40 (0.4–12.9%) | 0/40 (0.0–8.8%); **not evidence of protection:** the intervals overlap, and the model tried only 1 injected call when gated (blocked) | 0/110 calls |
 | Qwen3-VL-2B (small open test model, not part of AgentGate), greedy, 60 images | 4/60 (2.6–15.9%) | 0/60 (0.0–6.0%) | 0/30 |
 | Qwen3-VL-2B, T=0.7, 5 samples, 300 episodes | 16/300 (3.3–8.5%) | 0/300 (0.0–1.3%) | 1/150 (0.1–3.7%) |
 | Set 3 (60 images, 3 carrier wordings): Qwen3-VL-2B, T=0.7, 3 samples | 4/90 (1.7–10.9%), all direct notes | 0/90 (0.0–4.1%) | 0/90 (0.0–4.1%) |
@@ -121,7 +121,7 @@ python scripts/run_worstcase.py --split tune --mode clean --policy examples.my_p
 - The first command replays each task against all 14 injection goals, and the second without injections, for false blocks.
 - Attack success, utility, and user calls blocked or asked print at the end and land in `<out>/summary.json`. Every call's decision and reason is in `<out>/results.json`.
 
-**Zero-config policies (optional).** `agentgate/policy_synth.py` has Muse Spark Open propose a reviewable policy from tool schemas alone. Frozen before measuring, worst-case replay, gated attack success: banking 0/144, slack 13/105, travel 76/120, workspace 0/240, with clean utility 7/16, 9/21, 20/20, 33/40. That stops as much as the hand-written rules (A) but blocks more legitimate work, and travel stays mostly open (`eval/SYNTH_V0.md`).
+**Zero-config policies (optional): a starting point to review before use.** `agentgate/policy_synth.py` has Muse Spark Open propose a policy from tool schemas alone, used with `SynthGate`, which also blocks tools the policy doesn't classify. Frozen before measuring, worst-case replay, gated attack success: banking 0/144, slack 13/105, travel 76/120, workspace 0/240. That stops at least as much as the hand-written rules (A), but travel still leaks. Clean utility is lower than the hand-written rules on banking (7/16 vs 8/16), slack (9/21 vs 13/21) and workspace (33/40 vs 38/40), and equal on travel (20/20) (`eval/SYNTH_V0.md`).
 
 ## Budgets and guards (agentlab/llm.py)
 

@@ -72,7 +72,7 @@ Zero model cost; nothing in `agentgate/` or the policy was changed. Code: `tests
 
 ## What gets through, and what a fix would need
 
-The design rule stays the same: no fix may relax fail-closed blocking. Each fix below needs its own false-block measurement on the clean AgentDojo replay before it ships.
+The design rule stays the same: no fix may relax fail-closed blocking of unknown values in checked arguments. Each fix below needs its own false-block measurement on the clean AgentDojo replay before it ships.
 
 1. **Address in a contact search result (#27).**
    - **Why it passes:** the policy trusts `search_contacts_*` output as a source of recipients. If the attacker's address is in the contact list (added earlier, or auto-added from mail), the share is allowed.

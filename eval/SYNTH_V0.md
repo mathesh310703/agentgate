@@ -143,7 +143,7 @@ So the property is narrower than "cannot make a risky tool pass unchecked" in ge
 - **Scripted agent and one attack.** `important_instructions` only, no live model, and no adaptive attack against synthesized policies.
 - **Not blind.** The prompt and floor were written after seeing these suites' tool names and earlier results. The floor's verb and argument lists are generic, but they do fit these suites.
 - **The floor over-blocks by design.** It blocks a tool rather than fixing its classification, so its 7 tools need a person to write rules before they can work.
-- **`SynthGate` is required.** With the plain frozen `Gate`, an unknown tool is allowed. A test pins this.
+- **`SynthGate` is required.** With the plain frozen `Gate`, an unknown tool is allowed. A test pins this. "Fail-closed behaviour is new" in the rule section means this, blocking unknown tools: the frozen gate already blocked unknown values in checked arguments. That section stays as committed.
 - **Kinds are limited.** There is no "user only" or "venue" kind, and no trust settings, which are where the hand-written rules (A) and (B) get some of their strength.
 
 ## Cost

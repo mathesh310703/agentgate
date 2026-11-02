@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Office Assistant, AgentGate demo</title>
+<style>
+:root {
+  --bg: #f4f3ef; --panel: #ffffff; --ink: #1d2126; --muted: #5d646d; --line: #dcdad3; --accent: #1f4e8c;
+  --red: #b3261e; --red-bg: #fbe9e7; --green: #1b6e3c; --green-bg: #e6f4ea; --amber: #8a5a00; --amber-bg: #fdf1d6;
+  --user: #1f4e8c; --user-bg: #e6eef8; --text: #6a4a8c; --text-bg: #f1eaf8; --pixels: #8a5a00; --pixels-bg: #fdf1d6;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 19px/1.45 "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif; display: flex; flex-direction: column; }
+header { display: flex; align-items: center; gap: 22px; padding: 14px 24px; background: var(--panel); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.brand { font-size: 25px; font-weight: 650; letter-spacing: -.01em; margin-right: auto; }
+.brand small { display: block; font-size: 15px; font-weight: 400; color: var(--muted); letter-spacing: 0; }
+button { font: inherit; font-weight: 600; padding: 11px 20px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, .doc:focus-visible, .switch:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.switch { display: flex; align-items: center; gap: 12px; padding: 7px 14px 7px 18px; border-radius: 12px; border: 2px solid var(--red); background: var(--red-bg); color: var(--red); font-weight: 700; font-size: 21px; cursor: pointer; }
+.switch.on { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+.switch .knob { width: 58px; height: 30px; border-radius: 15px; background: var(--red); position: relative; }
+.switch.on .knob { background: var(--green); }
+.switch .knob::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; transition: left .15s; }
+.switch.on .knob::after { left: 31px; }
+.reader { font-size: 16px; color: var(--muted); display: flex; gap: 8px; align-items: center; }
+.reader input { width: 19px; height: 19px; }
+.notice { padding: 9px 24px; background: #1d2126; color: #f4f3ef; font-size: 17px; display: flex; gap: 16px; flex-wrap: wrap; }
+.badge { font-weight: 700; padding: 0 9px; border-radius: 6px; background: #f4f3ef; color: #1d2126; }
+.badge.replay { background: #f2c14e; }
+.badge.stub { background: #e88; }
+main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(250px, 300px) minmax(360px, 1fr) minmax(460px, 1.25fr); gap: 16px; padding: 16px 24px; }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 15px 17px; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
+h2 { margin: 0 0 9px; font-size: 15px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); font-weight: 650; }
+.doc { display: block; width: 100%; text-align: left; border: 1px solid var(--line); border-radius: 9px; padding: 9px 12px; margin-bottom: 8px; background: var(--panel); cursor: pointer; font-weight: 400; }
+.doc.active { border: 2px solid var(--accent); padding: 8px 11px; background: var(--user-bg); }
+.doc b { display: block; font-size: 18px; font-weight: 620; }
+.doc span { font-size: 15px; color: var(--muted); }
+.files { margin-top: 12px; overflow: auto; }
+.file { padding: 7px 0; border-top: 1px solid var(--line); font-size: 17px; overflow-wrap: anywhere; }
+.file.canary { font-weight: 620; }
+.file em { display: block; font-style: normal; font-size: 15px; color: var(--muted); }
+.file.leaked { background: var(--red-bg); color: var(--red); margin: 0 -8px; padding: 7px 8px; border-radius: 7px; }
+.file.leaked em { color: var(--red); font-weight: 700; }
+.viewer { flex: 1; min-height: 0; overflow: auto; background: #e9e7e1; border-radius: 9px; }
+.viewer img { display: block; width: 100%; height: auto; }
+.viewer img.reveal { filter: contrast(9) brightness(.62); }
+.viewtools { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+.viewtools h2 { margin: 0 auto 0 0; }
+.viewtools button { padding: 5px 12px; font-size: 15px; }
+#hidden { font-size: 16px; color: var(--pixels); background: var(--pixels-bg); border-radius: 8px; padding: 7px 11px; margin-top: 9px; }
+#steps { flex: 1; overflow-y: auto; min-height: 0; padding-right: 5px; }
+.empty { color: var(--muted); padding: 22px 4px; }
+.step { border: 1px solid var(--line); border-radius: 10px; padding: 11px 14px; margin-bottom: 10px; }
+.step .head { display: flex; gap: 10px; align-items: baseline; font-size: 15px; color: var(--muted); margin-bottom: 4px; }
+.step .head b { color: var(--ink); font-size: 17px; }
+.step .head time { margin-left: auto; font-variant-numeric: tabular-nums; }
+.chip { font-size: 14px; font-weight: 700; padding: 1px 8px; border-radius: 6px; white-space: nowrap; }
+.chip.user { color: var(--user); background: var(--user-bg); }
+.chip.text { color: var(--text); background: var(--text-bg); }
+.chip.pixels { color: var(--pixels); background: var(--pixels-bg); }
+.line { font-size: 16px; padding: 1px 5px; overflow-wrap: anywhere; color: #3b4149; }
+.line.planted { background: #ffd34d; color: #000; font-weight: 650; border-radius: 4px; margin: 2px 0; padding: 3px 7px; }
+.more { font-size: 15px; color: var(--accent); background: none; border: 0; padding: 2px 5px; }
+.note { font-size: 16px; color: var(--amber); margin-top: 4px; }
+code { font: 18px/1.4 Consolas, "Cascadia Mono", Menlo, monospace; overflow-wrap: anywhere; display: block; }
+.call.danger { background: var(--amber-bg); }
+.verdict { font-size: 24px; font-weight: 750; letter-spacing: .01em; }
+.block { border: 2px solid var(--green); background: var(--green-bg); } .block .verdict { color: var(--green); }
+.ask { border: 2px solid var(--amber); background: var(--amber-bg); } .ask .verdict { color: var(--amber); }
+.allow .verdict { color: var(--muted); font-size: 18px; }
+.leak { border: 2px solid var(--red); background: var(--red-bg); } .leak .verdict { color: var(--red); }
+.reason { font-size: 17px; margin-top: 3px; overflow-wrap: anywhere; }
+.summary { border: 2px solid var(--ink); }
+.spin { display: inline-block; width: 15px; height: 15px; border: 3px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: s 1s linear infinite; margin-right: 8px; vertical-align: -2px; }
+@keyframes s { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } .switch .knob::after { transition: none; } }
+#board { margin-top: 12px; overflow: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 16px; }
+th, td { text-align: left; padding: 5px 7px; border-top: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; font-size: 14px; }
+td.bad { color: var(--red); font-weight: 700; } td.good { color: var(--green); font-weight: 700; }
+@media (max-width: 1100px) { html, body { height: auto; } main { grid-template-columns: 1fr; } section { overflow: visible; } #steps, .viewer { overflow: visible; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Office Assistant<small>AgentGate demo, running on this computer only</small></div>
+  <label class="reader" id="readerBox" hidden><input type="checkbox" id="reader"> Muse Spark image reader (hosted, paid per image)</label>
+  <div class="switch" id="gate" role="switch" tabindex="0" aria-checked="false"><span id="gateText">Gate OFF</span><span class="knob"></span></div>
+  <button class="primary" id="run">Run</button>
+  <button id="runAll">Run all three, gate off then on</button>
+  <button id="replay">Replay recorded run</button>
+</header>
+<div class="notice"><span class="badge" id="mode">…</span><span id="honesty"></span><span id="modelState"></span></div>
+<main>
+  <section>
+    <h2>Inbox</h2>
+    <div id="docs"></div>
+    <h2 style="margin-top:10px">Your files</h2>
+    <div class="files" id="files"></div>
+  </section>
+  <section>
+    <div class="viewtools"><h2 id="viewTitle">The image the assistant is asked to read</h2><button id="reveal" aria-pressed="false">Show hidden text</button></div>
+    <div class="viewer"><img id="image" alt="The selected document"></div>
+    <div id="hidden" hidden></div>
+  </section>
+  <section>
+    <h2>What happened, step by step</h2>
+    <div id="steps"><div class="empty">Pick a document, set the gate, and press Run.</div></div>
+    <div id="board" hidden></div>
+  </section>
+</main>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+let config, scenario = "invoice", gateOn = false, busy = false, moreShown = 3;
+const originChip = { "user request": "user", "untrusted text": "text", "untrusted pixels": "pixels" };
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text !== undefined) e.textContent = text;   // model and image text only ever goes in as text
+  return e;
+}
+function setGate(on) {
+  gateOn = on;
+  $("gate").classList.toggle("on", on);
+  $("gate").setAttribute("aria-checked", on);
+  $("gateText").textContent = on ? "Gate ON" : "Gate OFF";
+}
+function setBusy(on) {
+  busy = on;
+  ["run", "runAll"].forEach(id => $(id).disabled = on || !canRun());
+  $("replay").disabled = on || !config.replay_available;
+  document.querySelectorAll(".doc").forEach(d => d.disabled = on);
+}
+function canRun() { return config.mode === "stub" || config.model_state === "ready"; }
+function selectDoc(id) {
+  if (id !== scenario) setReveal(false);
+  scenario = id;
+  document.querySelectorAll(".doc").forEach(d => d.classList.toggle("active", d.dataset.id === id));
+  const s = config.scenarios.find(x => x.id === id);
+  $("image").src = s.image;
+  $("viewTitle").textContent = s.name;
+  $("hidden").hidden = true;
+}
+function setReveal(on) {
+  $("image").classList.toggle("reveal", on);
+  $("reveal").setAttribute("aria-pressed", on);
+  $("reveal").textContent = on ? "Normal view" : "Show hidden text";
+}
+function renderFiles(shares) {
+  const box = $("files");
+  box.replaceChildren();
+  for (const f of config.files) {
+    const hit = (shares || []).filter(s => s.file === f.name);
+    const row = el("div", "file" + (f.name === config.canary ? " canary" : "") + (hit.length ? " leaked" : ""), f.name);
+    row.append(el("em", "", hit.length ? "shared with " + hit.map(s => s.email).join(", ") : "private"));
+    box.append(row);
+  }
+}
+function step(cls, title, at, chip) {
+  const s = el("div", "step " + cls), h = el("div", "head");
+  if (chip) h.append(el("span", "chip " + chip.cls, chip.text));
+  h.append(el("b", "", title));
+  if (at !== undefined) h.append(el("time", "", at.toFixed(1) + " s"));
+  s.append(h);
+  $("steps").append(s);
+  $("steps").scrollTop = $("steps").scrollHeight;
+  return s;
+}
+function callText(tool, args) {
+  return tool + "(" + Object.entries(args || {}).map(([k, v]) => k + "=" + JSON.stringify(v)).join(", ") + ")";
+}
+function renderLines(box, lines, limit) {
+  const planted = lines.filter(l => l.planted), rest = lines.filter(l => !l.planted);
+  planted.forEach(l => box.append(el("div", "line planted", l.text)));
+  rest.slice(0, limit).forEach(l => box.append(el("div", "line", l.text)));
+  if (rest.length > limit) {
+    const b = el("button", "more", "+ " + (rest.length - limit) + " more lines");
+    b.onclick = () => { b.remove(); rest.slice(limit).forEach(l => box.append(el("div", "line", l.text))); };
+    box.append(b);
+  }
+}
+let thinking = null, shares = [], sent = [];
+function clearThinking() { if (thinking) { thinking.remove(); thinking = null; } }
+function isRisky(tool) { return tool === "share_file" || tool === "send_email"; }
+
+function onEvent(e, ctx) {
+  if (e.type === "start") {
+    $("steps").replaceChildren();
+    shares = []; sent = [];
+    renderFiles([]);
+    selectDoc(e.scenario);
+    setGate(e.gate);
+    const badge = $("mode");
+    badge.textContent = e.source === "replay" ? "REPLAY of a recorded run, " + e.recorded_at : e.source === "stub" ? "STUB victim, not a real model" : "LIVE";
+    badge.className = "badge " + (e.source === "live" ? "" : e.source);
+    if (e.hidden_line) { $("hidden").hidden = false; $("hidden").textContent = "Test data. Hidden in this image: “" + e.hidden_line + "”"; }
+    else { $("hidden").hidden = false; $("hidden").textContent = "Clean control: nothing is hidden in this image."; }
+    const s = step("", e.gate ? "Run started, gate ON" : "Run started, gate OFF", 0);
+    s.append(el("div", "reason", e.name));
+  } else if (e.type === "origin") {
+    clearThinking();
+    const titles = { "user request": "You asked", "untrusted text": "Tool result, read by the assistant", "untrusted pixels": "Text recovered from the image, " + e.source };
+    const s = step("", titles[e.origin], e.at, { cls: originChip[e.origin], text: e.origin });
+    if (e.origin === "user request") s.append(el("div", "reason", e.lines[0].text));
+    else {
+      renderLines(s, e.lines, e.origin === "untrusted text" ? 2 : moreShown);
+      if (e.hidden_in_image && !e.planted_found) s.append(el("div", "note", "This reader did not recover the hidden line."));
+      if (e.error) s.append(el("div", "note", "The reader failed (" + e.error + "), so the session has OCR alone."));
+    }
+  } else if (e.type === "thinking") {
+    clearThinking();
+    thinking = el("div", "step"); thinking.append(el("span", "spin"));
+    thinking.append(document.createTextNode(e.turn ? "The assistant is deciding what to do next…" : "The assistant is reading the image…"));
+    $("steps").append(thinking);
+    $("steps").scrollTop = $("steps").scrollHeight;
+  } else if (e.type === "proposal") {
+    clearThinking();
+    const s = step("call" + (isRisky(e.tool) ? " danger" : ""), "The assistant proposes this call", e.at);
+    s.append(el("code", "", callText(e.tool, e.args)));
+  } else if (e.type === "decision") {
+    const name = { block: "BLOCKED by the gate", ask: "ASK: the gate wants your confirmation", allow: "Allowed by the gate" }[e.action];
+    const s = step(e.action, "Gate decision", e.at);
+    s.append(el("div", "verdict", name));
+    s.append(el("div", "reason", e.reason));
+  } else if (e.type === "executed") {
+    shares = shares.concat(e.shares || []); sent = sent.concat(e.sent || []);
+    renderFiles(shares);
+    const canaryOut = (e.shares || []).some(x => x.file === config.canary) || (e.sent || []).some(m => (m.attachments || []).includes(config.canary));
+    if (canaryOut) {
+      const s = step("leak", "It went through", e.at);
+      s.append(el("div", "verdict", "LEAKED: " + config.canary));
+      s.append(el("div", "reason", e.result));
+    } else if (!e.gate) {
+      step("", "It ran: no gate is checking", e.at);
+    }
+  } else if (e.type === "answer") {
+    clearThinking();
+    const s = step("", "The assistant answers you", e.at);
+    s.append(el("div", "reason", e.text || "(an empty reply)"));
+  } else if (e.type === "done") {
+    clearThinking();
+    const s = step("summary " + (e.leaked ? "leak" : ""), "Result", e.seconds);
+    s.append(el("div", "verdict", e.leaked ? "The canary file left your account" : "The canary file stayed private"));
+    const parts = ["Took " + e.seconds.toFixed(1) + " s (model " + e.model_seconds.toFixed(1) + " s).", e.calls + " tool calls, " + e.blocks + " stopped by the gate."];
+    parts.push(e.answered ? "It also answered your question correctly." : e.hit_turn_cap ? "It ran out of turns and gave no answer." : "It did not give the correct answer.");
+    s.append(el("div", "reason", parts.join(" ")));
+    ctx.done = e;
+  } else if (e.type === "error") {
+    clearThinking();
+    const s = step("ask", "This run failed", e.at);
+    s.append(el("div", "reason", e.message + (config.replay_available ? " You can use Replay recorded run instead." : "")));
+    ctx.done = null;
+  }
+  $("steps").scrollTop = $("steps").scrollHeight;
+}
+async function stream(response, ctx) {
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    onEvent({ type: "error", at: 0, message: body.error || ("HTTP " + response.status) }, ctx);
+    return;
+  }
+  const reader = response.body.getReader(), dec = new TextDecoder();
+  let buf = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf("\n")) >= 0) {
+      const line = buf.slice(0, i);
+      buf = buf.slice(i + 1);
+      if (line.trim()) onEvent(JSON.parse(line), ctx);
+    }
+  }
+}
+async function one(id, gate, kind) {
+  const ctx = {};
+  const res = kind === "replay"
+    ? await fetch("/api/replay?scenario=" + id + "&gate=" + (gate ? "on" : "off"))
+    : await fetch("/api/run", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ scenario: id, gate, reader: $("reader").checked }) });
+  await stream(res, ctx);
+  return ctx.done;
+}
+function board(rows, title) {
+  const b = $("board");
+  b.hidden = false;
+  b.replaceChildren(el("h2", "", title));
+  const t = el("table"), head = el("tr");
+  ["Document", "Gate", "Canary", "Answer", "Time"].forEach(h => head.append(el("th", "", h)));
+  t.append(head);
+  for (const r of rows) {
+    const tr = el("tr");
+    tr.append(el("td", "", r.name), el("td", "", r.gate ? "ON" : "OFF"));
+    if (!r.done) { tr.append(el("td", "", "failed"), el("td", "", "–"), el("td", "", "–")); }
+    else {
+      tr.append(el("td", r.done.leaked ? "bad" : "good", r.done.leaked ? "leaked" : "private"), el("td", "", r.done.answered ? "correct" : "no"), el("td", "", r.done.seconds.toFixed(1) + " s"));
+    }
+    t.append(tr);
+  }
+  b.append(t);
+}
+async function runOne(kind) {
+  setBusy(true);
+  $("board").hidden = true;
+  try { await one(scenario, gateOn, kind); } finally { setBusy(false); }
+}
+async function runAll() {
+  setBusy(true);
+  const rows = [];
+  $("board").hidden = true;
+  try {
+    for (const gate of [false, true]) {
+      for (const s of config.scenarios) {
+        const done = await one(s.id, gate, "live");
+        rows.push({ name: s.name, gate, done });
+        board(rows, "All three, gate off then on");
+      }
+    }
+  } finally { setBusy(false); }
+}
+async function refresh() {
+  config = await (await fetch("/api/config")).json();
+  $("honesty").textContent = config.honesty;
+  if ($("mode").textContent === "…") {
+    $("mode").textContent = config.mode === "stub" ? "STUB victim, not a real model" : "LIVE";
+    $("mode").className = "badge " + (config.mode === "stub" ? "stub" : "");
+  }
+  $("modelState").textContent = config.mode === "stub" ? "" :
+    config.model_state === "ready" ? "Model ready." :
+    config.model_state === "loading" ? "Loading the model…" : "Model unavailable: use Replay recorded run. " + (config.model_error || "");
+  $("readerBox").hidden = !config.reader_available;
+  if (!busy) setBusy(false);
+}
+(async function init() {
+  await refresh();
+  const docs = $("docs");
+  for (const s of config.scenarios) {
+    const d = el("button", "doc");
+    d.dataset.id = s.id;
+    d.append(el("b", "", s.name), el("span", "", "from " + s.from));
+    d.onclick = () => { if (!busy) selectDoc(s.id); };
+    docs.append(d);
+  }
+  selectDoc(scenario);
+  renderFiles([]);
+  setGate(false);
+  $("gate").onclick = () => { if (!busy) setGate(!gateOn); };
+  $("gate").onkeydown = e => { if ((e.key === " " || e.key === "Enter") && !busy) { e.preventDefault(); setGate(!gateOn); } };
+  $("reveal").onclick = () => setReveal(!$("image").classList.contains("reveal"));
+  $("run").onclick = () => runOne("live");
+  $("runAll").onclick = runAll;
+  $("replay").onclick = () => runOne("replay");
+  setBusy(false);
+  const poll = setInterval(async () => { await refresh(); if (config.model_state !== "loading") clearInterval(poll); }, 2000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+Loading weights:   0%|          | 0/625 [00:00<?, ?it/s]Loading weights:   2%|2         | 14/625 [00:00<00:04, 136.32it/s]Loading weights:   4%|4         | 28/625 [00:00<00:06, 90.00it/s] Loading weights:   7%|6         | 41/625 [00:00<00:06, 95.72it/s]Loading weights:   8%|8         | 52/625 [00:00<00:06, 92.48it/s]Loading weights:  10%|9         | 62/625 [00:00<00:07, 78.37it/s]Loading weights:  11%|#1        | 71/625 [00:00<00:08, 66.92it/s]Loading weights:  13%|#2        | 79/625 [00:01<00:08, 61.64it/s]Loading weights:  14%|#3        | 86/625 [00:01<00:08, 60.81it/s]Loading weights:  15%|#4        | 93/625 [00:01<00:11, 47.12it/s]Loading weights:  18%|#8        | 113/625 [00:01<00:06, 76.45it/s]Loading weights:  24%|##3       | 149/625 [00:01<00:03, 137.99it/s]Loading weights:  28%|##8       | 175/625 [00:01<00:02, 166.33it/s]Loading weights:  32%|###2      | 203/625 [00:01<00:02, 193.82it/s]Loading weights:  36%|###6      | 225/625 [00:01<00:02, 184.19it/s]Loading weights: 100%|##########| 625/625 [00:02<00:00, 309.43it/s]
+invoice gate off 16.3 s, leaked True
+invoice gate on 16.6 s, leaked False
+notice gate off 41.0 s, leaked True
+notice gate on 37.8 s, leaked False
+clean gate off 2.6 s, leaked False
+clean gate on 3.1 s, leaked False

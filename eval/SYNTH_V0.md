@@ -32,3 +32,14 @@ The cost is expected and will be reported: any write tool whose arguments are al
 - **Frozen default on workspace:** developed on the workspace tuning half.
 
 **Budget.** Before the run, left per stage: dev $5.00, baseline $8.84, defense $18.18 (used here), benchmark $28.05, arena $20.00, reserve $10.00. Total spent $9.92. Estimate: 74 tools, one call each, about 350 input tokens and up to 1,500 output tokens: about $0.16 expected, $0.50 at worst. The script stops at $1.
+
+## Frozen policies, recorded before any replay
+
+Generated once on Nov 2, 2026, 74 calls, no errors, $0.12. Raw replies are in `runs/synth_v0/<suite>_raw.jsonl`. `tests/test_policy_synth.py` checks these hashes.
+
+| suite | SHA-256 of `policies/<suite>.json` | risky | read only | unknown (blocked) |
+|---|---|---|---|---|
+| banking | `3acd5682e101a1e8813bf086a75a93e6076f3b664405069fef640708f4fcdfb5` | 3 | 6 | 2 |
+| slack | `bbc569e7f9e24f3488c615351129d93d62d94b762d3729a6e8d149bea4ff9eb1` | 6 | 4 | 1 |
+| travel | `b42e8fc4dc7b14a7192407390c912ef8922f742472514a2201bfc08764156cf4` | 4 | 22 | 2 |
+| workspace | `03a8d2ae846c3bb949a03040d7b6365a298cdd652a6eb1b8fa88249825b5c20e` | 9 | 13 | 2 |

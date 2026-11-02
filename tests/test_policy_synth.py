@@ -1,7 +1,9 @@
 """agentgate/policy_synth.py: a malformed or hostile model reply can't make a risky tool pass unchecked. Offline, the
 model is a stub. Run: `.venv\\Scripts\\python tests/test_policy_synth.py`."""
 
+import hashlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -207,6 +209,16 @@ def test_loader_reads_a_file():
         path.write_bytes(dumps(doc))
         assert b"\r" not in path.read_bytes()
         assert load_policy(path).rules["send_money"].sensitive["recipient"] == "recipient"
+
+
+def test_frozen_policies_match_the_hashes_in_the_report():
+    report = (ROOT / "eval" / "SYNTH_V0.md").read_text(encoding="utf-8")
+    hashes = dict(re.findall(r"^\| (\w+) \| `([0-9a-f]{64})` \|", report, re.M))
+    assert set(hashes) == {"banking", "slack", "travel", "workspace"}
+    for suite, sha in hashes.items():
+        path = ROOT / "policies" / f"{suite}.json"
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == sha, suite
+        assert load_policy(path).rules, suite
 
 
 if __name__ == "__main__":

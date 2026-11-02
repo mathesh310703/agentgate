@@ -53,6 +53,19 @@ def test_empty_text_scores_zero_without_loading():
     assert g.score("") == 0.0 and g.score(None) == 0.0 and g.seen == []
 
 
+def test_86m_is_optional_and_22m_stays_the_default():
+    from agentgate.detectors import MODEL_86M, MODEL_ID
+
+    default, large = PromptGuard(), PromptGuard(MODEL_86M)
+    assert default.model_id == MODEL_ID and "22M" in MODEL_ID and default.device == "cpu"
+    assert large.model_id == MODEL_86M and "86M" in MODEL_86M
+
+
+def test_replay_runs_without_a_detector_unless_asked():
+    source = (Path(__file__).resolve().parent.parent / "scripts" / "run_worstcase.py").read_text(encoding="utf-8")
+    assert 'choices=["none", "promptguard", "promptguard86"], default="none"' in source
+
+
 if __name__ == "__main__":
     tests = [v for k, v in dict(globals()).items() if k.startswith("test_")]
     for t in tests:

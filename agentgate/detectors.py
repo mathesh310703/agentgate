@@ -6,7 +6,7 @@ one rule (gate.py: recipients taken only from a sender or owner field) and in bl
     scorer = PromptGuard()          # loads nothing until the first score() call
     scorer("some tool output")      # -> malicious probability in [0, 1]
 
-Runs on CPU. The model is gated on Hugging Face: HF_TOKEN is read from .env and never printed.
+Runs on CPU by default. The model is gated on Hugging Face: HF_TOKEN is read from .env and never printed.
 Inputs longer than 512 tokens are split into chunks and the maximum chunk score is returned.
 Scores are cached in memory by a hash of the text.
 """
@@ -16,13 +16,15 @@ import os
 from pathlib import Path
 
 MODEL_ID = "meta-llama/Llama-Prompt-Guard-2-22M"
+MODEL_86M = "meta-llama/Llama-Prompt-Guard-2-86M"   # optional larger model (eval/LAYER1_86M.md), off by default
 MAX_TOKENS = 512
 ROOT = Path(__file__).resolve().parent.parent
 
 
 class PromptGuard:
-    def __init__(self, model_id: str = MODEL_ID, max_tokens: int = MAX_TOKENS, batch_size: int = 16):
+    def __init__(self, model_id: str = MODEL_ID, max_tokens: int = MAX_TOKENS, batch_size: int = 16, device: str = "cpu"):
         self.model_id = model_id
+        self.device = device
         self.max_tokens = max_tokens
         self.batch_size = batch_size
         self._tok = self._model = None
@@ -39,7 +41,7 @@ class PromptGuard:
         token = os.environ.get("HF_TOKEN") or None
         self._tok = AutoTokenizer.from_pretrained(self.model_id, token=token)
         self._model = AutoModelForSequenceClassification.from_pretrained(self.model_id, token=token)
-        self._model.to("cpu").eval()
+        self._model.to(self.device).eval()
         labels = {i: str(n).lower() for i, n in self._model.config.id2label.items()}
         self._malicious = next((i for i, n in labels.items() if "malicious" in n or "injection" in n), 1)
 
@@ -68,6 +70,8 @@ class PromptGuard:
         for i in range(0, len(pieces), self.batch_size):
             enc = self._tok(pieces[i:i + self.batch_size], return_tensors="pt", padding=True, truncation=True,
                             max_length=self.max_tokens)
+            if self.device != "cpu":
+                enc = enc.to(self.device)
             with torch.no_grad():
                 probs = torch.softmax(self._model(**enc).logits, dim=-1)[:, self._malicious]
             out += [float(p) for p in probs]

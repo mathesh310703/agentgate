@@ -122,7 +122,7 @@ The score is advisory: it is stored on each record, shown in block explanations,
 
 **Measured at the fixed 0.5 threshold (`eval/LAYER1.md`):**
 - **22M, the model the gate uses by default:** 0/378 injected tool outputs (AUC 0.886), 0/60 planted image lines.
-- **86M, not in the default gate:** 125/378 injected tool outputs (AUC 0.997), 0/60 planted image lines, with no signal on image lines.
+- **86M, optional and off by default (`--detector promptguard86`):** 125/378 injected tool outputs (AUC 0.997), 0/60 planted image lines, with no signal on image lines. In the gate it changes no decision on the workspace replay, which does not exercise the sender rule (`eval/LAYER1_86M.md`).
 - **False positives:** none for either model on the clean set (0/55 outputs, 0/60 OCR texts).
 - **Wiring:** classic jailbreaks score 0.996 or above on both, so it works; the AgentDojo payload is low on most goals.
 - **The 22M rule never fires, and no reported result depends on it.**

@@ -164,8 +164,9 @@ def main(argv=None):
     ap.add_argument("--injections", nargs="*")
     ap.add_argument("--mode", choices=["attack", "clean"], default="attack",
                     help="clean: user-task calls only, no injections (utility without attack goals)")
-    ap.add_argument("--detector", choices=["none", "promptguard"], default="none",
-                    help="promptguard: score free-text records with Llama Prompt Guard 2 (CPU, local)")
+    ap.add_argument("--detector", choices=["none", "promptguard", "promptguard86"], default="none",
+                    help="promptguard: score free-text records with Llama Prompt Guard 2 22M (CPU, local); "
+                         "promptguard86: the optional 86M model instead")
     ap.add_argument("--judge", action="store_true",
                     help="Layer 2: send the gate's asks to the intent judge via the proxy (costs money; "
                          "start the proxy with --stage defense)")
@@ -190,9 +191,9 @@ def main(argv=None):
         print(f"{len(users)} user tasks x {len(injs)} injection tasks = {len(pairs)} pairs; attack {ATTACK}")
 
     scorer = None
-    if a.detector == "promptguard":
-        from agentgate.detectors import PromptGuard
-        scorer = PromptGuard()
+    if a.detector != "none":
+        from agentgate.detectors import MODEL_86M, MODEL_ID, PromptGuard
+        scorer = PromptGuard(MODEL_86M if a.detector == "promptguard86" else MODEL_ID)
     judge = None
     if a.judge:
         from agentgate.judge import IntentJudge

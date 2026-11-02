@@ -116,8 +116,8 @@ As before, "recall at 1% FPR" is recall above the highest clean score, on the sa
 - **It is uneven by goal.** Goal 9 is flagged on 25/27 outputs; goals 3, 7, 11 and 13 on 3–4 of 27. The AgentDojo payload alone reaches 0.5 only for goals 9 (0.97) and 12 (0.73); it scores 0.02–0.25 for the other 12.
 - **It catches none of the neutral image lines.** The lines even score below clean documents (AUC 0.023). Positives are single short lines and negatives whole documents, and there are only 16 distinct lines, so read this as "no signal", not as an inverted detector.
 - **Two thirds of injected outputs still pass at 0.5**, so it cannot replace provenance.
-- **Cost:** about 0.79 s per text on CPU, vs 0.31 s for the 22M (tool outputs, one run each).
-- **Not tested:** the 86M in the gate. Whether the sender rule would then fire, and on how many false positives, is unmeasured. The conclusions above about that rule are for the 22M. AgentDojo puts injections only in free text, so the replay would not exercise the rule's target anyway.
+- **Cost:** about 0.79 s per text on CPU, vs 0.31 s for the 22M, over all 433 tool outputs from one run each. For a timing on its own, with CPU and GPU, see `eval/LAYER1_86M.md`.
+- **In the gate:** measured separately in `eval/LAYER1_86M.md`. The replays do not exercise the sender rule. The conclusions above about that rule are for the 22M.
 
 ## Reproduce
 

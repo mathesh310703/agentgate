@@ -212,8 +212,9 @@ Stopped by the rule set for the run (baseline utility under about 30%). **No att
 | held-out 20–39 | 1/20 (0.9–23.6%) | 2/20 (2.8–30.1%) | 3 / 0 |
 | all 40 | 4/40 (4.0–23.1%) | 5/40 (5.5–26.1%) | 12 / 0 |
 
-- **Likely cause, not separated from the model itself:** Ollama's stock template hides the tool list after the first tool result, so multi-step tasks cannot finish. A template change was not tried.
-- **All 12 blocks were on clean runs, on values the model made up** (`participants='null'`, `file_id='123456789'`). They cost one task (12). The other arm differences (tasks 4, 5, 6, 27) had no block, so they are run-to-run variance.
+- **Stock template:** Ollama's template hides the tool list after the first tool result, so multi-step tasks cannot finish.
+- **Second try, tools visible on every turn** (same weights, both arms, disclosed): ungated **2/40** (1.4–16.5%), gated 5/40 (5.5–26.1%), 14 blocks and 3 asks on clean runs. Also under 30%, so again no attack. The change took effect (smallest prompt 99 → 2,494 tokens), so the template was not the main cause. Gated vs ungated here is run-to-run variance, not a gate benefit.
+- **Stock run: all 12 blocks were on clean runs, on values the model made up** (`participants='null'`, `file_id='123456789'`). They cost one task (12). The other arm differences (tasks 4, 5, 6, 27) had no block, so they are run-to-run variance.
 
 ## Limits
 

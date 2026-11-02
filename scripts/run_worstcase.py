@@ -16,6 +16,7 @@ Session as untrusted text). Metrics come from the end state via agentdojo's own 
 """
 
 import argparse
+import importlib
 import json
 import sys
 from collections import Counter
@@ -88,11 +89,19 @@ def findings_text(d):
     return "; ".join(f"{f.arg}={f.value!r} {f.verdict} (source: {f.source or 'none'})" for f in d.findings) or "-"
 
 
+def load_policy(spec):
+    """'package.module:function' -> the Policy that function returns, e.g. examples.my_policy:build."""
+    module, _, function = spec.partition(":")
+    return getattr(importlib.import_module(module), function)()
+
+
 def run(arm, suite, attack, pairs, scorer=None, judge=None, policy="default"):
     gate = None
     if arm == "gate":
-        gate = (RecordingGate(attach_policy(), judge, prepare=attach_args) if policy == "attach"
-                else RecordingGate(default_workspace_policy(), judge))
+        if policy == "attach":
+            gate = RecordingGate(attach_policy(), judge, prepare=attach_args)
+        else:
+            gate = RecordingGate(default_workspace_policy() if policy == "default" else load_policy(policy), judge)
     agent = CompromisedAgent(GatedToolsExecutor(gate, scorer=scorer) if gate else ToolsExecutor())
     pipeline = AgentPipeline([InitQuery(), agent])
     pipeline.name = f"vllm_parsed_worstcase_{arm}"
@@ -160,8 +169,9 @@ def main(argv=None):
     ap.add_argument("--judge", action="store_true",
                     help="Layer 2: send the gate's asks to the intent judge via the proxy (costs money; "
                          "start the proxy with --stage defense)")
-    ap.add_argument("--policy", choices=["default", "attach"], default="default",
-                    help="attach: optional policy that also checks send_email attachments (agentgate/policy_attach.py)")
+    ap.add_argument("--policy", default="default",
+                    help="default; attach (optional policy that also checks send_email attachments, "
+                         "agentgate/policy_attach.py); or your own as package.module:function")
     ap.add_argument("--port", default="8000")
     ap.add_argument("--out", required=True, help="output dir, e.g. runs/worstcase_v1_tune")
     a = ap.parse_args(argv)

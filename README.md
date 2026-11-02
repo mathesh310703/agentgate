@@ -80,6 +80,19 @@ How the gate works and where it stops working: [docs/TECHNICAL.md](docs/TECHNICA
 
 Every real model call is logged to `eval/cost_log.csv`; responses are cached on disk so reruns cost nothing.
 
+## Test your own policy
+
+Write a function that returns a `Policy` ([examples/my_policy.py](examples/my_policy.py) is a small example), then run the worst-case replay on AgentDojo workspace. No model, no keys, no cost; about a minute per half.
+
+```
+python scripts/run_worstcase.py --split tune --policy examples.my_policy:build --out runs/my_policy
+python scripts/run_worstcase.py --split tune --mode clean --policy examples.my_policy:build --out runs/my_policy_clean
+```
+
+- `--policy` takes `package.module:function`; `--split` takes `tune` (tasks 0–19), `heldout` (20–39) or `all`.
+- The first command replays each task against all 14 injection goals, and the second without injections, for false blocks.
+- Attack success, utility, and user calls blocked or asked print at the end and land in `<out>/summary.json`. Every call's decision and reason is in `<out>/results.json`.
+
 ## Budgets and guards (agentlab/llm.py)
 
 - Every call names a stage; budgets (USD): dev 5, baseline 15, defense 20, benchmark 30, arena 20, reserve 10. A call whose worst-case cost would exceed its stage budget is refused before sending.

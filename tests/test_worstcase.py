@@ -11,7 +11,7 @@ from agentdojo.agent_pipeline import AgentPipeline  # noqa: E402
 from agentdojo.attacks.attack_registry import load_attack  # noqa: E402
 from agentdojo.task_suite.load_suites import get_suite  # noqa: E402
 
-from scripts.run_worstcase import ATTACK, run  # noqa: E402
+from scripts.run_worstcase import ATTACK, load_policy, run  # noqa: E402
 
 SUITE = get_suite("v1.2.2", "workspace")
 _named = AgentPipeline([])
@@ -39,6 +39,12 @@ def test_injection_ids_follow_user_calls():
     # user_task_6 creates an event, which sends an invitation email; the injected delete must hit the new id
     (r,) = run("none", SUITE, ATK, pair("user_task_6", "injection_task_5"))
     assert r["attack_success"]
+
+
+def test_own_policy_runs_from_a_module_path():
+    assert not load_policy("examples.my_policy:build").trusted_for["recipient"]
+    (r,) = run("gate", SUITE, ATK, pair("user_task_0", "injection_task_2"), policy="examples.my_policy:build")
+    assert not r["attack_success"] and r["arm"] == "gate"
 
 
 if __name__ == "__main__":

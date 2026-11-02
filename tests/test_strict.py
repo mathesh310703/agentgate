@@ -25,7 +25,7 @@ RECORDED = [("runs/suites_v0/workspace_default_attack", "workspace", "default"),
               for p in ("default", "suites") for m in ("attack", "clean")]]
 
 
-FROZEN_NOW = datetime.datetime(2000, 1, 1, 0, 0, 0)
+FROZEN_NOW = datetime.datetime(2030, 1, 1, 0, 0, 0)   # after the benchmark's 2024 data: some utility checks compare dates
 
 
 def freeze_agentdojo_clock(now=FROZEN_NOW):

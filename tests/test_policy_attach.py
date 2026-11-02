@@ -58,7 +58,9 @@ def test_default_reproduces_every_recorded_replay():
         pairs = ([(u, None) for u in users] if path.endswith("_clean")
                  else [(u, i) for u in users for i in suite.injection_tasks.values()])
         saved = json.loads((ROOT / path / "results.json").read_text(encoding="utf-8"))
-        got, want = _decisions(run("gate", suite, attack, pairs)), _decisions(saved)
+        results = run("gate", suite, attack, pairs)
+        assert [r["utility"] for r in results] == [r["utility"] for r in saved if r["arm"] == "gate"], path
+        got, want = _decisions(results), _decisions(saved)
         assert got == want, (path, next((g, w) for g, w in zip(got, want) if g != w) if len(got) == len(want) else len(got))
 
 

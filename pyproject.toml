@@ -12,7 +12,7 @@ dependencies = []   # the gate, session and policies use only the standard libra
 
 [project.optional-dependencies]
 ocr = ["rapidocr-onnxruntime==1.4.4", "pillow>=10.1", "numpy"]   # agentgate/pixels.py
-mcp = ["mcp>=2.3,<3"]                                            # agentgate/mcp_server.py
+mcp = ["mcp>=2.3,<3", "agentdojo==0.1.35"]                       # agentgate/mcp_server.py imports the adapter's gate_message
 agentdojo = ["agentdojo==0.1.35"]                                # agentgate/adapters/agentdojo_adapter.py
 detector = ["torch", "transformers", "python-dotenv"]            # agentgate/detectors.py
 judge = ["httpx"]                                                # agentgate/judge.py, needs the proxy from a clone

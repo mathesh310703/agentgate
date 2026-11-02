@@ -46,7 +46,9 @@ def test_readme_shows_the_commands_and_the_real_output():
 def test_core_has_no_required_dependency_and_extras_are_declared():
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
     assert project["dependencies"] == []
-    assert {"ocr", "mcp"} <= set(project["optional-dependencies"])
+    extras = project["optional-dependencies"]
+    assert {"ocr", "mcp"} <= set(extras)
+    assert any(d.startswith("agentdojo") for d in extras["mcp"])   # agentgate/mcp_server.py imports the adapter
 
 
 if __name__ == "__main__":

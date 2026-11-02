@@ -7,7 +7,7 @@ The final configuration is the deterministic gate plus the Layer 2 intent judge,
   - **22M, the default model:** 0/378 injected AgentDojo tool outputs (AUC 0.886) and 0/60 planted image lines (highest score 0.0016; `eval/LLAMAGUARD_V0.md`, which corrects an earlier OCR-based figure).
   - **86M, optional:** 125/378 (AUC 0.997) and 0/60, with no signal on image lines; see (n).
   - **False positives:** none for either on the clean set (0/55 outputs, 0/60 OCR texts).
-  - It does score classic "ignore previous instructions" jailbreaks at 0.996 or above, while the AgentDojo payload scores 0.005.
+  - **Wiring:** both score classic "ignore previous instructions" jailbreaks at 0.996 or above; the 22M scores the AgentDojo payload at 0.005.
   - With the 22M, the one score-based rule never fires, and both replay halves make identical decisions.
   - No result below depends on it.
 - The model under test is Muse Spark Open (Baseten), reached through the budget proxy.

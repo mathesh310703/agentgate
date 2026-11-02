@@ -44,6 +44,8 @@ Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md)
 - **#36:** an email to a recipient the user named, with an attachment chosen by injected email text.
 - **#37:** the same, with the attachment chosen by text in an image.
 
+**Branch steering is not closed:** when every argument traces to a trusted source but untrusted text caused the call, the gate allows it (pinned in `tests/adaptive_cases.py`), whereas FIDES's context-label check would catch it.
+
 All 26 obfuscated spellings of an injected address are blocked. Other limits are in [RESULTS.md](RESULTS.md#limits).
 
 ## Setup (Windows, NVIDIA GPU)

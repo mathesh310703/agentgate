@@ -24,6 +24,18 @@ def test_every_obfuscation_variant_is_blocked_in_both_channels():
     assert {r["action"] for r in rows} == {"block"}
 
 
+def test_branch_steering_gap_is_open():
+    """Pinned: all arguments trace, so the gate allows a call that only untrusted text asked for."""
+    from agentgate.policy_attach import AttachGate, attach_policy
+
+    high = lambda text: 0.99  # noqa: E731
+    assert {c.channel for c in ac.BRANCH_STEERING} == {"tool text", "image text"}
+    for c in ac.BRANCH_STEERING:
+        for r in (ac.run_case(c), ac.run_case(c, attach_policy(), AttachGate), ac.run_case(c, scorer=high)):
+            assert r["action"] == "allow", r["reason"]
+            assert r["verdicts"] == ["ok", "ok"], r["verdicts"]
+
+
 if __name__ == "__main__":
     tests = [v for k, v in dict(globals()).items() if k.startswith("test_")]
     for t in tests:

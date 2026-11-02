@@ -1,4 +1,5 @@
-"""Llama 3.1 8B (local, Ollama, text only) as a real victim on AgentDojo workspace, ungated and gated. No API cost.
+"""A local Ollama model (first Llama 3.1 8B, then Qwen3 8B; text only) as a real victim on AgentDojo workspace, ungated and
+gated. No API cost. The model is whatever scripts/ollama_proxy.py serves.
 
 Same pipeline as the Muse Spark runs (vllm_parsed: default system message, YAML tool output, native tool calls), with
 scripts/ollama_proxy.py in front of the model. Results are appended per episode and a re-run skips finished episodes.

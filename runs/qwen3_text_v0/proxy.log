@@ -1,0 +1,26 @@
+ollama proxy on 127.0.0.1:8021, model qwen3-8b-ctx16k
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 55958)
+Traceback (most recent call last):
+  File "C:\Users\mathe\AppData\Local\Programs\Python\Python311\Lib\socketserver.py", line 691, in process_request_thread
+    self.finish_request(request, client_address)
+  File "C:\Users\mathe\AppData\Local\Programs\Python\Python311\Lib\socketserver.py", line 361, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+  File "C:\Users\mathe\AppData\Local\Programs\Python\Python311\Lib\socketserver.py", line 755, in __init__
+    self.handle()
+  File "C:\Users\mathe\AppData\Local\Programs\Python\Python311\Lib\http\server.py", line 431, in handle
+    self.handle_one_request()
+  File "C:\Users\mathe\AppData\Local\Programs\Python\Python311\Lib\http\server.py", line 419, in handle_one_request
+    method()
+  File "D:\agentgate\scripts\ollama_proxy.py", line 81, in do_POST
+    self._send(status, body)
+  File "D:\agentgate\scripts\ollama_proxy.py", line 46, in _send
+    self.end_headers()
+  File "C:\Users\mathe\AppData\Local\Programs\Python\Python311\Lib\http\server.py", line 533, in end_headers
+    self.flush_headers()
+  File "C:\Users\mathe\AppData\Local\Programs\Python\Python311\Lib\http\server.py", line 537, in flush_headers
+    self.wfile.write(b"".join(self._headers_buffer))
+  File "C:\Users\mathe\AppData\Local\Programs\Python\Python311\Lib\socketserver.py", line 834, in write
+    self._sock.sendall(b)
+ConnectionResetError: [WinError 10054] An existing connection was forcibly closed by the remote host
+----------------------------------------

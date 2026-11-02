@@ -8,6 +8,7 @@ Each call is logged to --log with tokens and latency. "truncated" flags a prompt
 its /v1 endpoint does so silently and ignores num_ctx, so a model tag with a larger num_ctx is used.
 
   .venv\\Scripts\\python scripts/ollama_proxy.py --model llama31-8b-ctx16k --port 8021 --log runs/llama31_v0/calls.jsonl
+  .venv\\Scripts\\python scripts/ollama_proxy.py --model qwen3-8b-ctx16k --reasoning-effort none --port 8021 --log runs/qwen3_text_v0/calls.jsonl
 """
 
 import argparse
@@ -56,6 +57,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(404, b"{}")
         payload = json.loads(self.rfile.read(int(self.headers.get("Content-Length") or 0)) or b"{}")
         p = prepare(payload, self.server.model)
+        if self.server.reasoning_effort:
+            p["reasoning_effort"] = self.server.reasoning_effort
         t0 = time.perf_counter()
         try:
             r = httpx.post(UPSTREAM, json=p, timeout=TIMEOUT)
@@ -83,12 +86,14 @@ def main(argv=None):
     ap.add_argument("--model", required=True)
     ap.add_argument("--port", type=int, default=8021)
     ap.add_argument("--log", required=True)
+    ap.add_argument("--reasoning-effort", help="sent on every request; none turns thinking off for Qwen3 "
+                                                "(think: false is ignored on /v1)")
     a = ap.parse_args(argv)
     Path(a.log).parent.mkdir(parents=True, exist_ok=True)
     import threading
 
     srv = ThreadingHTTPServer(("127.0.0.1", a.port), Handler)
-    srv.model, srv.log_path, srv.lock = a.model, a.log, threading.Lock()
+    srv.model, srv.log_path, srv.lock, srv.reasoning_effort = a.model, a.log, threading.Lock(), a.reasoning_effort
     print(f"ollama proxy on 127.0.0.1:{a.port}, model {a.model}", flush=True)
     srv.serve_forever()
 

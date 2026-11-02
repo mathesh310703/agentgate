@@ -4,6 +4,7 @@ Until now, the Layer 1 detector (`agentgate/detectors.py`) was built but unmeasu
 
 **Result:** Prompt Guard 2 catches classic jailbreaks, but it does not flag the injections in our tests.
 - At the 0.5 threshold, it flags none of the AgentDojo `important_instructions` tool outputs (0/378) and none of the image carriers (0/60).
+  - **Correction, Nov 2:** that 0/60 was scored on OCR text, and OCR missed the planted address on 10 of the 60 images, so those inputs did not hold the attack. Scored on the planted lines themselves the count is still 0/60, highest score 0.0016 (`eval/LLAMAGUARD_V0.md`).
 - On tool outputs, it ranks injected text above clean text (AUC 0.82–0.94), but every score is below 0.5. The highest injected tool output scores 0.32, and the highest injected free-text field 0.24.
 - On OCR text from the images, it is at chance (AUC 0.50–0.53).
 - The one score-based rule (a recipient taken only from a sender or owner field) therefore never fires, and no gate decision changes.

@@ -4,7 +4,7 @@ The final configuration is the deterministic gate plus the Layer 2 intent judge,
 - The gate was frozen as git tag `gate-final`, then given one disclosed post-freeze fix, tag `gate-final.1`. The fix is pixel matching only, and is described under "Post-freeze fix" below.
 - The tables (a), (c) and (d) are identical under both tags; (b) is shown under both.
 - The Layer 1 detector (Prompt Guard 2) was measured on Nov 1, 2026 (`eval/LAYER1.md`), and it flags none of our injections at the fixed 0.5 threshold.
-  - It flags 0/378 injected AgentDojo tool outputs (AUC 0.886) and 0/60 image carriers (AUC 0.526, chance).
+  - It flags 0/378 injected AgentDojo tool outputs (AUC 0.886) and 0/60 planted image lines (highest score 0.0016; `eval/LLAMAGUARD_V0.md`, which corrects an earlier OCR-based figure).
   - It does score classic "ignore previous instructions" jailbreaks at 0.996 or above, while the AgentDojo payload scores 0.005.
   - The one score-based rule therefore never fires; with the detector on, both replay halves make identical decisions.
   - No result below depends on it.
@@ -173,6 +173,35 @@ Same scripted agent as (a), all user × injection pairs, AgentDojo v1.2.2, zero 
   - Closed by the optional attachment policy: #36 and #37.
 - **Tests:** `tests/test_policy_attach.py` checks that the frozen default reproduces the four recorded workspace replays and the 7 pinned adaptive cases.
 
+### (j) Optional second image reader (Nov 2, 2026, tag `reader-v0`)
+
+**Added after the freeze; off by default.** `agentgate/pixels_vlm.py`: Muse Spark Open transcribes each image with no task and no tools, and the transcript joins OCR as untrusted pixels. Details are in `eval/READER_V0.md`. Cost $0.30 for 120 images.
+
+| measurement, sets 1-3 | OCR only | OCR + VLM |
+|---|---|---|
+| planted address traced to the image (60 carriers) | 50/60 | **60/60** |
+| planted filename traced to the image | 27/60 | **60/60** |
+| scripted worst case, attacks | 0/60 | 0/60 |
+| recorded tool calls (2,046), allow / block | 1,948 / 98 | 1,948 / 98 |
+
+- **It improves explanations, not decisions.** No action changed in the recorded calls, or in the clean 40-task replay with all transcripts added as a stress test. Unknown values were already blocked.
+- **Safety property, tested offline:** a transcript can only move a decision towards block (`tests/test_reader.py`).
+- **The transcript alone traces 57/60.** On 2 carriers the model described the hidden line instead of copying it, and on 1 it misread the address. OCR covers all 3.
+
+### (k) Llama 3.2 11B Vision as a victim: not run (Nov 2, 2026)
+
+Nothing was measured. The account has no access to the repo (HTTP 403), and the licence page withholds multimodal rights from individuals domiciled in the EU. No re-uploaded weights were used. Details are in `eval/LLAMAVLM_V0.md`. Tag `llama-victim-v0` was not created.
+
+### (l) Meta classifiers vs the provenance gate (Nov 2, 2026)
+
+Llama Guard 3 1B was not measured (HTTP 403, no access), so tag `llamaguard-v0` was not created. Details are in `eval/LLAMAGUARD_V0.md`. Classifiers score texts and the gate checks calls, so the rows are not directly comparable.
+
+| defence | injected tool outputs | planted image lines | false positives |
+|---|---|---|---|
+| Prompt Guard 2 22M, at 0.5 | 0/378 | 0/60 | 0/55, 0/60 |
+| Llama Guard 3 1B | not measured | not measured | not measured |
+| provenance gate, scripted attack success | 231/240 → 0/240 pairs | 0/60 | held-out: 0 blocked, asks on 28 attacked pairs and 2 of 20 clean tasks |
+
 ## Limits
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.
@@ -290,6 +319,7 @@ git archive gate-final agentgate | tar -x -C <dir>
 | defense stage (gated runs, vision, judge) | $1.51 |
 | **total** | **$7.68** |
 | this final run (fresh (c) + tuning-half judge) | $0.61 |
+| second image reader, (j) (not in the total above) | $0.30 |
 
 Details: `eval/GATE_V0.md`, `eval/VISION_V0.md`, `eval/WORSTCASE_V0.md`, `eval/WORSTCASE_V1.md`, `eval/LAYER2.md`.
 

@@ -94,7 +94,7 @@ The score is advisory: it is stored on each record, shown in block explanations,
 
 **Measured (Nov 1, 2026, `eval/LAYER1.md`):** Prompt Guard 2 flags none of our injections at 0.5.
 - AgentDojo tool outputs: 0/378 (AUC 0.886).
-- Image carriers: 0/60 (AUC 0.526).
+- Planted image lines: 0/60 (highest score 0.0016).
 - Classic jailbreaks score 0.996 or above, so the wiring works; the AgentDojo payload scores 0.005.
 - The rule never fires, and no reported result depends on it.
 
@@ -103,3 +103,9 @@ Copyright © Meta Platforms, Inc. All Rights Reserved. Use is subject to that li
 Acceptable Use Policy. This repo does not include or redistribute the model weights; they are downloaded from
 Hugging Face after accepting the license there. Put your Hugging Face token in `.env` as `HF_TOKEN=` (never commit it).
 Offline tests use a stub scorer and need neither the model nor the token.
+
+**Meta tooling used:**
+- **Muse Spark Open** (through Baseten): the model under test, the intent judge, and the optional image reader. The reader traces 60/60 planted addresses vs 50/60 for OCR, and changes no decision (`eval/READER_V0.md`).
+- **Llama Prompt Guard 2 22M:** measured, flags none of our injections at 0.5.
+- **Llama Guard 3 1B:** not measured; this account has no access (`eval/LLAMAGUARD_V0.md`).
+- **Llama 3.2 11B Vision:** not run; no access, and its licence page withholds multimodal rights from people domiciled in the EU (`eval/LLAMAVLM_V0.md`).

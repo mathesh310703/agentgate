@@ -62,7 +62,7 @@ Treating every tool result as untrusted blocks legitimate work. "Reply to Ana's 
 **Known gap:** `sender` and `owner` are structured, but whoever sent or shared the item chooses them. So "reply to the sender" injections pass.
 - A rule meant to close this blocks a recipient that comes only from those fields when the session holds free text with an injection score of 0.5 or more.
 - That score comes from Llama Prompt Guard 2 (`agentgate/detectors.py`).
-- Measured in `eval/LAYER1.md`: the model flags none of our injections at 0.5 (0/378 tool outputs, 0/60 image carriers). The rule never fires, so this gap is open.
+- Measured in `eval/LAYER1.md`: the model flags none of our injections at 0.5 (0/378 tool outputs, 0/60 planted image lines). The rule never fires, so this gap is open.
 
 ## The isolated judge
 

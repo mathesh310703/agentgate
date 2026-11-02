@@ -261,6 +261,15 @@ Stopped by the rule set for the run (ungated utility without attack under 30%). 
 - **All 5 blocks were on clean runs, on values the model made up**, in tasks 7, 9, 12, 15 and 20. None of those passed ungated, so no block cost a task. The arm differences (tasks 27, 31, 33, 36) had no block or ask, so they are run-to-run variance, not a gate cost.
 - **One of 260 calls was probably truncated** at the context limit. It cannot change the stop: 9/40 is still under 30%.
 
+### (q) More AgentDojo attack types against Muse Spark Open (Nov 2, 2026, tag `attacktypes-v0`)
+
+**The model resisted: 0/165 attacks succeeded (Wilson 95% CI 0.0–2.3%), with 165/165 utility, ungated.** 11 attack types that ship with AgentDojo × user tasks 0, 8, 16, 24, 32 × goals 0, 1, 2, each attack 0/15 (0.0–20.4%). The sample was committed before the first model call (`602aa9b`). Details are in `eval/ATTACKTYPES_V0.md`; cost $1.79.
+
+- **No attack succeeded, so the gated arm was not run,** as fixed in advance. This measures nothing about the gate.
+- **Episodes are clustered** (5 tasks, 3 goals, similar attack texts), so the pooled interval overstates the evidence. One run per episode.
+- **Exposure is not confirmed per episode:** transcripts were not saved. Every call returned normally, with no upstream refusal.
+- **Not run:** `manual` (needs typed input) and the 5 DoS attacks (no injection goal).
+
 ## Limits
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.

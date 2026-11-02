@@ -1,0 +1,535 @@
+[proxy] model meta-models/muse-spark-open-1026: $1.25/M in, $4.25/M out
+[proxy] listening on http://127.0.0.1:8000/v1 (forwarding to Baseten); stage benchmark; cost log D:\agentgate\eval\cost_log.csv
+[proxy] 200 GET /v1/models (local)
+[proxy] 200 GET /v1/models (local)
+[proxy] 200 GET /v1/models (local)
+[proxy] 200 GET /v1/models (local)
+[proxy] 200 in=4033 out=184 (reasoning 73) $0.00582 2.31s; benchmark $0.1650/$30.00
+[proxy] 200 in=4317 out=455 (reasoning 374) $0.00297 2.32s; benchmark $0.1680/$30.00
+[proxy] 200 in=4033 out=180 (reasoning 44) $0.00144 1.43s; benchmark $0.1695/$30.00
+[proxy] 200 in=4194 out=258 (reasoning 69) $0.00183 2.79s; benchmark $0.1713/$30.00
+[proxy] 200 in=4685 out=1171 (reasoning 920) $0.00633 5.36s; benchmark $0.1776/$30.00
+[proxy] 200 in=4033 out=141 (reasoning 78) $0.00128 1.21s; benchmark $0.1789/$30.00
+[proxy] 200 in=4093 out=116 (reasoning 38) $0.00124 1.41s; benchmark $0.1801/$30.00
+[proxy] 200 in=4327 out=323 (reasoning 241) $0.00242 2.85s; benchmark $0.1825/$30.00
+[proxy] 200 in=4568 out=453 (reasoning 335) $0.00299 2.37s; benchmark $0.1855/$30.00
+[proxy] 200 in=4052 out=196 (reasoning 41) $0.00153 1.22s; benchmark $0.1871/$30.00
+[proxy] 200 in=4749 out=623 (reasoning 485) $0.00422 3.32s; benchmark $0.1913/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5022 out=712 (reasoning 524) $0.00409 3.70s; benchmark $0.1954/$30.00
+[proxy] 200 in=4052 out=187 (reasoning 94) $0.00149 1.44s; benchmark $0.1969/$30.00
+[proxy] 200 in=4273 out=391 (reasoning 260) $0.00250 2.23s; benchmark $0.1994/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4527 out=821 (reasoning 623) $0.00450 4.26s; benchmark $0.2039/$30.00
+[proxy] 200 GET /v1/models (local)
+[proxy] 200 GET /v1/models (local)
+[proxy] 200 in=4052 out=202 (reasoning 56) $0.00156 1.26s; benchmark $0.2054/$30.00
+[proxy] 200 in=4769 out=202 (reasoning 87) $0.00231 1.26s; benchmark $0.2077/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5054 out=489 (reasoning 359) $0.00319 2.31s; benchmark $0.2109/$30.00
+[proxy] 200 in=4025 out=211 (reasoning 18) $0.00156 1.36s; benchmark $0.2125/$30.00
+[proxy] 200 in=8422 out=413 (reasoning 314) $0.00792 2.10s; benchmark $0.2204/$30.00
+[proxy] 200 in=4025 out=245 (reasoning 91) $0.00171 1.51s; benchmark $0.2221/$30.00
+[proxy] 200 in=4661 out=417 (reasoning 312) $0.00323 2.26s; benchmark $0.2254/$30.00
+[proxy] 200 in=4025 out=300 (reasoning 106) $0.00194 1.56s; benchmark $0.2273/$30.00
+[proxy] 200 in=8462 out=484 (reasoning 395) $0.00799 3.10s; benchmark $0.2353/$30.00
+[proxy] 200 in=4017 out=74 (reasoning 16) $0.00097 1.94s; benchmark $0.2363/$30.00
+[proxy] 200 in=4867 out=824 (reasoning 234) $0.00522 2.76s; benchmark $0.2415/$30.00
+[proxy] 200 in=4017 out=69 (reasoning 14) $0.00095 1.19s; benchmark $0.2424/$30.00
+[proxy] 200 in=4827 out=940 (reasoning 355) $0.00496 3.38s; benchmark $0.2474/$30.00
+[proxy] 200 in=4017 out=74 (reasoning 16) $0.00097 0.97s; benchmark $0.2484/$30.00
+[proxy] 200 in=4887 out=1146 (reasoning 539) $0.00591 4.10s; benchmark $0.2543/$30.00
+[proxy] 200 in=4054 out=83 (reasoning 26) $0.00106 1.05s; benchmark $0.2553/$30.00
+[proxy] 200 in=11752 out=367 (reasoning 212) $0.01188 2.90s; benchmark $0.2672/$30.00
+[proxy] 200 in=12023 out=137 (reasoning 27) $0.00280 1.31s; benchmark $0.2700/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12258 out=764 (reasoning 533) $0.00548 4.84s; benchmark $0.2755/$30.00
+[proxy] 200 in=4054 out=180 (reasoning 71) $0.00147 1.89s; benchmark $0.2770/$30.00
+[proxy] 200 in=12231 out=584 (reasoning 284) $0.01341 2.46s; benchmark $0.2904/$30.00
+[proxy] 200 in=12815 out=191 (reasoning 82) $0.00345 1.61s; benchmark $0.2938/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13216 out=839 (reasoning 539) $0.00601 4.28s; benchmark $0.2998/$30.00
+[proxy] 200 in=4054 out=212 (reasoning 59) $0.00160 1.31s; benchmark $0.3014/$30.00
+[proxy] 200 in=12996 out=405 (reasoning 110) $0.01346 1.83s; benchmark $0.3149/$30.00
+[proxy] 200 in=13572 out=143 (reasoning 35) $0.00335 1.35s; benchmark $0.3182/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13969 out=365 (reasoning 47) $0.00409 1.73s; benchmark $0.3223/$30.00
+[proxy] 200 in=4033 out=184 (reasoning 122) $0.00146 1.32s; benchmark $0.3238/$30.00
+[proxy] 200 in=4093 out=138 (reasoning 42) $0.00134 1.70s; benchmark $0.3251/$30.00
+[proxy] 200 in=4342 out=375 (reasoning 220) $0.00252 2.11s; benchmark $0.3276/$30.00
+[proxy] 200 in=4033 out=169 (reasoning 107) $0.00139 1.27s; benchmark $0.3290/$30.00
+[proxy] 200 in=4093 out=132 (reasoning 36) $0.00131 2.97s; benchmark $0.3303/$30.00
+[proxy] 200 in=4325 out=885 (reasoning 692) $0.00466 4.73s; benchmark $0.3350/$30.00
+[proxy] 200 in=4033 out=227 (reasoning 116) $0.00164 1.64s; benchmark $0.3366/$30.00
+[proxy] 200 in=4337 out=591 (reasoning 473) $0.00343 2.50s; benchmark $0.3401/$30.00
+[proxy] 200 in=4052 out=231 (reasoning 68) $0.00168 1.36s; benchmark $0.3418/$30.00
+[proxy] 200 in=4757 out=495 (reasoning 376) $0.00354 2.54s; benchmark $0.3453/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5035 out=892 (reasoning 701) $0.00488 4.80s; benchmark $0.3502/$30.00
+[proxy] 200 in=4052 out=151 (reasoning 57) $0.00134 1.26s; benchmark $0.3515/$30.00
+[proxy] 200 in=4279 out=375 (reasoning 256) $0.00244 2.23s; benchmark $0.3540/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4539 out=729 (reasoning 514) $0.00413 3.92s; benchmark $0.3581/$30.00
+[proxy] 200 in=4052 out=158 (reasoning 65) $0.00137 1.64s; benchmark $0.3595/$30.00
+[proxy] 200 in=4308 out=466 (reasoning 346) $0.00286 2.20s; benchmark $0.3623/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4598 out=577 (reasoning 402) $0.00355 3.72s; benchmark $0.3659/$30.00
+[proxy] 200 in=4025 out=187 (reasoning 113) $0.00146 3.62s; benchmark $0.3673/$30.00
+[proxy] 200 in=4341 out=595 (reasoning 462) $0.00359 2.94s; benchmark $0.3709/$30.00
+[proxy] 200 in=4025 out=202 (reasoning 43) $0.00152 1.53s; benchmark $0.3724/$30.00
+[proxy] 200 in=5444 out=837 (reasoning 726) $0.00586 3.65s; benchmark $0.3783/$30.00
+[proxy] 200 in=4025 out=301 (reasoning 153) $0.00195 1.95s; benchmark $0.3802/$30.00
+[proxy] 200 in=8172 out=793 (reasoning 670) $0.00922 3.70s; benchmark $0.3895/$30.00
+[proxy] 200 in=4017 out=67 (reasoning 10) $0.00094 0.95s; benchmark $0.3904/$30.00
+[proxy] 200 in=4881 out=592 (reasoning 116) $0.00355 2.92s; benchmark $0.3940/$30.00
+[proxy] 200 in=4017 out=94 (reasoning 38) $0.00106 1.07s; benchmark $0.3950/$30.00
+[proxy] 200 in=4845 out=1376 (reasoning 733) $0.00684 5.74s; benchmark $0.4018/$30.00
+[proxy] 200 in=4017 out=83 (reasoning 27) $0.00101 1.01s; benchmark $0.4029/$30.00
+[proxy] 200 in=4905 out=1556 (reasoning 1048) $0.00768 7.67s; benchmark $0.4105/$30.00
+[proxy] 200 in=4054 out=323 (reasoning 81) $0.00208 1.68s; benchmark $0.4126/$30.00
+[proxy] 200 in=13886 out=523 (reasoning 212) $0.01507 2.16s; benchmark $0.4277/$30.00
+[proxy] 200 in=14488 out=231 (reasoning 123) $0.00389 1.60s; benchmark $0.4316/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=14899 out=1025 (reasoning 482) $0.00707 4.79s; benchmark $0.4386/$30.00
+[proxy] 200 in=4054 out=173 (reasoning 24) $0.00144 1.25s; benchmark $0.4401/$30.00
+[proxy] 200 in=12936 out=542 (reasoning 368) $0.00594 2.82s; benchmark $0.4460/$30.00
+[proxy] 200 in=13254 out=397 (reasoning 286) $0.00403 2.41s; benchmark $0.4500/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13515 out=590 (reasoning 305) $0.00490 3.86s; benchmark $0.4549/$30.00
+[proxy] 200 in=4054 out=174 (reasoning 21) $0.00144 2.30s; benchmark $0.4564/$30.00
+[proxy] 200 in=12673 out=558 (reasoning 388) $0.01371 2.94s; benchmark $0.4701/$30.00
+[proxy] 200 in=12976 out=137 (reasoning 32) $0.00286 1.51s; benchmark $0.4730/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13229 out=339 (reasoning 194) $0.00376 2.22s; benchmark $0.4767/$30.00
+[proxy] 200 in=4033 out=158 (reasoning 96) $0.00135 1.28s; benchmark $0.4781/$30.00
+[proxy] 200 in=4093 out=236 (reasoning 85) $0.00175 1.34s; benchmark $0.4798/$30.00
+[proxy] 200 in=4747 out=893 (reasoning 681) $0.00536 3.87s; benchmark $0.4852/$30.00
+[proxy] 200 in=4033 out=206 (reasoning 95) $0.00155 1.81s; benchmark $0.4867/$30.00
+[proxy] 200 in=4387 out=1309 (reasoning 1112) $0.00654 8.21s; benchmark $0.4933/$30.00
+[proxy] 200 in=4033 out=183 (reasoning 52) $0.00145 1.26s; benchmark $0.4947/$30.00
+[proxy] 200 in=4194 out=250 (reasoning 62) $0.00180 1.43s; benchmark $0.4965/$30.00
+[proxy] 200 in=4931 out=839 (reasoning 607) $0.00522 3.83s; benchmark $0.5017/$30.00
+[proxy] 200 in=4052 out=149 (reasoning 48) $0.00133 1.14s; benchmark $0.5031/$30.00
+[proxy] 200 in=4371 out=683 (reasoning 555) $0.00386 3.15s; benchmark $0.5069/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4723 out=658 (reasoning 459) $0.00391 3.36s; benchmark $0.5109/$30.00
+[proxy] 200 in=4052 out=150 (reasoning 57) $0.00134 1.12s; benchmark $0.5122/$30.00
+[proxy] 200 in=4351 out=387 (reasoning 265) $0.00258 2.03s; benchmark $0.5148/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4683 out=893 (reasoning 626) $0.00500 4.55s; benchmark $0.5198/$30.00
+[proxy] 200 in=4052 out=211 (reasoning 54) $0.00160 1.27s; benchmark $0.5214/$30.00
+[proxy] 200 in=4925 out=487 (reasoning 361) $0.00372 2.55s; benchmark $0.5251/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5288 out=767 (reasoning 534) $0.00452 3.70s; benchmark $0.5296/$30.00
+[proxy] 200 in=4025 out=185 (reasoning 111) $0.00145 1.32s; benchmark $0.5311/$30.00
+[proxy] 200 in=4415 out=759 (reasoning 625) $0.00424 3.66s; benchmark $0.5353/$30.00
+[proxy] 200 in=4025 out=209 (reasoning 51) $0.00155 1.35s; benchmark $0.5369/$30.00
+[proxy] 200 in=5660 out=604 (reasoning 398) $0.00500 4.16s; benchmark $0.5419/$30.00
+[proxy] 200 in=4025 out=319 (reasoning 74) $0.00202 1.59s; benchmark $0.5439/$30.00
+[proxy] 200 in=9185 out=1170 (reasoning 984) $0.01195 5.36s; benchmark $0.5558/$30.00
+[proxy] 200 in=4017 out=70 (reasoning 14) $0.00095 1.63s; benchmark $0.5568/$30.00
+[proxy] 200 in=5029 out=1281 (reasoning 805) $0.00666 6.09s; benchmark $0.5634/$30.00
+[proxy] 200 in=4017 out=71 (reasoning 14) $0.00096 0.90s; benchmark $0.5644/$30.00
+[proxy] 200 in=4989 out=1377 (reasoning 722) $0.00702 5.82s; benchmark $0.5714/$30.00
+[proxy] 200 in=4017 out=69 (reasoning 14) $0.00095 0.97s; benchmark $0.5724/$30.00
+[proxy] 200 in=5049 out=1320 (reasoning 745) $0.00685 6.07s; benchmark $0.5792/$30.00
+[proxy] 200 in=4054 out=159 (reasoning 57) $0.00138 1.53s; benchmark $0.5806/$30.00
+[proxy] 200 in=12425 out=1002 (reasoning 775) $0.00726 4.36s; benchmark $0.5879/$30.00
+[proxy] 200 in=12840 out=264 (reasoning 155) $0.00351 2.22s; benchmark $0.5914/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13152 out=366 (reasoning 181) $0.00392 2.27s; benchmark $0.5953/$30.00
+[proxy] 200 in=4054 out=116 (reasoning 12) $0.00120 1.41s; benchmark $0.5965/$30.00
+[proxy] 200 in=12385 out=690 (reasoning 479) $0.01405 3.51s; benchmark $0.6105/$30.00
+[proxy] 200 in=12778 out=561 (reasoning 453) $0.00484 3.91s; benchmark $0.6154/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13078 out=585 (reasoning 343) $0.00489 2.80s; benchmark $0.6203/$30.00
+[proxy] 200 in=4054 out=165 (reasoning 109) $0.00140 1.42s; benchmark $0.6217/$30.00
+[proxy] 200 in=11839 out=748 (reasoning 491) $0.00559 4.69s; benchmark $0.6273/$30.00
+[proxy] 200 in=12316 out=392 (reasoning 283) $0.00411 2.59s; benchmark $0.6314/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12661 out=763 (reasoning 468) $0.00555 3.31s; benchmark $0.6369/$30.00
+[proxy] 200 in=4033 out=154 (reasoning 92) $0.00133 1.72s; benchmark $0.6382/$30.00
+[proxy] 200 in=4093 out=201 (reasoning 51) $0.00161 1.24s; benchmark $0.6399/$30.00
+[proxy] 200 in=4751 out=1225 (reasoning 1015) $0.00650 7.50s; benchmark $0.6464/$30.00
+[proxy] 200 in=4033 out=196 (reasoning 66) $0.00151 1.35s; benchmark $0.6479/$30.00
+[proxy] 200 in=4194 out=322 (reasoning 137) $0.00211 1.72s; benchmark $0.6500/$30.00
+[proxy] 200 in=4873 out=941 (reasoning 717) $0.00558 4.29s; benchmark $0.6556/$30.00
+[proxy] 200 in=4033 out=102 (reasoning 38) $0.00111 1.10s; benchmark $0.6567/$30.00
+[proxy] 200 in=4093 out=201 (reasoning 53) $0.00161 1.28s; benchmark $0.6583/$30.00
+[proxy] 200 in=4779 out=1081 (reasoning 885) $0.00606 5.41s; benchmark $0.6643/$30.00
+[proxy] 200 in=4052 out=229 (reasoning 82) $0.00167 1.35s; benchmark $0.6660/$30.00
+[proxy] 200 in=4909 out=773 (reasoning 641) $0.00478 4.84s; benchmark $0.6708/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5263 out=1105 (reasoning 861) $0.00592 5.22s; benchmark $0.6767/$30.00
+[proxy] 200 in=4052 out=164 (reasoning 76) $0.00140 1.22s; benchmark $0.6781/$30.00
+[proxy] 200 in=4568 out=645 (reasoning 514) $0.00845 3.80s; benchmark $0.6865/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4902 out=731 (reasoning 542) $0.00487 4.35s; benchmark $0.6914/$30.00
+[proxy] 200 in=4052 out=226 (reasoning 70) $0.00166 1.51s; benchmark $0.6931/$30.00
+[proxy] 200 in=4929 out=769 (reasoning 625) $0.00478 4.99s; benchmark $0.6979/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5294 out=1309 (reasoning 1034) $0.00683 7.63s; benchmark $0.7047/$30.00
+[proxy] 200 in=4025 out=173 (reasoning 14) $0.00140 1.37s; benchmark $0.7061/$30.00
+[proxy] 200 in=5726 out=865 (reasoning 502) $0.00647 4.78s; benchmark $0.7126/$30.00
+[proxy] 200 in=4025 out=120 (reasoning 47) $0.00118 1.22s; benchmark $0.7137/$30.00
+[proxy] 200 in=4397 out=602 (reasoning 437) $0.00341 3.25s; benchmark $0.7171/$30.00
+[proxy] 200 in=4025 out=296 (reasoning 172) $0.00192 1.98s; benchmark $0.7191/$30.00
+[proxy] 200 in=4827 out=1323 (reasoning 1067) $0.00715 6.12s; benchmark $0.7262/$30.00
+[proxy] 200 in=4017 out=73 (reasoning 16) $0.00097 0.94s; benchmark $0.7272/$30.00
+[proxy] 200 in=5033 out=1165 (reasoning 468) $0.00617 4.40s; benchmark $0.7334/$30.00
+[proxy] 200 in=4017 out=72 (reasoning 15) $0.00096 0.93s; benchmark $0.7343/$30.00
+[proxy] 200 in=4993 out=732 (reasoning 343) $0.00428 3.46s; benchmark $0.7386/$30.00
+[proxy] 200 in=4017 out=68 (reasoning 13) $0.00095 0.94s; benchmark $0.7396/$30.00
+[proxy] 200 in=5053 out=942 (reasoning 379) $0.00525 4.51s; benchmark $0.7448/$30.00
+[proxy] 200 in=4054 out=142 (reasoning 35) $0.00131 1.14s; benchmark $0.7461/$30.00
+[proxy] 200 in=12429 out=554 (reasoning 390) $0.01353 3.59s; benchmark $0.7596/$30.00
+[proxy] 200 in=12729 out=77 (reasoning 0) $0.00371 1.29s; benchmark $0.7633/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12980 out=362 (reasoning 182) $0.00368 2.31s; benchmark $0.7670/$30.00
+[proxy] 200 in=4054 out=117 (reasoning 12) $0.00120 1.21s; benchmark $0.7682/$30.00
+[proxy] 200 in=12389 out=776 (reasoning 602) $0.01386 5.47s; benchmark $0.7821/$30.00
+[proxy] 200 in=12688 out=77 (reasoning 0) $0.00267 1.03s; benchmark $0.7848/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12939 out=323 (reasoning 167) $0.00361 2.60s; benchmark $0.7884/$30.00
+[proxy] 200 in=4054 out=227 (reasoning 76) $0.00167 1.51s; benchmark $0.7900/$30.00
+[proxy] 200 in=12811 out=1150 (reasoning 889) $0.00837 5.53s; benchmark $0.7984/$30.00
+[proxy] 200 in=13282 out=726 (reasoning 615) $0.00561 3.88s; benchmark $0.8040/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13624 out=1276 (reasoning 991) $0.00795 6.83s; benchmark $0.8120/$30.00
+[proxy] 200 in=4033 out=174 (reasoning 64) $0.00142 1.37s; benchmark $0.8134/$30.00
+[proxy] 200 in=4410 out=447 (reasoning 357) $0.00291 2.23s; benchmark $0.8163/$30.00
+[proxy] 200 in=4734 out=480 (reasoning 308) $0.00359 3.87s; benchmark $0.8199/$30.00
+[proxy] 200 in=4033 out=132 (reasoning 70) $0.00124 1.22s; benchmark $0.8211/$30.00
+[proxy] 200 in=4093 out=194 (reasoning 43) $0.00158 1.24s; benchmark $0.8227/$30.00
+[proxy] 200 in=4713 out=876 (reasoning 649) $0.00497 5.80s; benchmark $0.8277/$30.00
+[proxy] 200 in=4033 out=196 (reasoning 84) $0.00151 1.45s; benchmark $0.8292/$30.00
+[proxy] 200 in=4423 out=503 (reasoning 313) $0.00330 2.88s; benchmark $0.8325/$30.00
+[proxy] 200 in=4052 out=176 (reasoning 77) $0.00145 1.53s; benchmark $0.8339/$30.00
+[proxy] 200 in=4373 out=452 (reasoning 334) $0.00288 2.21s; benchmark $0.8368/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4727 out=420 (reasoning 293) $0.00291 2.15s; benchmark $0.8397/$30.00
+[proxy] 200 in=4052 out=158 (reasoning 57) $0.00137 1.15s; benchmark $0.8411/$30.00
+[proxy] 200 in=4353 out=636 (reasoning 511) $0.00364 3.81s; benchmark $0.8447/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4687 out=1650 (reasoning 1374) $0.00808 7.34s; benchmark $0.8528/$30.00
+[proxy] 200 in=4052 out=197 (reasoning 47) $0.00154 1.25s; benchmark $0.8543/$30.00
+[proxy] 200 in=4929 out=624 (reasoning 492) $0.00431 3.14s; benchmark $0.8586/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5294 out=563 (reasoning 326) $0.00366 2.76s; benchmark $0.8623/$30.00
+[proxy] 200 in=4025 out=276 (reasoning 82) $0.00184 4.25s; benchmark $0.8641/$30.00
+[proxy] 200 in=8754 out=561 (reasoning 391) $0.00868 2.79s; benchmark $0.8728/$30.00
+[proxy] 200 in=4025 out=303 (reasoning 72) $0.00195 1.68s; benchmark $0.8748/$30.00
+[proxy] 200 in=8734 out=660 (reasoning 418) $0.00922 3.36s; benchmark $0.8840/$30.00
+[proxy] 200 in=4025 out=251 (reasoning 59) $0.00173 1.78s; benchmark $0.8857/$30.00
+[proxy] 200 in=8794 out=524 (reasoning 321) $0.00843 2.80s; benchmark $0.8942/$30.00
+[proxy] 200 in=4017 out=71 (reasoning 16) $0.00096 1.13s; benchmark $0.8951/$30.00
+[proxy] 200 in=5033 out=1187 (reasoning 612) $0.00627 5.34s; benchmark $0.9014/$30.00
+[proxy] 200 in=4017 out=101 (reasoning 45) $0.00109 1.11s; benchmark $0.9025/$30.00
+[proxy] 200 in=4993 out=940 (reasoning 457) $0.00517 4.67s; benchmark $0.9076/$30.00
+[proxy] 200 in=4017 out=69 (reasoning 14) $0.00095 1.52s; benchmark $0.9086/$30.00
+[proxy] 200 in=5053 out=847 (reasoning 300) $0.00485 3.18s; benchmark $0.9134/$30.00
+[proxy] 200 in=4054 out=197 (reasoning 88) $0.00154 1.37s; benchmark $0.9150/$30.00
+[proxy] 200 in=12429 out=934 (reasoning 623) $0.00697 4.26s; benchmark $0.9219/$30.00
+[proxy] 200 in=13014 out=333 (reasoning 225) $0.00403 2.05s; benchmark $0.9260/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13416 out=380 (reasoning 211) $0.00416 3.64s; benchmark $0.9301/$30.00
+[proxy] 200 in=4054 out=279 (reasoning 79) $0.00189 1.53s; benchmark $0.9320/$30.00
+[proxy] 200 in=13505 out=1056 (reasoning 866) $0.01686 4.70s; benchmark $0.9489/$30.00
+[proxy] 200 in=13819 out=258 (reasoning 145) $0.00359 5.09s; benchmark $0.9525/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=14077 out=820 (reasoning 539) $0.00602 4.61s; benchmark $0.9585/$30.00
+[proxy] 200 in=4054 out=195 (reasoning 87) $0.00153 1.47s; benchmark $0.9600/$30.00
+[proxy] 200 in=12449 out=633 (reasoning 450) $0.01332 3.06s; benchmark $0.9733/$30.00
+[proxy] 200 in=12783 out=428 (reasoning 318) $0.00414 2.47s; benchmark $0.9775/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13051 out=836 (reasoning 609) $0.00593 3.79s; benchmark $0.9834/$30.00
+[proxy] 200 in=4033 out=209 (reasoning 84) $0.00156 1.33s; benchmark $0.9850/$30.00
+[proxy] 200 in=4194 out=290 (reasoning 51) $0.00197 1.98s; benchmark $0.9869/$30.00
+[proxy] 200 in=5228 out=909 (reasoning 723) $0.00589 4.68s; benchmark $0.9928/$30.00
+[proxy] 200 in=4033 out=202 (reasoning 72) $0.00153 1.36s; benchmark $0.9944/$30.00
+[proxy] 200 in=4194 out=98 (reasoning 22) $0.00115 1.07s; benchmark $0.9955/$30.00
+[proxy] 200 in=4489 out=365 (reasoning 282) $0.00266 1.98s; benchmark $0.9982/$30.00
+[proxy] 200 in=4791 out=1039 (reasoning 855) $0.00548 4.96s; benchmark $1.0037/$30.00
+[proxy] 200 in=4033 out=144 (reasoning 34) $0.00129 1.14s; benchmark $1.0049/$30.00
+[proxy] 200 in=4420 out=905 (reasoning 747) $0.00487 4.34s; benchmark $1.0098/$30.00
+[proxy] 200 in=4052 out=167 (reasoning 69) $0.00141 1.60s; benchmark $1.0112/$30.00
+[proxy] 200 in=4371 out=445 (reasoning 323) $0.00285 2.42s; benchmark $1.0141/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4723 out=410 (reasoning 257) $0.00286 2.26s; benchmark $1.0169/$30.00
+[proxy] 200 in=4052 out=188 (reasoning 87) $0.00150 1.53s; benchmark $1.0184/$30.00
+[proxy] 200 in=4351 out=346 (reasoning 221) $0.00240 1.87s; benchmark $1.0208/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4683 out=601 (reasoning 425) $0.00376 2.95s; benchmark $1.0246/$30.00
+[proxy] 200 in=4052 out=210 (reasoning 87) $0.00159 1.33s; benchmark $1.0262/$30.00
+[proxy] 200 in=4381 out=566 (reasoning 431) $0.00338 3.14s; benchmark $1.0296/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4744 out=596 (reasoning 369) $0.00368 3.32s; benchmark $1.0332/$30.00
+[proxy] 200 in=4025 out=143 (reasoning 70) $0.00127 1.20s; benchmark $1.0345/$30.00
+[proxy] 200 in=4415 out=479 (reasoning 317) $0.00291 2.89s; benchmark $1.0374/$30.00
+[proxy] 200 in=4025 out=250 (reasoning 56) $0.00173 2.56s; benchmark $1.0392/$30.00
+[proxy] 200 in=8666 out=735 (reasoning 558) $0.00945 4.47s; benchmark $1.0486/$30.00
+[proxy] 200 in=4025 out=186 (reasoning 113) $0.00146 1.41s; benchmark $1.0501/$30.00
+[proxy] 200 in=4425 out=699 (reasoning 467) $0.00386 3.36s; benchmark $1.0539/$30.00
+[proxy] 200 in=4017 out=71 (reasoning 14) $0.00096 2.16s; benchmark $1.0549/$30.00
+[proxy] 200 in=5029 out=947 (reasoning 380) $0.00524 5.60s; benchmark $1.0601/$30.00
+[proxy] 200 in=4017 out=69 (reasoning 14) $0.00095 0.91s; benchmark $1.0611/$30.00
+[proxy] 200 in=4989 out=1017 (reasoning 547) $0.00549 4.78s; benchmark $1.0666/$30.00
+[proxy] 200 in=4017 out=71 (reasoning 14) $0.00096 0.92s; benchmark $1.0675/$30.00
+[proxy] 200 in=5049 out=1027 (reasoning 486) $0.00561 5.19s; benchmark $1.0731/$30.00
+[proxy] 200 in=4054 out=125 (reasoning 61) $0.00123 1.30s; benchmark $1.0744/$30.00
+[proxy] 200 in=11829 out=632 (reasoning 468) $0.00508 3.34s; benchmark $1.0794/$30.00
+[proxy] 200 in=12120 out=77 (reasoning 0) $0.00252 1.03s; benchmark $1.0820/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12366 out=868 (reasoning 640) $0.00577 4.75s; benchmark $1.0877/$30.00
+[proxy] 200 in=4054 out=145 (reasoning 88) $0.00132 2.21s; benchmark $1.0891/$30.00
+[proxy] 200 in=11809 out=595 (reasoning 296) $0.00476 2.79s; benchmark $1.0938/$30.00
+[proxy] 200 in=12394 out=298 (reasoning 189) $0.00381 1.88s; benchmark $1.0976/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12796 out=457 (reasoning 194) $0.00442 2.65s; benchmark $1.1020/$30.00
+[proxy] 200 in=4054 out=185 (reasoning 19) $0.00149 1.28s; benchmark $1.1035/$30.00
+[proxy] 200 in=12523 out=686 (reasoning 359) $0.01406 3.34s; benchmark $1.1176/$30.00
+[proxy] 200 in=13163 out=260 (reasoning 147) $0.00390 1.81s; benchmark $1.1215/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13594 out=575 (reasoning 331) $0.00507 3.25s; benchmark $1.1266/$30.00
+[proxy] 200 in=4033 out=159 (reasoning 48) $0.00135 1.26s; benchmark $1.1279/$30.00
+[proxy] 200 in=4408 out=976 (reasoning 815) $0.00515 5.15s; benchmark $1.1331/$30.00
+[proxy] 200 in=4033 out=206 (reasoning 77) $0.00155 1.27s; benchmark $1.1346/$30.00
+[proxy] 200 in=4194 out=283 (reasoning 94) $0.00194 1.53s; benchmark $1.1366/$30.00
+[proxy] 200 in=4868 out=700 (reasoning 509) $0.00441 3.22s; benchmark $1.1410/$30.00
+[proxy] 200 in=4033 out=92 (reasoning 31) $0.00107 1.05s; benchmark $1.1420/$30.00
+[proxy] 200 in=4093 out=223 (reasoning 74) $0.00170 1.32s; benchmark $1.1437/$30.00
+[proxy] 200 in=4775 out=1027 (reasoning 765) $0.00569 5.12s; benchmark $1.1494/$30.00
+[proxy] 200 in=4052 out=186 (reasoning 86) $0.00149 1.30s; benchmark $1.1509/$30.00
+[proxy] 200 in=4372 out=584 (reasoning 442) $0.00344 2.70s; benchmark $1.1544/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4725 out=778 (reasoning 583) $0.00443 5.18s; benchmark $1.1588/$30.00
+[proxy] 200 in=4052 out=140 (reasoning 43) $0.00130 1.10s; benchmark $1.1601/$30.00
+[proxy] 200 in=4352 out=547 (reasoning 415) $0.00326 2.79s; benchmark $1.1633/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4685 out=915 (reasoning 684) $0.00496 5.87s; benchmark $1.1683/$30.00
+[proxy] 200 in=4052 out=215 (reasoning 69) $0.00161 2.99s; benchmark $1.1699/$30.00
+[proxy] 200 in=4927 out=432 (reasoning 306) $0.00363 2.65s; benchmark $1.1735/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5291 out=708 (reasoning 413) $0.00498 3.44s; benchmark $1.1785/$30.00
+[proxy] 200 in=4025 out=252 (reasoning 90) $0.00174 1.49s; benchmark $1.1803/$30.00
+[proxy] 200 in=7832 out=810 (reasoning 638) $0.00873 4.77s; benchmark $1.1890/$30.00
+[proxy] 200 in=4025 out=271 (reasoning 115) $0.00182 1.60s; benchmark $1.1908/$30.00
+[proxy] 200 in=7772 out=930 (reasoning 576) $0.00902 4.16s; benchmark $1.1998/$30.00
+[proxy] 200 in=4025 out=340 (reasoning 177) $0.00211 1.88s; benchmark $1.2019/$30.00
+[proxy] 200 in=7862 out=781 (reasoning 559) $0.00850 3.40s; benchmark $1.2104/$30.00
+[proxy] 200 in=4017 out=74 (reasoning 16) $0.00097 0.98s; benchmark $1.2114/$30.00
+[proxy] 200 in=5031 out=871 (reasoning 421) $0.00492 3.44s; benchmark $1.2163/$30.00
+[proxy] 200 in=4017 out=71 (reasoning 14) $0.00096 0.99s; benchmark $1.2173/$30.00
+[proxy] 200 in=4991 out=1204 (reasoning 636) $0.00629 5.32s; benchmark $1.2236/$30.00
+[proxy] 200 in=4017 out=70 (reasoning 14) $0.00095 1.24s; benchmark $1.2245/$30.00
+[proxy] 200 in=5051 out=1116 (reasoning 625) $0.00599 5.35s; benchmark $1.2305/$30.00
+[proxy] 200 in=4054 out=177 (reasoning 26) $0.00145 1.31s; benchmark $1.2320/$30.00
+[proxy] 200 in=12789 out=404 (reasoning 245) $0.00517 2.18s; benchmark $1.2371/$30.00
+[proxy] 200 in=13073 out=483 (reasoning 375) $0.00445 4.60s; benchmark $1.2416/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13314 out=588 (reasoning 417) $0.00478 2.56s; benchmark $1.2464/$30.00
+[proxy] 200 in=4054 out=125 (reasoning 65) $0.00123 1.15s; benchmark $1.2476/$30.00
+[proxy] 200 in=11810 out=719 (reasoning 422) $0.00543 3.57s; benchmark $1.2530/$30.00
+[proxy] 200 in=12352 out=491 (reasoning 385) $0.00457 2.63s; benchmark $1.2576/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12728 out=562 (reasoning 346) $0.00478 3.00s; benchmark $1.2624/$30.00
+[proxy] 200 in=4054 out=275 (reasoning 117) $0.00187 2.20s; benchmark $1.2643/$30.00
+[proxy] 200 in=12809 out=828 (reasoning 513) $0.00700 4.62s; benchmark $1.2713/$30.00
+[proxy] 200 in=13404 out=463 (reasoning 349) $0.00464 2.48s; benchmark $1.2759/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13812 out=683 (reasoning 392) $0.00552 3.56s; benchmark $1.2814/$30.00
+[proxy] 200 in=4033 out=227 (reasoning 100) $0.00164 1.40s; benchmark $1.2831/$30.00
+[proxy] 200 in=4194 out=368 (reasoning 124) $0.00230 1.87s; benchmark $1.2854/$30.00
+[proxy] 200 in=4982 out=555 (reasoning 382) $0.00394 5.02s; benchmark $1.2893/$30.00
+[proxy] 200 in=4033 out=106 (reasoning 45) $0.00113 1.31s; benchmark $1.2904/$30.00
+[proxy] 200 in=4093 out=211 (reasoning 79) $0.00165 1.31s; benchmark $1.2921/$30.00
+[proxy] 200 in=4688 out=1741 (reasoning 1509) $0.00875 8.24s; benchmark $1.3008/$30.00
+[proxy] 200 in=4033 out=132 (reasoning 71) $0.00124 1.20s; benchmark $1.3021/$30.00
+[proxy] 200 in=4093 out=115 (reasoning 18) $0.00124 1.02s; benchmark $1.3033/$30.00
+[proxy] 200 in=4439 out=772 (reasoning 591) $0.00432 3.60s; benchmark $1.3076/$30.00
+[proxy] 200 in=4052 out=188 (reasoning 91) $0.00150 1.26s; benchmark $1.3091/$30.00
+[proxy] 200 in=4371 out=487 (reasoning 365) $0.00303 2.44s; benchmark $1.3122/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4723 out=1022 (reasoning 795) $0.00546 5.18s; benchmark $1.3176/$30.00
+[proxy] 200 in=4052 out=191 (reasoning 89) $0.00151 1.30s; benchmark $1.3191/$30.00
+[proxy] 200 in=4351 out=425 (reasoning 305) $0.00274 2.39s; benchmark $1.3219/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4683 out=1080 (reasoning 885) $0.00580 5.79s; benchmark $1.3277/$30.00
+[proxy] 200 in=4052 out=325 (reasoning 175) $0.00208 1.72s; benchmark $1.3298/$30.00
+[proxy] 200 in=4925 out=440 (reasoning 313) $0.00352 2.35s; benchmark $1.3333/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5288 out=328 (reasoning 172) $0.00265 1.78s; benchmark $1.3359/$30.00
+[proxy] 200 in=4025 out=184 (reasoning 111) $0.00145 2.04s; benchmark $1.3374/$30.00
+[proxy] 200 in=4415 out=424 (reasoning 292) $0.00267 2.39s; benchmark $1.3401/$30.00
+[proxy] 200 in=4025 out=258 (reasoning 65) $0.00176 1.48s; benchmark $1.3418/$30.00
+[proxy] 200 in=8666 out=824 (reasoning 601) $0.00955 4.08s; benchmark $1.3514/$30.00
+[proxy] 200 in=4025 out=175 (reasoning 97) $0.00141 1.36s; benchmark $1.3528/$30.00
+[proxy] 200 in=4425 out=661 (reasoning 414) $0.00369 3.53s; benchmark $1.3565/$30.00
+[proxy] 200 in=4017 out=71 (reasoning 16) $0.00096 0.99s; benchmark $1.3574/$30.00
+[proxy] 200 in=5029 out=1047 (reasoning 545) $0.00567 4.34s; benchmark $1.3631/$30.00
+[proxy] 200 in=4017 out=79 (reasoning 23) $0.00099 1.02s; benchmark $1.3641/$30.00
+[proxy] 200 in=4989 out=1350 (reasoning 792) $0.00761 6.93s; benchmark $1.3717/$30.00
+[proxy] 200 in=4017 out=69 (reasoning 13) $0.00095 0.96s; benchmark $1.3726/$30.00
+[proxy] 200 in=5049 out=909 (reasoning 336) $0.00511 3.67s; benchmark $1.3778/$30.00
+[proxy] 200 in=4054 out=229 (reasoning 79) $0.00168 2.28s; benchmark $1.3794/$30.00
+[proxy] 200 in=12787 out=925 (reasoning 770) $0.00738 4.53s; benchmark $1.3868/$30.00
+[proxy] 200 in=13061 out=77 (reasoning 0) $0.00271 1.07s; benchmark $1.3895/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13298 out=282 (reasoning 133) $0.00346 2.13s; benchmark $1.3930/$30.00
+[proxy] 200 in=4054 out=80 (reasoning 25) $0.00104 1.01s; benchmark $1.3940/$30.00
+[proxy] 200 in=11809 out=629 (reasoning 330) $0.00504 3.04s; benchmark $1.3991/$30.00
+[proxy] 200 in=12390 out=359 (reasoning 246) $0.00406 2.23s; benchmark $1.4031/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12789 out=552 (reasoning 346) $0.00482 2.94s; benchmark $1.4079/$30.00
+[proxy] 200 in=4054 out=267 (reasoning 66) $0.00184 1.55s; benchmark $1.4098/$30.00
+[proxy] 200 in=13589 out=777 (reasoning 480) $0.00776 3.57s; benchmark $1.4175/$30.00
+[proxy] 200 in=14163 out=558 (reasoning 450) $0.00515 3.75s; benchmark $1.4227/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=14559 out=1009 (reasoning 762) $0.00700 4.91s; benchmark $1.4297/$30.00
+[proxy] 200 in=4033 out=208 (reasoning 100) $0.00156 1.51s; benchmark $1.4312/$30.00
+[proxy] 200 in=4331 out=274 (reasoning 191) $0.00207 1.58s; benchmark $1.4333/$30.00
+[proxy] 200 in=4576 out=763 (reasoning 588) $0.00432 3.46s; benchmark $1.4376/$30.00
+[proxy] 200 in=4033 out=206 (reasoning 95) $0.00155 1.43s; benchmark $1.4392/$30.00
+[proxy] 200 in=4311 out=356 (reasoning 264) $0.00240 1.89s; benchmark $1.4416/$30.00
+[proxy] 200 in=4536 out=717 (reasoning 545) $0.00407 3.21s; benchmark $1.4457/$30.00
+[proxy] 200 in=4033 out=165 (reasoning 38) $0.00138 1.25s; benchmark $1.4470/$30.00
+[proxy] 200 in=4194 out=294 (reasoning 105) $0.00199 1.66s; benchmark $1.4490/$30.00
+[proxy] 200 in=4773 out=581 (reasoning 391) $0.00365 3.43s; benchmark $1.4527/$30.00
+[proxy] 200 in=4052 out=210 (reasoning 59) $0.00159 1.34s; benchmark $1.4543/$30.00
+[proxy] 200 in=4779 out=353 (reasoning 231) $0.00297 1.78s; benchmark $1.4572/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5068 out=575 (reasoning 340) $0.00357 2.76s; benchmark $1.4608/$30.00
+[proxy] 200 in=4052 out=134 (reasoning 42) $0.00127 1.09s; benchmark $1.4621/$30.00
+[proxy] 200 in=4287 out=280 (reasoning 158) $0.00204 1.71s; benchmark $1.4641/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4555 out=515 (reasoning 276) $0.00324 2.54s; benchmark $1.4673/$30.00
+[proxy] 200 in=4052 out=207 (reasoning 106) $0.00158 1.37s; benchmark $1.4689/$30.00
+[proxy] 200 in=4317 out=396 (reasoning 274) $0.00257 1.83s; benchmark $1.4715/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4616 out=1023 (reasoning 742) $0.00561 5.13s; benchmark $1.4771/$30.00
+[proxy] 200 in=4025 out=236 (reasoning 42) $0.00167 1.47s; benchmark $1.4788/$30.00
+[proxy] 200 in=8478 out=628 (reasoning 455) $0.00862 3.11s; benchmark $1.4874/$30.00
+[proxy] 200 in=4025 out=275 (reasoning 82) $0.00184 1.62s; benchmark $1.4892/$30.00
+[proxy] 200 in=5519 out=1380 (reasoning 1186) $0.00826 6.51s; benchmark $1.4975/$30.00
+[proxy] 200 in=4025 out=258 (reasoning 101) $0.00176 1.50s; benchmark $1.4993/$30.00
+[proxy] 200 in=7658 out=1272 (reasoning 1049) $0.01033 6.26s; benchmark $1.5096/$30.00
+[proxy] 200 in=4017 out=72 (reasoning 16) $0.00096 1.02s; benchmark $1.5106/$30.00
+[proxy] 200 in=4895 out=996 (reasoning 437) $0.00528 3.82s; benchmark $1.5158/$30.00
+[proxy] 200 in=4017 out=69 (reasoning 13) $0.00095 1.74s; benchmark $1.5168/$30.00
+[proxy] 200 in=4855 out=1265 (reasoning 805) $0.00638 6.67s; benchmark $1.5232/$30.00
+[proxy] 200 in=4017 out=81 (reasoning 25) $0.00100 1.13s; benchmark $1.5242/$30.00
+[proxy] 200 in=4915 out=1106 (reasoning 521) $0.00578 6.05s; benchmark $1.5299/$30.00
+[proxy] 200 in=4054 out=201 (reasoning 43) $0.00156 1.39s; benchmark $1.5315/$30.00
+[proxy] 200 in=12377 out=629 (reasoning 333) $0.01364 2.65s; benchmark $1.5451/$30.00
+[proxy] 200 in=12952 out=494 (reasoning 385) $0.00477 2.99s; benchmark $1.5499/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13349 out=149 (reasoning 57) $0.00310 1.33s; benchmark $1.5530/$30.00
+[proxy] 200 in=4054 out=231 (reasoning 37) $0.00168 1.52s; benchmark $1.5547/$30.00
+[proxy] 200 in=13309 out=619 (reasoning 435) $0.01476 3.31s; benchmark $1.5695/$30.00
+[proxy] 200 in=13647 out=193 (reasoning 80) $0.00338 2.96s; benchmark $1.5728/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13919 out=437 (reasoning 258) $0.00433 2.17s; benchmark $1.5772/$30.00
+[proxy] 200 in=4054 out=143 (reasoning 41) $0.00131 1.31s; benchmark $1.5785/$30.00
+[proxy] 200 in=12319 out=616 (reasoning 301) $0.01323 2.95s; benchmark $1.5917/$30.00
+[proxy] 200 in=12931 out=313 (reasoning 202) $0.00398 1.87s; benchmark $1.5957/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13347 out=678 (reasoning 410) $0.00534 3.09s; benchmark $1.6010/$30.00
+[proxy] 200 in=4033 out=116 (reasoning 54) $0.00117 1.10s; benchmark $1.6022/$30.00
+[proxy] 200 in=4093 out=219 (reasoning 66) $0.00168 1.50s; benchmark $1.6039/$30.00
+[proxy] 200 in=4573 out=942 (reasoning 811) $0.00507 4.75s; benchmark $1.6089/$30.00
+[proxy] 200 in=4033 out=172 (reasoning 44) $0.00141 1.55s; benchmark $1.6104/$30.00
+[proxy] 200 in=4194 out=183 (reasoning 42) $0.00166 1.31s; benchmark $1.6120/$30.00
+[proxy] 200 in=4615 out=667 (reasoning 466) $0.00410 3.34s; benchmark $1.6161/$30.00
+[proxy] 200 in=4033 out=220 (reasoning 93) $0.00161 1.39s; benchmark $1.6177/$30.00
+[proxy] 200 in=4194 out=217 (reasoning 82) $0.00166 1.38s; benchmark $1.6194/$30.00
+[proxy] 200 in=4507 out=1591 (reasoning 1405) $0.00775 7.46s; benchmark $1.6271/$30.00
+[proxy] 200 in=4052 out=120 (reasoning 20) $0.00121 1.01s; benchmark $1.6283/$30.00
+[proxy] 200 in=4297 out=510 (reasoning 390) $0.00303 2.51s; benchmark $1.6314/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4575 out=1051 (reasoning 832) $0.00554 4.86s; benchmark $1.6369/$30.00
+[proxy] 200 in=4052 out=219 (reasoning 66) $0.00163 1.57s; benchmark $1.6385/$30.00
+[proxy] 200 in=4715 out=682 (reasoning 528) $0.00429 4.99s; benchmark $1.6428/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4972 out=719 (reasoning 524) $0.00420 4.76s; benchmark $1.6470/$30.00
+[proxy] 200 in=4052 out=201 (reasoning 54) $0.00155 1.31s; benchmark $1.6486/$30.00
+[proxy] 200 in=4777 out=328 (reasoning 206) $0.00286 1.76s; benchmark $1.6514/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5065 out=263 (reasoning 112) $0.00224 1.90s; benchmark $1.6537/$30.00
+[proxy] 200 in=4025 out=307 (reasoning 147) $0.00197 2.17s; benchmark $1.6556/$30.00
+[proxy] 200 in=4707 out=847 (reasoning 642) $0.00948 5.53s; benchmark $1.6651/$30.00
+[proxy] 200 in=4025 out=286 (reasoning 96) $0.00188 1.61s; benchmark $1.6670/$30.00
+[proxy] 200 in=7595 out=925 (reasoning 684) $0.00892 4.41s; benchmark $1.6759/$30.00
+[proxy] 200 in=4025 out=131 (reasoning 52) $0.00122 1.46s; benchmark $1.6772/$30.00
+[proxy] 200 in=4347 out=420 (reasoning 312) $0.00271 2.07s; benchmark $1.6799/$30.00
+[proxy] 200 in=4017 out=76 (reasoning 21) $0.00098 1.28s; benchmark $1.6808/$30.00
+[proxy] 200 in=4873 out=1287 (reasoning 811) $0.00649 6.01s; benchmark $1.6873/$30.00
+[proxy] 200 in=4017 out=72 (reasoning 15) $0.00096 0.96s; benchmark $1.6883/$30.00
+[proxy] 200 in=4833 out=1163 (reasoning 520) $0.00592 4.84s; benchmark $1.6942/$30.00
+[proxy] 200 in=4017 out=93 (reasoning 38) $0.00105 1.09s; benchmark $1.6953/$30.00
+[proxy] 200 in=4893 out=959 (reasoning 426) $0.00512 3.81s; benchmark $1.7004/$30.00
+[proxy] 200 in=4054 out=204 (reasoning 55) $0.00157 1.29s; benchmark $1.7020/$30.00
+[proxy] 200 in=12639 out=672 (reasoning 476) $0.00612 3.37s; benchmark $1.7081/$30.00
+[proxy] 200 in=12992 out=388 (reasoning 279) $0.00409 2.27s; benchmark $1.7122/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13271 out=287 (reasoning 159) $0.01330 3.34s; benchmark $1.7255/$30.00
+[proxy] 200 in=4054 out=83 (reasoning 24) $0.00106 1.17s; benchmark $1.7265/$30.00
+[proxy] 200 in=11735 out=783 (reasoning 565) $0.00561 3.60s; benchmark $1.7321/$30.00
+[proxy] 200 in=12121 out=200 (reasoning 94) $0.00319 1.58s; benchmark $1.7353/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12416 out=678 (reasoning 514) $0.00517 4.03s; benchmark $1.7405/$30.00
+[proxy] 200 in=4054 out=174 (reasoning 12) $0.00144 1.54s; benchmark $1.7419/$30.00
+[proxy] 200 in=11930 out=435 (reasoning 354) $0.01240 2.57s; benchmark $1.7543/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=12293 out=402 (reasoning 148) $0.00398 2.97s; benchmark $1.7583/$30.00
+[proxy] 200 in=12778 out=77 (reasoning 0) $0.00278 1.14s; benchmark $1.7611/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13129 out=206 (reasoning 56) $0.00321 1.54s; benchmark $1.7643/$30.00
+[proxy] 200 in=4033 out=94 (reasoning 33) $0.00108 1.09s; benchmark $1.7654/$30.00
+[proxy] 200 in=4093 out=191 (reasoning 41) $0.00156 1.28s; benchmark $1.7669/$30.00
+[proxy] 200 in=4889 out=971 (reasoning 721) $0.00559 4.69s; benchmark $1.7725/$30.00
+[proxy] 200 in=4033 out=118 (reasoning 56) $0.00118 1.14s; benchmark $1.7737/$30.00
+[proxy] 200 in=4093 out=114 (reasoning 16) $0.00124 1.11s; benchmark $1.7749/$30.00
+[proxy] 200 in=4446 out=1288 (reasoning 1055) $0.00667 7.12s; benchmark $1.7816/$30.00
+[proxy] 200 in=4033 out=122 (reasoning 26) $0.00119 1.17s; benchmark $1.7828/$30.00
+[proxy] 200 in=4134 out=176 (reasoning 44) $0.00155 1.29s; benchmark $1.7844/$30.00
+[proxy] 200 in=4627 out=759 (reasoning 576) $0.00450 3.44s; benchmark $1.7889/$30.00
+[proxy] 200 in=4052 out=212 (reasoning 55) $0.00160 1.41s; benchmark $1.7905/$30.00
+[proxy] 200 in=5071 out=538 (reasoning 405) $0.00412 2.94s; benchmark $1.7946/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5505 out=519 (reasoning 302) $0.00360 2.73s; benchmark $1.7982/$30.00
+[proxy] 200 in=4052 out=220 (reasoning 121) $0.00164 1.25s; benchmark $1.7998/$30.00
+[proxy] 200 in=4402 out=508 (reasoning 380) $0.00316 7.58s; benchmark $1.8030/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=4785 out=1157 (reasoning 912) $0.00611 5.76s; benchmark $1.8091/$30.00
+[proxy] 200 in=4052 out=215 (reasoning 61) $0.00161 1.32s; benchmark $1.8107/$30.00
+[proxy] 200 in=5133 out=1012 (reasoning 881) $0.00607 5.30s; benchmark $1.8168/$30.00
+[proxy] coerced event_id int->str
+[proxy] 200 in=5598 out=687 (reasoning 449) $0.00429 3.73s; benchmark $1.8211/$30.00
+[proxy] 200 in=4025 out=325 (reasoning 163) $0.00205 1.75s; benchmark $1.8231/$30.00
+[proxy] 200 in=8063 out=416 (reasoning 342) $0.00720 2.38s; benchmark $1.8303/$30.00
+[proxy] 200 in=8123 out=982 (reasoning 628) $0.00560 5.15s; benchmark $1.8359/$30.00
+[proxy] 200 in=4025 out=356 (reasoning 125) $0.00218 2.27s; benchmark $1.8381/$30.00
+[proxy] 200 in=8914 out=1025 (reasoning 706) $0.01099 4.81s; benchmark $1.8491/$30.00
+[proxy] 200 in=4025 out=182 (reasoning 109) $0.00144 1.55s; benchmark $1.8505/$30.00
+[proxy] 200 in=4525 out=568 (reasoning 411) $0.00371 5.45s; benchmark $1.8542/$30.00
+[proxy] 200 in=4017 out=70 (reasoning 14) $0.00095 0.99s; benchmark $1.8552/$30.00
+[proxy] 200 in=5185 out=1393 (reasoning 848) $0.00733 6.35s; benchmark $1.8625/$30.00
+[proxy] 200 in=4017 out=69 (reasoning 14) $0.00095 0.98s; benchmark $1.8635/$30.00
+[proxy] 200 in=5083 out=1106 (reasoning 509) $0.00599 4.92s; benchmark $1.8694/$30.00
+[proxy] 200 in=4017 out=70 (reasoning 14) $0.00095 1.14s; benchmark $1.8704/$30.00
+[proxy] 200 in=5249 out=1022 (reasoning 520) $0.00584 4.53s; benchmark $1.8762/$30.00
+[proxy] 200 in=4054 out=329 (reasoning 132) $0.00210 2.51s; benchmark $1.8783/$30.00
+[proxy] 200 in=13823 out=1015 (reasoning 791) $0.01709 5.25s; benchmark $1.8954/$30.00
+[proxy] 200 in=14207 out=308 (reasoning 198) $0.00400 2.25s; benchmark $1.8994/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=14505 out=1109 (reasoning 815) $0.00736 5.21s; benchmark $1.9068/$30.00
+[proxy] 200 in=4054 out=189 (reasoning 84) $0.00151 1.34s; benchmark $1.9083/$30.00
+[proxy] 200 in=12505 out=787 (reasoning 623) $0.00659 3.91s; benchmark $1.9149/$30.00
+[proxy] 200 in=12803 out=822 (reasoning 708) $0.00584 4.40s; benchmark $1.9207/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=13053 out=555 (reasoning 348) $0.00460 6.22s; benchmark $1.9253/$30.00
+[proxy] 200 in=4054 out=288 (reasoning 90) $0.00193 2.53s; benchmark $1.9272/$30.00
+[proxy] 200 in=13928 out=791 (reasoning 620) $0.00824 4.20s; benchmark $1.9355/$30.00
+[proxy] 200 in=14235 out=560 (reasoning 447) $0.00497 3.50s; benchmark $1.9404/$30.00
+[proxy] coerced file_id int->str
+[proxy] 200 in=14489 out=615 (reasoning 400) $0.00510 3.15s; benchmark $1.9455/$30.00

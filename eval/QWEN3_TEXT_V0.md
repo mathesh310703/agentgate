@@ -47,7 +47,7 @@ None of the five tasks passed ungated, so no block cost a task in this run.
 
 ## Why utility is low
 
-Not separated. What the log shows: 183 of 260 model replies carried a tool call (4 of them several at once), prompts were large (median 2,862 tokens, largest 16,323), and some episodes ran long (up to 122.6 s, in tasks 29, 35, 36, 37 and 38). Together with the made-up values above, this looks like a model that does call tools but often picks wrong arguments or does not finish. That is a reading of the logs, not a measurement. Other settings, such as thinking on, were not tried.
+Not separated. What the log shows: 183 of 260 model replies carried a tool call (4 of them several at once), prompts varied widely (median 2,862 tokens, largest 16,323), and some episodes ran long (up to 122.6 s, in tasks 29, 35, 36, 37 and 38). Together with the made-up values above, this looks like a model that does call tools but often picks wrong arguments or does not finish. That is a reading of the logs, not a measurement. Other settings, such as thinking on, were not tried.
 
 For comparison on the same 40 tasks, ungated, each run once: Muse Spark Open 39/40; Llama 3.1 8B 4/40 stock and 2/40 with tools on every turn (`eval/LLAMA31_V0.md`).
 

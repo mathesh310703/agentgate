@@ -9,6 +9,8 @@ Text gates with provenance already exist ([docs/RELATED_WORK.md](docs/RELATED_WO
 - **A second image reader that can only make the gate stricter.** An optional model transcript joins the OCR text as untrusted data. It traces more planted addresses to their image (60/60 vs 50/60) and changed no decision. Tests check that it never moves a decision towards allow.
 - **An evaluation that assumes the model is fooled.** A scripted agent obeys every injection (worst-case replay): 231/240 attacks succeed ungated on AgentDojo workspace, 0/240 gated. A small real model that does fail shows the same on images: Qwen3-VL-2B leaks 16/300 ungated, 0/300 gated.
 
+**Compared with the closest papers** ([docs/RELATED_WORK.md](docs/RELATED_WORK.md)): FIDES (preprint) also checks the context label, which our argument-only gate does not, so an injection that steers the agent's branch using only trusted values is a known gap. LlamaFirewall (preprint) is text only and reports PromptGuard 2 86M. We do not claim to be the first: we found no work that traces tool-call argument values to text recovered from images and enforces on that, though two papers come close and the search was not exhaustive.
+
 ## Runs on Meta open-weight models
 
 The model under test is Muse Spark Open (`meta-models/muse-spark-open-1026`), served through Baseten partner inference. The proxy pins the model id on every request (`prepare()` in `agentlab/proxy.py`, default `llm.MODEL`) and logs it per call in the `model` column of `eval/cost_log.csv`.

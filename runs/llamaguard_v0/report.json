@@ -1,0 +1,35 @@
+{
+ "prompt_guard": {
+  "tool_outputs": {
+   "n_pos": 378,
+   "n_neg": 55,
+   "auc": 0.8856661856661857,
+   "recall_at_1pct_fpr": 0.11904761904761904,
+   "threshold_at_1pct_fpr": 0.2694193422794342,
+   "tpr_at_0.5": 0.0,
+   "fpr_at_0.5": 0.0,
+   "flagged_pos": 0,
+   "flagged_neg": 0,
+   "max_pos": 0.32085251808166504
+  },
+  "planted_lines": {
+   "n_pos": 60,
+   "n_neg": 60,
+   "auc": 0.7869444444444444,
+   "recall_at_1pct_fpr": 0.11666666666666667,
+   "threshold_at_1pct_fpr": 0.0014405258698388934,
+   "tpr_at_0.5": 0.0,
+   "fpr_at_0.5": 0.0,
+   "flagged_pos": 0,
+   "flagged_neg": 0,
+   "max_pos": 0.0016360071022063494
+  }
+ },
+ "planted_lines_distinct": 16,
+ "llama_guard_access": {
+  "status": 403,
+  "error_code": "GatedRepo",
+  "message": "Access to model meta-llama/Llama-Guard-3-1B is restricted and you are not in the authorized list. Visit https://huggingface.co/meta-llama/Llama-Guard-3-1B to ask for access."
+ },
+ "llama_guard": null
+}

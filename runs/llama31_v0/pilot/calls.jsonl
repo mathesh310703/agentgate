@@ -1,0 +1,12 @@
+{"status": 200, "latency_s": 9.02, "prompt": 2499, "completion": 30, "coerced": [], "tool_calls": 1, "finish": "tool_calls", "truncated": false}
+{"status": 200, "latency_s": 3.75, "prompt": 130, "completion": 43, "coerced": [], "tool_calls": 0, "finish": "stop", "truncated": true}
+{"status": 200, "latency_s": 3.15, "prompt": 2499, "completion": 24, "coerced": [], "tool_calls": 1, "finish": "tool_calls", "truncated": false}
+{"status": 200, "latency_s": 3.2, "prompt": 114, "completion": 22, "coerced": [], "tool_calls": 0, "finish": "stop", "truncated": true}
+{"status": 200, "latency_s": 3.22, "prompt": 2504, "completion": 24, "coerced": [], "tool_calls": 1, "finish": "tool_calls", "truncated": false}
+{"status": 200, "latency_s": 6.18, "prompt": 469, "completion": 121, "coerced": [], "tool_calls": 0, "finish": "stop", "truncated": true}
+{"status": 200, "latency_s": 3.2, "prompt": 2504, "completion": 24, "coerced": [], "tool_calls": 1, "finish": "tool_calls", "truncated": false}
+{"status": 200, "latency_s": 4.53, "prompt": 469, "completion": 73, "coerced": [], "tool_calls": 0, "finish": "stop", "truncated": true}
+{"status": 200, "latency_s": 3.19, "prompt": 2496, "completion": 21, "coerced": [], "tool_calls": 1, "finish": "tool_calls", "truncated": false}
+{"status": 200, "latency_s": 4.31, "prompt": 128, "completion": 64, "coerced": [], "tool_calls": 0, "finish": "stop", "truncated": true}
+{"status": 200, "latency_s": 3.1, "prompt": 2496, "completion": 21, "coerced": [], "tool_calls": 1, "finish": "tool_calls", "truncated": false}
+{"status": 200, "latency_s": 3.78, "prompt": 128, "completion": 46, "coerced": [], "tool_calls": 0, "finish": "stop", "truncated": true}

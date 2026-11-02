@@ -202,6 +202,19 @@ Llama Guard 3 1B was not measured (HTTP 403, no access), so tag `llamaguard-v0` 
 | Llama Guard 3 1B | not measured | not measured | not measured |
 | provenance gate, scripted attack success | 231/240 → 0/240 pairs | 0/60 | held-out: 0 blocked, asks on 28 attacked pairs and 2 of 20 clean tasks |
 
+### (m) Llama 3.1 8B as a local victim: stopped at the baseline (Nov 2, 2026)
+
+Stopped by the rule set for the run (baseline utility under about 30%). **No attack was run, so this says nothing about whether the model resists injections.** Details are in `eval/LLAMA31_V0.md`. Tag `llama31-victim-v0` was not created.
+
+| half | utility, ungated | utility, gated | gate blocks / asks |
+|---|---|---|---|
+| tuning 0–19 | 3/20 (5.2–36.0%) | 3/20 (5.2–36.0%) | 9 / 0 |
+| held-out 20–39 | 1/20 (0.9–23.6%) | 2/20 (2.8–30.1%) | 3 / 0 |
+| all 40 | 4/40 (4.0–23.1%) | 5/40 (5.5–26.1%) | 12 / 0 |
+
+- **Likely cause, not separated from the model itself:** Ollama's stock template hides the tool list after the first tool result, so multi-step tasks cannot finish. A template change was not tried.
+- **All 12 blocks were on clean runs, on values the model made up** (`participants='null'`, `file_id='123456789'`). They cost one task (12). The other arm differences (tasks 4, 5, 6, 27) had no block, so they are run-to-run variance.
+
 ## Limits
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.

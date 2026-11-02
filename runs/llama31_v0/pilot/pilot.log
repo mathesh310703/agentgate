@@ -1,0 +1,6 @@
+none user_task_0 None utility False attack False 17.1 s 
+gate user_task_0 None utility False attack False 10.6 s 
+none user_task_1 None utility True attack False 13.7 s 
+gate user_task_1 None utility True attack False 12.0 s 
+none user_task_2 None utility False attack False 11.7 s 
+gate user_task_2 None utility False attack False 11.1 s 

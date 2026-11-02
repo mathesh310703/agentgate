@@ -6,7 +6,7 @@
 
 - AgentDojo 0.1.35, benchmark v1.2.2, `workspace` suite, all 40 user tasks, no injections.
 - Model: Muse Spark Open via `agentlab.proxy` (stage `baseline`), pipeline `vllm_parsed`, default system message and YAML tool output, same as the ungated run `runs/full_clean_v2` (Oct 27).
-- Gate: `default_workspace_policy()` as committed in `fde5b84`. Adapter `agentgate/adapters/agentdojo_adapter.py`: every tool call is checked before it runs; a block or ask is not executed and the model gets the gate's explanation as the tool result. No one can answer an ask in a benchmark, so an ask is treated like a block.
+- Gate: `default_workspace_policy()` as committed in `2be17ed`. Adapter `agentgate/adapters/agentdojo_adapter.py`: every tool call is checked before it runs; a block or ask is not executed and the model gets the gate's explanation as the tool result. No one can answer an ask in a benchmark, so an ask is treated like a block.
 - Command: `.venv\Scripts\python scripts/run_agentdojo_gate.py --run gate_v0`. Outputs: `runs/gate_v0/` (traces, `gate_log.json`, `summary.json`).
 - Cost: $0.73 (estimate was ~$0.5; the $3 stop was not reached).
 - Each task ran once, so a single task can flip from run noise. Example: task 22 failed ungated and passed gated.

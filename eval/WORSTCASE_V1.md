@@ -15,7 +15,7 @@ The tuning half (tasks 0–19) went from 28 false blocks to 0, with 0 attack suc
 
 **Only 6 of the 14 workspace injection goals are replayable.** AgentDojo ships empty ground truth for injection tasks 6–13, so every attack-success number here covers goals 0–5 only (120 replayable pairs per half).
 
-## What changed (commit `cf1e67b`)
+## What changed (commit `d84c2ed`)
 
 1. **IDs** (`agentgate/ids.py`): a bare number in the user's request names an id only if it is quoted, or an id-like cue ("id", "file", "event", "email", "#") comes within 3 tokens before it. A number in a date or amount never counts: "June 13", "13 June", "13/06", "10:13", "$13", "13 EUR", "13%".
    - Otherwise the number is "unnamed". The gate blocks it, explaining that the number appears in your request only as a date or amount, unless an id field in a tool result vouches for it, in which case a destructive call asks.

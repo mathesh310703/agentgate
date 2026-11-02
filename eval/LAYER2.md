@@ -92,7 +92,7 @@ Cost: $0.0434 for the judge (36 uncached calls, about $0.0012 each) and $0.0352 
 
 ## Second pass (facts: plus every other entry's id and numbers)
 
-**Change (commit `ac661c8`).** An id fact now also carries `other_entries_in_listing`: the id and numeric non-id fields of every other entry in the same tool output, capped at 50.
+**Change (commit `a0fb95b`).** An id fact now also carries `other_entries_in_listing`: the id and numeric non-id fields of every other entry in the same tool output, capped at 50.
 - Still numbers and ids only: no filenames, owners, dates, subjects or free text.
 - Entries without an id field, such as a nested `shared_with` dict, are skipped.
 - In the workspace listing this is 25 other files, each just `{"id", "size"}`, so the judge input is about 870 characters of facts.

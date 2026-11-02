@@ -57,6 +57,27 @@ The model under test is Muse Spark Open (`meta-models/muse-spark-open-1026`), se
 
 Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md), `eval/LOCALVLM_V1.md` and `eval/SET3_V0.md`.
 
+## What is solid, and what is still open
+
+**Solid (measured, reproducible from the repo):**
+- **Held-out half of AgentDojo workspace:** 0/120 attacks succeed under the worst-case replay, and no legitimate call is blocked, though 28 are asked to confirm (5 with the judge). Workspace suite only, scripted attacker ([RESULTS (a)](RESULTS.md#a-worst-case-replay-agentdojo-workspace)).
+- **A real small model that does fail:** Qwen3-VL-2B leaks in 20 of 390 ungated episodes and 0 of 390 gated, on images picked to fool it ([v1](eval/LOCALVLM_V1.md), [set 3](eval/SET3_V0.md)).
+- **Hidden-text images:** 15/15 to 0/15 with a scripted agent ([report](eval/VISION_V0.md)), and the [live demo](#live-demo).
+- **Spelling and encoding tricks:** all 26 variants are blocked ([report](eval/ADAPTIVE_V0.md)).
+- **Second image reader:** 60/60 planted addresses traced vs 50/60 for OCR, and no decision changed ([report](eval/READER_V0.md)).
+- **Muse Spark Open on its own:** 0/165 across 11 published AgentDojo attack types ([report](eval/ATTACKTYPES_V0.md)), 0/140 text and 0/45 image attacks ([RESULTS](RESULTS.md), [set 3](eval/SET3_V0.md)).
+- **Reproducibility:** [one-line install](#install-and-try-it-in-one-minute), tests that pass in a fresh clone, a [CI workflow](.github/workflows/tests.yml), [MIT licence](LICENSE).
+
+**Open (known gaps, with the report that shows each):**
+- **The attacker in the headline replay is scripted.** No strong model failed on the real benchmark: Muse Spark [resisted](eval/ATTACKTYPES_V0.md), two local text models completed too few tasks ([Llama 3.1](eval/LLAMA31_V0.md) 4/40, [Qwen3](eval/QWEN3_TEXT_V0.md) 8/40), and the [instructed-compliant agent](eval/COMPLIANT_V0.md)'s 1/40 vs 0/40 is not evidence of protection.
+- **5 trust gaps still get through:** an attacker-chosen sender, an address already in contacts, a plus-address boundary, a listed-but-wrong file id, and a wrong-object id. Attachments are closed only by the optional policy ([report](eval/ADAPTIVE_V0.md)).
+- **Branch steering:** a call whose arguments all trace to trusted sources, but whose choice was caused by untrusted text, is not caught ([report](eval/ADAPTIVE_V0.md)).
+- **Other AgentDojo suites:** with the frozen policy, banking (141 to 16 of 144) and Slack (105 to 23 of 105) improve at a utility cost, and travel does not (116 of 120 both ways). Rules tuned afterwards reach 37/120 on travel, but are not held out ([report](eval/SUITES_V0.md)). [Zero-config policies](eval/SYNTH_V0.md) are a starting point to review, and cost utility.
+- **Samples are small and clustered,** the held-out half is not fully blind, and only 6 of 14 AgentDojo goals are replayable ([RESULTS](RESULTS.md#limits)).
+- **OCR misses small text** ([report](eval/VISION_V0.md)). The second reader helps explanations, but changed no decision ([report](eval/READER_V0.md)).
+- **Prompt Guard 2, at 0.5:** the 22M flags none of our injections ([report](eval/LAYER1.md)). The 86M flags about a third of text injections (125/378) and none of the image lines, and is untested on real replies ([report](eval/LAYER1_86M.md)).
+- **Not done:** Llama Guard, no access ([report](eval/LLAMAGUARD_V0.md)); Llama 3.2 Vision, no access, and its licence appears to exclude EU-domiciled individuals ([report](eval/LLAMAVLM_V0.md)); a real text model as a victim ([Qwen3](eval/QWEN3_TEXT_V0.md)).
+
 ## Limits
 
 **What gets past the gate.** 7 of the 37 hand-built adaptive cases (`eval/ADAPTIVE_V0.md`) are allowed by the frozen default policy. **5 gaps remain in substance**, even with the optional attachment policy:

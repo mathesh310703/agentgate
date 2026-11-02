@@ -48,7 +48,7 @@ A `Session` (`agentgate/session.py`) keeps one record per piece of content: its 
 **Deterministic** means: given the same session records and the same call, the decision and the reason text are always the same.
 - There is no model, no sampling, no network call and no clock in the decision path.
 - The gate's inputs can still vary. OCR output depends on the image and the OCR model, and the agent's calls depend on the agent. That is why OCR text is cached, and why the evaluation replays fixed calls.
-- The optional injection-score rule (below) depends on a classifier score. That classifier was not measured, because no Hugging Face token was available, so the rule never fires in the reported results.
+- The optional injection-score rule (below) depends on a classifier score. That classifier is the 22M by default, which flags none of our injections at 0.5 (below), so the rule never fires in the reported results.
 
 ## Field-aware trust
 
@@ -62,7 +62,7 @@ Treating every tool result as untrusted blocks legitimate work. "Reply to Ana's 
 **Known gap:** `sender` and `owner` are structured, but whoever sent or shared the item chooses them. So "reply to the sender" injections pass.
 - A rule meant to close this blocks a recipient that comes only from those fields when the session holds free text with an injection score of 0.5 or more.
 - That score comes from Llama Prompt Guard 2 (`agentgate/detectors.py`).
-- Measured in `eval/LAYER1.md`: the model flags none of our injections at 0.5 (0/378 tool outputs, 0/60 planted image lines). The rule never fires, so this gap is open.
+- Measured in `eval/LAYER1.md`, at 0.5: 22M flags 0/378 injected tool outputs and 0/60 planted image lines; 86M flags 125/378 and 0/60. Neither has a false positive on the clean set (0/55 outputs, 0/60 OCR texts). The 86M reaches AUC 0.997 on tool outputs and shows no signal on image lines. With the default 22M the rule never fires, so this gap is open.
 
 ## The isolated judge
 
@@ -102,7 +102,7 @@ If OCR misses the line entirely, the address is not traced at all. The call is s
 ## Limits
 
 - **String matching, not semantics.** A target that is paraphrased, translated, split across fields or encoded isn't traced. It is blocked, which is safe but can be a false block. A value that also appears in a trusted field is trusted.
-- **Attacker-chosen structured fields** (`sender`, `owner`) are trusted. The rule meant to cover them never fires (`eval/LAYER1.md`).
+- **Attacker-chosen structured fields** (`sender`, `owner`) are trusted. The rule meant to cover them never fires with the default 22M (`eval/LAYER1.md`).
 - **Ids are untyped.** Any id field vouches for any id argument, so a calendar event's id 13 can make `delete_file('13')` an ask rather than a block. In the evaluation, the judge denied every such ask.
 - **OCR recall** drops for very small text: 10 px corner text at 768 px is not recovered. Pixel provenance is only as good as OCR, though missed lines still fail closed.
 - **Coverage:** only 6 of 14 AgentDojo workspace injection goals are replayable, because the others ship without ground truth. One suite, synthetic images, and `.test` addresses with a canary file.

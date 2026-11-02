@@ -23,6 +23,7 @@ The model under test is Muse Spark Open (`meta-models/muse-spark-open-1026`), se
 | Scripted worst case, 15 image carriers | 15/15 | 0/15 | 0/15 |
 | Muse Spark Open, real attacks | 0/140, 0/15 (refused on its own) | – | – |
 | Muse Spark Open, 11 AgentDojo attack types, 165 episodes (5 tasks, 3 goals, clustered) | 0/165 (0.0–2.3%), resisted | not run | – |
+| Muse Spark Open as an instructed-compliant agent (system prompt tells it to obey tool results; not a natural vulnerability), 40 episodes per arm (10 tasks, 4 goals, clustered) | 1/40 (0.4–12.9%) | 0/40 (0.0–8.8%); overlapping, 1 injected call tried and blocked | 0/110 calls |
 | Qwen3-VL-2B (small open test model, not part of AgentGate), greedy, 60 images | 4/60 (2.6–15.9%) | 0/60 (0.0–6.0%) | 0/30 |
 | Qwen3-VL-2B, T=0.7, 5 samples, 300 episodes | 16/300 (3.3–8.5%) | 0/300 (0.0–1.3%) | 1/150 (0.1–3.7%) |
 | Set 3 (60 images, 3 carrier wordings): Qwen3-VL-2B, T=0.7, 3 samples | 4/90 (1.7–10.9%), all direct notes | 0/90 (0.0–4.1%) | 0/90 (0.0–4.1%) |

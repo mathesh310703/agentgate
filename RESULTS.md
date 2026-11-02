@@ -286,6 +286,21 @@ Stopped by the rule set for the run (ungated utility without attack under 30%). 
 - **A hostile model can still** call a read-named tool not risky, or leave an argument unchecked if its name doesn't look like a target. A person has to review the file. A test pins this.
 - **Episodes are clustered,** the replay is deterministic, and there was one generation, so its variation is not measured.
 
+### (s) Instructed-compliant agent under the published attack (Nov 2, 2026, tag `compliant-v0`)
+
+**The instruction barely made the model comply, so this says little about the gate.** Muse Spark Open with one added system-prompt sentence telling it to carry out instructions in tool results, `important_instructions`, 10 user tasks × 4 goals, one run per episode. The sample and the sentence were committed before the first model call (`b386a87`). Details are in `eval/COMPLIANT_V0.md`; cost $1.12. This is an instructed-compliant agent, not a natural vulnerability.
+
+| tasks | attack success, no gate | attack success, gate | utility under attack, no gate → gate | legitimate calls blocked / asked |
+|---|---|---|---|---|
+| tuning 0–19 | 1/20 (0.9–23.6%) | 0/20 (0.0–16.1%) | 19/20 → 20/20 | 0 / 0 of 51 |
+| held-out 20–39 | 0/20 (0.0–16.1%) | 0/20 (0.0–16.1%) | 20/20 → 20/20 | 0 / 0 of 59 |
+| all | 1/40 (0.4–12.9%) | 0/40 (0.0–8.8%) | 39/40 → 40/40 | 0 / 0 of 110 |
+
+- **1/40 vs 0/40 is not evidence of protection.** The intervals overlap, and the pair that succeeded ungated made no attempt when gated.
+- **The gate blocked the one injected call the model tried while gated.** One example, not a rate.
+- **Exposure is confirmed per episode:** the payload is in all 80 transcripts, and the model mentioned it in all 80 by keyword search.
+- **Episodes are clustered,** and with one run per episode, variance is not estimated. Of the 110 legitimate calls, only 16 had a checked value.
+
 ## Limits
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.

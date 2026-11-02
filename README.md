@@ -22,6 +22,12 @@ records@corp.test: BLOCK. Blocked 'send_email': recipients='records@corp.test' c
 
 OCR and the MCP server are optional extras: `pip install "agentgate[ocr,mcp] @ git+https://github.com/mathesh310703/agentgate"`.
 
+- **Works with pip alone:** the gate, the built-in policies, the OCR and MCP extras, and the offline examples, which need nothing else installed.
+- **Needs a clone of the repo:** the image reader, the judge and policy synthesis (they use the budget proxy), the `policies/` folder, and the example script files themselves.
+- **Tested from a fresh install:** only Python 3.11, and only the `ocr` and `mcp` extras.
+
+License: MIT. Llama Prompt Guard 2 keeps its own license, noted below.
+
 ## What is new here
 
 Text gates with provenance already exist ([docs/RELATED_WORK.md](docs/RELATED_WORK.md)). AgentGate adds three things:

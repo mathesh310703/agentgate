@@ -41,11 +41,14 @@ def test_readme_shows_the_commands_and_the_real_output():
     assert "pip install git+https://github.com/mathesh310703/agentgate" in readme
     assert "python examples/ten_lines.py" in readme
     assert run_example() in readme.replace("\r\n", "\n")
+    assert "License: MIT" in readme and "**Built with Llama.**" in readme
 
 
 def test_core_has_no_required_dependency_and_extras_are_declared():
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
     assert project["dependencies"] == []
+    assert project["license"] == "MIT" and project["license-files"] == ["LICENSE"]
+    assert "2026 Matheshwaran Prakash" in (ROOT / "LICENSE").read_text(encoding="utf-8")
     extras = project["optional-dependencies"]
     assert {"ocr", "mcp"} <= set(extras)
     assert any(d.startswith("agentdojo") for d in extras["mcp"])   # agentgate/mcp_server.py imports the adapter

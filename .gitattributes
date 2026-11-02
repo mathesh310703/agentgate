@@ -1,0 +1,2 @@
+# frozen policies: their SHA-256 is recorded in eval/SYNTH_V0.md, so line endings must never change
+policies/*.json -text

@@ -14,6 +14,7 @@ pillow==13.0.0
 numpy==2.4.6
 opencv-python-headless==5.0.0.93
 playwright==1.64.1
+jsonschema==4.26.0          # agentgate/policy_synth.py
 httpx==0.28.1
 mcp==2.3.0                  # agentgate/mcp_server.py, scripts/mcp_demo.py
 # OCR for agentgate/pixels.py: rapidocr-onnxruntime is installed with --no-deps (step 4; it pins

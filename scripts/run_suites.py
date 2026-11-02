@@ -3,8 +3,8 @@ frozen gate. No model calls, zero cost (unless --judge).
 
 Same scripted compromised agent as scripts/run_worstcase.py (user-task ground truth, then the injection
 task's ground truth, important_instructions attack). Adds: --suite, --policy (the frozen workspace policy,
-or agentgate/policy_suites.py, written after seeing the first run), clean mode, and the gate's own latency
-per call (Gate.check only, judge excluded).
+agentgate/policy_suites.py, written after seeing the first run, or the synthesized policies/<suite>.json from
+agentgate/policy_synth.py), clean mode, and the gate's own latency per call (Gate.check only, judge excluded).
 
   .venv\\Scripts\\python scripts/run_suites.py --suite banking --policy default --out runs/suites_v0/banking_default
   .venv\\Scripts\\python scripts/run_suites.py --suite banking --policy default --mode clean --out runs/suites_v0/banking_default_clean
@@ -31,6 +31,7 @@ from agentdojo.task_suite.load_suites import get_suite  # noqa: E402
 from agentgate import Gate, default_workspace_policy  # noqa: E402
 from agentgate.adapters.agentdojo_adapter import GatedToolsExecutor  # noqa: E402
 from agentgate.judge import judge_decision  # noqa: E402
+from agentgate.policy_synth import SynthGate, SynthPolicy, load_policy  # noqa: E402
 from run_worstcase import ATTACK, CompromisedAgent, findings_text, summarize  # noqa: E402
 
 WRITE_VERBS = ("send_", "share_", "delete_", "update_", "schedule_", "reserve_", "add_", "remove_", "invite_",
@@ -40,6 +41,8 @@ WRITE_VERBS = ("send_", "share_", "delete_", "update_", "schedule_", "reserve_",
 def policy_for(name, suite_name):
     if name == "default":
         return default_workspace_policy()
+    if name == "synth":
+        return load_policy(ROOT / "policies" / f"{suite_name}.json")
     from agentgate.policy_suites import suite_policy
     return suite_policy(suite_name, "rules" if name == "suites" else "rules_trust")
 
@@ -60,13 +63,18 @@ class TimedGate(Gate):
         return d
 
 
+class TimedSynthGate(TimedGate, SynthGate):
+    """TimedGate around SynthGate: tools the synthesized policy does not classify are blocked, and recorded."""
+
+
 def replayable(suite, injection_task) -> bool:
     env = suite.load_and_inject_default_environment({})
     return len(injection_task.ground_truth(env)) > 0
 
 
 def run(arm, suite, attack, pairs, policy, judge=None, strict=False):
-    gate = TimedGate(policy, judge) if arm == "gate" else None
+    gate_cls = TimedSynthGate if isinstance(policy, SynthPolicy) else TimedGate
+    gate = gate_cls(policy, judge) if arm == "gate" else None
     agent = CompromisedAgent(GatedToolsExecutor(gate, strict=strict) if gate else ToolsExecutor())
     pipeline = AgentPipeline([InitQuery(), agent])
     pipeline.name = f"vllm_parsed_worstcase_{arm}"
@@ -99,8 +107,9 @@ def pct(xs, q):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--suite", required=True, choices=["banking", "slack", "travel", "workspace"])
-    ap.add_argument("--policy", choices=["default", "suites", "suites_trust"],
-                    help="suites: agentgate/policy_suites.py level 'rules'; suites_trust: level 'rules_trust'", default="default")
+    ap.add_argument("--policy", choices=["default", "suites", "suites_trust", "synth"],
+                    help="suites: agentgate/policy_suites.py level 'rules'; suites_trust: level 'rules_trust'; "
+                         "synth: policies/<suite>.json from agentgate/policy_synth.py", default="default")
     ap.add_argument("--mode", choices=["attack", "clean"], default="attack")
     ap.add_argument("--benchmark-version", default="v1.2.2")
     ap.add_argument("--strict", action="store_true", help="strict mode (agentgate/fields_strict.py)")

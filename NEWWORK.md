@@ -32,3 +32,4 @@
 - **Nov 2, 2026:** README "Test your own policy": `--policy package.module:function` in `scripts/run_worstcase.py`, `examples/my_policy.py`, a test in `tests/test_worstcase.py`.
 - **Nov 2, 2026:** Llama 3.1 8B second try, tool definitions visible on every turn (`runs/llama31_v0/tools_every_turn/Modelfile`): ungated utility 2/40, under the 30% rule, so no attack run and no tag. Note in `eval/LLAMA31_V0.md`, RESULTS (m). Temporary Ollama tags removed.
 - **Nov 2, 2026:** `docs/RELATED_WORK.md`: five closest papers checked against abstract pages and full text, with how AgentGate differs, and the provenance-through-pixels statement with its two closest papers; README paragraph.
+- **Nov 2, 2026:** Prompt Guard 2 86M next to the 22M: `scripts/measure_promptguard_86m.py`, `runs/promptguard_86m_v0/`, `eval/LAYER1.md`, RESULTS (n). At 0.5: 125/378 injected tool outputs vs 0/378, 0/55 false positives, 0/60 image lines for both. Gate unchanged, still the 22M.

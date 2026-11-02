@@ -118,7 +118,7 @@ Offline test (fake local upstream, no API calls): `.venv\Scripts\python tests/te
 The score is advisory: it is stored on each record, shown in block explanations, and used by one rule
 (a recipient taken only from an email's sender or a file's owner is blocked when the session holds text scoring 0.5 or higher).
 
-**Measured (Nov 1, 2026, `eval/LAYER1.md`):** Prompt Guard 2 flags none of our injections at 0.5.
+**Measured (Nov 1, 2026, `eval/LAYER1.md`):** Prompt Guard 2 22M, the model the gate uses, flags none of our injections at 0.5. The larger 86M flags 125/378 tool outputs (0/55 false positives) and 0/60 image lines; it is not in the gate.
 - AgentDojo tool outputs: 0/378 (AUC 0.886).
 - Planted image lines: 0/60 (highest score 0.0016).
 - Classic jailbreaks score 0.996 or above, so the wiring works; the AgentDojo payload scores 0.005.

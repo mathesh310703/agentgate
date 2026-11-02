@@ -99,6 +99,26 @@ That is about 1,000 times the gate's own check (median 1–37 µs, `eval/OVERHEA
 - **Where the gate's results come from.** Every protection result in RESULTS.md comes from provenance (and the judge), not from Layer 1. Those results are unchanged.
 - **What a lower threshold would mean.** The AUCs show some ranking signal on tool outputs. But a threshold low enough to use it (0.04–0.27) would have to be chosen and checked on held-out data, and on the held-out free-text leaves no threshold gives recall above 0 without false positives.
 
+## Prompt Guard 2 86M next to the 22M (Nov 2, 2026)
+
+Everything above is the 22M, which the gate uses. The 86M was measured on the same texts (`scripts/measure_promptguard_86m.py`, `runs/promptguard_86m_v0/`). The gate was not changed, and the threshold stays at 0.5. Same positive control first: the wiring holds (5 benign sentences at most 0.0004; 3 classic jailbreaks at least 0.9994).
+
+| texts | model | flagged at 0.5 | false positives at 0.5 | AUC | highest injected score | highest clean score | recall at 1% FPR |
+|---|---|---|---|---|---|---|---|
+| 378 injected / 55 clean tool outputs | 22M | **0/378** | 0/55 | 0.886 | 0.32 | 0.27 | 11.9% |
+| 378 injected / 55 clean tool outputs | 86M | **125/378 (33.1%)** | 0/55 | 0.997 | 0.99 | 0.02 | 91.0% |
+| 60 planted image lines / 60 clean OCR texts | 22M | **0/60** | 0/60 | 0.787 | 0.0016 | 0.0014 | 11.7% |
+| 60 planted image lines / 60 clean OCR texts | 86M | **0/60** | 0/60 | 0.023 | 0.0007 | 0.0027 | 0% |
+
+As before, "recall at 1% FPR" is recall above the highest clean score, on the same data, so it describes ranking and is not a usable setting.
+
+- **On tool outputs the 86M is far stronger than the 22M, and it holds in both halves:** 55/182 tuning, 70/196 held-out. The clean set is small (55 outputs).
+- **It is uneven by goal.** Goal 9 is flagged on 25/27 outputs; goals 3, 7, 11 and 13 on 3–4 of 27. The AgentDojo payload alone reaches 0.5 only for goals 9 (0.97) and 12 (0.73); it scores 0.02–0.25 for the other 12.
+- **It catches none of the neutral image lines.** The lines even score below clean documents (AUC 0.023). Positives are single short lines and negatives whole documents, and there are only 16 distinct lines, so read this as "no signal", not as an inverted detector.
+- **Two thirds of injected outputs still pass at 0.5**, so it cannot replace provenance.
+- **Cost:** about 0.79 s per text on CPU, vs 0.31 s for the 22M (tool outputs, one run each).
+- **Not tested:** the 86M in the gate. Whether the sender rule would then fire, and on how many false positives, is unmeasured. The conclusions above about that rule are for the 22M. AgentDojo puts injections only in free text, so the replay would not exercise the rule's target anyway.
+
 ## Reproduce
 
 ```
@@ -112,3 +132,5 @@ That is about 1,000 times the gate's own check (median 1–37 µs, `eval/OVERHEA
 ```
 
 All of these need `HF_TOKEN` in `.env`, after accepting the Llama 4 Community License for the model on Hugging Face.
+
+The 86M comparison: `.venv\Scripts\python scripts/measure_promptguard_86m.py --out runs/promptguard_86m_v0` (add `--detail` for the breakdown by half and goal).

@@ -3,7 +3,7 @@
 The final configuration is the deterministic gate plus the Layer 2 intent judge, which reviews only the gate's "ask" decisions.
 - The gate was frozen as git tag `gate-final`, then given one disclosed post-freeze fix, tag `gate-final.1`. The fix is pixel matching only, and is described under "Post-freeze fix" below.
 - The tables (a), (c) and (d) are identical under both tags; (b) is shown under both.
-- The Layer 1 detector (Prompt Guard 2) was measured on Nov 1, 2026 (`eval/LAYER1.md`), and it flags none of our injections at the fixed 0.5 threshold.
+- The Layer 1 detector (Prompt Guard 2 22M; the larger 86M is compared in (n)) was measured on Nov 1, 2026 (`eval/LAYER1.md`), and it flags none of our injections at the fixed 0.5 threshold.
   - It flags 0/378 injected AgentDojo tool outputs (AUC 0.886) and 0/60 planted image lines (highest score 0.0016; `eval/LLAMAGUARD_V0.md`, which corrects an earlier OCR-based figure).
   - It does score classic "ignore previous instructions" jailbreaks at 0.996 or above, while the AgentDojo payload scores 0.005.
   - The one score-based rule therefore never fires; with the detector on, both replay halves make identical decisions.
@@ -215,6 +215,20 @@ Stopped by the rule set for the run (baseline utility under about 30%). **No att
 - **Stock template:** Ollama's template hides the tool list after the first tool result, so multi-step tasks cannot finish.
 - **Second try, tools visible on every turn** (same weights, both arms, disclosed): ungated **2/40** (1.4–16.5%), gated 5/40 (5.5–26.1%), 14 blocks and 3 asks on clean runs. Also under 30%, so again no attack. The change took effect (smallest prompt 99 → 2,494 tokens), so the template was not the main cause. Gated vs ungated here is run-to-run variance, not a gate benefit.
 - **Stock run: all 12 blocks were on clean runs, on values the model made up** (`participants='null'`, `file_id='123456789'`). They cost one task (12). The other arm differences (tasks 4, 5, 6, 27) had no block, so they are run-to-run variance.
+
+### (n) Prompt Guard 2 86M next to the 22M (Nov 2, 2026)
+
+Same texts, fixed 0.5 threshold, CPU, no API cost. The gate still uses the 22M and was not changed. Details are in `eval/LAYER1.md`.
+
+| texts | model | flagged at 0.5 | false positives | AUC | highest injected score |
+|---|---|---|---|---|---|
+| 378 injected / 55 clean tool outputs | 22M | 0/378 | 0/55 | 0.886 | 0.32 |
+| 378 injected / 55 clean tool outputs | 86M | **125/378 (33.1%)** | 0/55 | 0.997 | 0.99 |
+| 60 planted image lines / 60 clean OCR texts | 22M | 0/60 | 0/60 | 0.787 | 0.0016 |
+| 60 planted image lines / 60 clean OCR texts | 86M | 0/60 | 0/60 | 0.023 | 0.0007 |
+
+- The 86M result holds in both halves (55/182, 70/196) and is uneven by goal (goal 9: 25/27; goals 3, 7, 11, 13: 3–4 of 27).
+- Two thirds of injected outputs still pass, and it catches none of the image lines. The 86M in the gate, including the sender rule, is untested.
 
 ## Limits
 

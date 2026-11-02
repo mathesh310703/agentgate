@@ -134,7 +134,7 @@ def report() -> list:
                          "clean_blocked": c["gate"]["user_calls_blocked"], "clean_asked": c["gate"]["user_calls_asked"],
                          "clean_calls": c["gate"]["user_calls"], "attacked_blocked": a["gate"]["user_calls_blocked"],
                          "attacked_asked": a["gate"]["user_calls_asked"], "attacked_calls": a["gate"]["user_calls"],
-                         "utility_attacked": f"{a['none']['utility']}/{a['none']['pairs']} → {a['gate']['utility']}/{a['gate']['pairs']}"})
+                         "utility_attacked": f"{a['none']['utility']}/{a['none']['pairs']} -> {a['gate']['utility']}/{a['gate']['pairs']}"})
     return rows
 
 

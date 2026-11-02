@@ -1,0 +1,46 @@
+{
+ "none": {
+  "pairs": 105,
+  "attack_success": 105,
+  "utility": 102,
+  "replayable_pairs": 105,
+  "attack_success_replayable": 105
+ },
+ "gate": {
+  "pairs": 105,
+  "attack_success": 34,
+  "utility": 42,
+  "user_calls": 490,
+  "user_calls_blocked": 115,
+  "user_calls_asked": 0,
+  "user_calls_blocked_sender_rule": 0,
+  "user_tasks_with_block": 14,
+  "user_tasks_with_ask": 0,
+  "injection_calls": {
+   "block": 134,
+   "allow": 139
+  },
+  "judge": {
+   "user": {},
+   "injection": {}
+  },
+  "replayable_pairs": 105,
+  "attack_success_replayable": 34
+ },
+ "replayable_goals": [
+  "injection_task_1",
+  "injection_task_2",
+  "injection_task_3",
+  "injection_task_4",
+  "injection_task_5"
+ ],
+ "write_tools_without_rule": [
+  "invite_user_to_slack"
+ ],
+ "gate_latency_s": {
+  "calls": 763,
+  "median": 3.9000005926936865e-06,
+  "p95": 0.00014349998673424125,
+  "max": 0.0008681000035721809
+ }
+}

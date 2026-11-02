@@ -120,6 +120,8 @@ python scripts/run_worstcase.py --split tune --mode clean --policy examples.my_p
 - The first command replays each task against all 14 injection goals, and the second without injections, for false blocks.
 - Attack success, utility, and user calls blocked or asked print at the end and land in `<out>/summary.json`. Every call's decision and reason is in `<out>/results.json`.
 
+**Zero-config policies (optional).** `agentgate/policy_synth.py` has Muse Spark Open propose a reviewable policy from tool schemas alone. Frozen before measuring, worst-case replay, gated attack success: banking 0/144, slack 13/105, travel 76/120, workspace 0/240, with clean utility 7/16, 9/21, 20/20, 33/40. That stops as much as the hand-written rules (A) but blocks more legitimate work, and travel stays mostly open (`eval/SYNTH_V0.md`).
+
 ## Budgets and guards (agentlab/llm.py)
 
 - Every call names a stage; budgets (USD): dev 5, baseline 15, defense 20, benchmark 30, arena 20, reserve 10. A call whose worst-case cost would exceed its stage budget is refused before sending.

@@ -270,6 +270,22 @@ Stopped by the rule set for the run (ungated utility without attack under 30%). 
 - **Exposure is not confirmed per episode:** transcripts were not saved. Every call returned normally, with no upstream refusal.
 - **Not run:** `manual` (needs typed input) and the 5 DoS attacks (no injection goal).
 
+### (r) Zero-config policies from tool schemas (Nov 2, 2026, tag `synth-v0`)
+
+**A policy generated from tool names, descriptions and argument schemas alone stops as much as the hand-written rules (A), but blocks more legitimate work.** Muse Spark Open classified each tool once; the files were frozen, with SHA-256 recorded, before any replay. Worst-case replay, attack success by calls that ran. Details are in `eval/SYNTH_V0.md`; cost $0.12.
+
+| suite | no gate | synthesized, **not tuned** | hand rules (A), tuned | hand rules + trust (B), tuned | clean utility: synthesized / (A) / (B) |
+|---|---|---|---|---|---|
+| banking | 141/144 | **0/144** (0.0–2.6%) | 0/144 | 0/144 | 7/16 / 8/16 / 8/16 |
+| slack | 105/105 | **13/105** (7.4–20.0%) | 23/105 | 8/105 | 9/21 / 13/21 / 3/21 |
+| travel | 116/120 | **76/120** (54.4–71.4%) | 96/120 | 37/120 | 20/20 / 20/20 / 20/20 |
+| workspace, against the frozen default | 231/240 | **0/240** (0.0–1.6%) | 0/240 (frozen default) | – | 33/40 / 38/40 (frozen default) / – |
+
+- **Travel stays mostly open,** because the trust setting behind most of it was not synthesized. Its 20/20 says little: the legitimate replay makes only 6 write calls there.
+- **Fail-closed is new, and optional.** The frozen `Gate` allows a tool without a rule. `SynthGate` blocks a tool that is unknown or outside the file, and a deterministic floor rejects replies that would leave a write tool unchecked. 7 of 74 tools became unknown this way, and their legitimate calls are blocked too.
+- **A hostile model can still** call a read-named tool not risky, or leave an argument unchecked if its name doesn't look like a target. A person has to review the file. A test pins this.
+- **Episodes are clustered,** the replay is deterministic, and there was one generation, so its variation is not measured.
+
 ## Limits
 
 - **Only 6 of 14 injection goals are replayable.** AgentDojo ships empty ground truth for workspace injection tasks 6–13 (bulk exfiltration and deletion), so they are untested.

@@ -43,15 +43,20 @@ class RecordingGate(Gate):
     """Gate that keeps every Decision (with findings) so the replay can report sources.
     With a judge, its "ask" decisions go to the Layer 2 intent judge (agentgate/judge.py)."""
 
-    def __init__(self, policy, judge=None, prepare=None):
+    def __init__(self, policy, judge=None, prepare=None, recipient_trust=False):
         super().__init__(policy)
         self.judge = judge
         self.prepare = prepare   # optional (tool, args) -> args the gate sees (agentgate/policy_attach.py)
+        self.recipient_trust = recipient_trust   # optional layer (agentgate/policy_recipient.py)
         self.decisions = []
 
     def check(self, tool, args, session):
         seen = self.prepare(tool, args) if self.prepare else args
-        d = judge_decision(self.judge, super().check(tool, seen, session), args, session)
+        d = super().check(tool, seen, session)
+        if self.recipient_trust:
+            from agentgate.policy_recipient import downgrade
+            d = downgrade(d, tool, args, session, self.policy)
+        d = judge_decision(self.judge, d, args, session)
         self.decisions.append(d)
         return d
 
@@ -95,13 +100,14 @@ def load_policy(spec):
     return getattr(importlib.import_module(module), function)()
 
 
-def run(arm, suite, attack, pairs, scorer=None, judge=None, policy="default"):
+def run(arm, suite, attack, pairs, scorer=None, judge=None, policy="default", recipient_trust=False):
     gate = None
     if arm == "gate":
         if policy == "attach":
-            gate = RecordingGate(attach_policy(), judge, prepare=attach_args)
+            gate = RecordingGate(attach_policy(), judge, prepare=attach_args, recipient_trust=recipient_trust)
         else:
-            gate = RecordingGate(default_workspace_policy() if policy == "default" else load_policy(policy), judge)
+            gate = RecordingGate(default_workspace_policy() if policy == "default" else load_policy(policy), judge,
+                                 recipient_trust=recipient_trust)
     agent = CompromisedAgent(GatedToolsExecutor(gate, scorer=scorer) if gate else ToolsExecutor())
     pipeline = AgentPipeline([InitQuery(), agent])
     pipeline.name = f"vllm_parsed_worstcase_{arm}"
@@ -173,6 +179,9 @@ def main(argv=None):
     ap.add_argument("--policy", default="default",
                     help="default; attach (optional policy that also checks send_email attachments, "
                          "agentgate/policy_attach.py); or your own as package.module:function")
+    ap.add_argument("--recipient-trust", action="store_true",
+                    help="optional layer (agentgate/policy_recipient.py): a recipient trusted only via a sender/owner "
+                         "field becomes 'ask'")
     ap.add_argument("--port", default="8000")
     ap.add_argument("--out", required=True, help="output dir, e.g. runs/worstcase_v1_tune")
     a = ap.parse_args(argv)
@@ -198,7 +207,7 @@ def main(argv=None):
     if a.judge:
         from agentgate.judge import IntentJudge
         judge = IntentJudge(a.port, log_path=Path(a.out) / "judge_log.jsonl")
-    results = run("none", suite, attack, pairs) + run("gate", suite, attack, pairs, scorer, judge, a.policy)
+    results = run("none", suite, attack, pairs) + run("gate", suite, attack, pairs, scorer, judge, a.policy, a.recipient_trust)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "results.json").write_text(json.dumps(results, indent=1), encoding="utf-8")

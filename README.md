@@ -1,6 +1,6 @@
 # AgentGate
 
-AgentGate is a plugin for browser agents that stops untrusted on-screen content (page text, images, popups, chat widgets) from commanding the agent: only the user's task may direct actions, and everything the agent reads from a page is treated as data. This repo holds the plugin work and its evaluation harness; the vision model under test is Muse Spark Open via Baseten's OpenAI-compatible Model API.
+AgentGate is a plugin for browser agents: everything the agent reads from a page (text, images, popups, chat widgets) is treated as untrusted data, so only the user's task directs actions. The gate is deterministic code with no model in it, and its protection is measured against a *scripted* worst-case agent that obeys every injection (see Results) — not against a model that was actually fooled. This repo holds the plugin work and its evaluation harness; the vision model under test is Muse Spark Open via Baseten's OpenAI-compatible Model API.
 
 ## Install and try it in one minute
 
@@ -27,6 +27,8 @@ OCR and the MCP server are optional extras: `pip install "agentgate[ocr,mcp] @ g
 - **Tested from a fresh install:** only Python 3.11, and only the `ocr` and `mcp` extras.
 
 License: MIT. Llama Prompt Guard 2 keeps its own license, noted below.
+
+Built with Claude (Anthropic) as a coding assistant; the author directed the design and ran the experiments.
 
 ## What is new here
 
@@ -72,7 +74,7 @@ Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md)
 - **The attacker in the headline replay is scripted.** No strong model failed on the real benchmark: Muse Spark [resisted](eval/ATTACKTYPES_V0.md), two local text models completed too few tasks ([Llama 3.1](eval/LLAMA31_V0.md) 4/40, [Qwen3](eval/QWEN3_TEXT_V0.md) 8/40), and the [instructed-compliant agent](eval/COMPLIANT_V0.md)'s 1/40 vs 0/40 is not evidence of protection.
 - **5 trust gaps still get through:** an attacker-chosen sender, an address already in contacts, a plus-address boundary, a listed-but-wrong file id, and a wrong-object id. Attachments are closed only by the optional policy ([report](eval/ADAPTIVE_V0.md)).
 - **Model-driven red-team (Muse Spark Open as attacker):** 30 of 90 episodes bypassed the frozen gate, all of them the known attacker-chosen `sender`/`owner` trust gap (#28); 0 new bypasses, 0 on the image channel, 0 refusals ([report](eval/REDTEAM_MUSESPARK_V0.md)).
-- **An optional layer closes that gap (off by default):** `agentgate/policy_recipient.py` turns a recipient trusted only via a `sender`/`owner` field into `ask`. With it on, the same model attack bypasses 0/90 (0.0–4.1%), the 30 saved bypasses all become `ask`, and 0 legitimate held-out workspace calls are newly asked ([report](eval/RECIPIENT_TRUST_V0.md)).
+- **An optional layer closes that gap — off by default, and written after the first red-team run:** `agentgate/policy_recipient.py` turns a recipient trusted only via a `sender`/`owner` field into `ask`. With it on, the same model attack bypasses 0/90 (0.0–4.1%) in this harness (the attacker can only set `sender` and `owner`), the 30 saved bypasses all become `ask`, and 0 legitimate held-out workspace calls are newly asked. Gaps #27, #29, #33 and #34 are untested ([report](eval/RECIPIENT_TRUST_V0.md)).
 - **Branch steering:** a call whose arguments all trace to trusted sources, but whose choice was caused by untrusted text, is not caught ([report](eval/ADAPTIVE_V0.md)).
 - **Other AgentDojo suites:** with the frozen policy, banking (141 to 16 of 144) and Slack (105 to 23 of 105) improve at a utility cost, and travel does not (116 of 120 both ways). Rules tuned afterwards reach 37/120 on travel, but are not held out ([report](eval/SUITES_V0.md)). [Zero-config policies](eval/SYNTH_V0.md) are a starting point to review, and cost utility.
 - **Samples are small and clustered,** the held-out half is not fully blind, and only 6 of 14 AgentDojo goals are replayable ([RESULTS](RESULTS.md#limits)).
@@ -209,5 +211,6 @@ Hugging Face after accepting the license there. Put your Hugging Face token in `
 Offline tests use a stub scorer and need neither the model nor the token.
 
 **Meta tooling used:**
-- **Muse Spark Open** (through Baseten): the agent under test, the intent judge, and the optional image reader. The planted address is traced to the image on 60/60 carriers with the reader, vs 50/60 with OCR alone; no gate decision changes (`eval/READER_V0.md`).
+- **Muse Spark Open** (through Baseten): the agent under test, the Layer 2 intent judge, the optional image reader, and the attacker in the model-driven red-team (`eval/REDTEAM_MUSESPARK_V0.md`). The planted address is traced to the image on 60/60 carriers with the reader, vs 50/60 with OCR alone; no gate decision changes (`eval/READER_V0.md`).
+- **Optional vs always on:** the gate itself contains no model. The image reader, the 86M detector and the recipient-trust layer are optional and off by default; the 22M detector is loadable but its one rule never fires; the Layer 2 judge is part of the final configuration but reviews only `ask` decisions.
 - **Llama Prompt Guard 2:** measured at 0.5 (`eval/LAYER1.md`). 22M flags 0/378 injected tool outputs and 0/60 planted image lines; 86M flags 125/378 and 0/60. Neither has a false positive on the clean set (0/55 outputs, 0/60 OCR texts). The 86M reaches AUC 0.997 on tool outputs and shows no signal on image lines.

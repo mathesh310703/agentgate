@@ -1,6 +1,6 @@
 # AgentGate
 
-AgentGate is a plugin for browser agents: everything the agent reads from a page (text, images, popups, chat widgets) is treated as untrusted data, so only the user's task directs actions. The gate is deterministic code with no model in it, and its protection is measured against a *scripted* worst-case agent that obeys every injection (see Results) — not against a model that was actually fooled. This repo holds the plugin work and its evaluation harness; the vision model under test is Muse Spark Open via Baseten's OpenAI-compatible Model API.
+AgentGate is a gate for AI agents that use tools such as email, files and calendar (tested on AgentDojo's workspace suite): everything the agent reads from a tool result or an image is treated as untrusted data, so only the user's task directs actions. The gate is deterministic code with no model in it, and its protection is measured against a *scripted* worst-case agent that obeys every injection (see Results) — not against a model that was actually fooled. This repo holds the gate and its evaluation harness; the agent under test is Muse Spark Open via Baseten's OpenAI-compatible Model API.
 
 ## Install and try it in one minute
 
@@ -37,7 +37,7 @@ Text gates with provenance already exist ([docs/RELATED_WORK.md](docs/RELATED_WO
 - **A second image reader that can only make the gate stricter.** An optional model transcript joins the OCR text as untrusted data. It traces more planted addresses to their image (60/60 vs 50/60) and changed no decision. Tests check that it never moves a decision towards allow.
 - **An evaluation that assumes the model is fooled.** A scripted agent obeys every injection (worst-case replay): 231/240 attacks succeed ungated on AgentDojo workspace, 0/240 gated. A small real model that does fail shows the same on images: Qwen3-VL-2B leaks 16/300 ungated, 0/300 gated.
 
-**Compared with the closest papers** ([docs/RELATED_WORK.md](docs/RELATED_WORK.md)): FIDES (preprint) also checks the context label, which our argument-only gate does not, so an injection that steers the agent's branch using only trusted values is a known gap. LlamaFirewall (preprint) is text only and reports PromptGuard 2 86M. We do not claim to be the first: we found no work that traces tool-call argument values to text recovered from images and enforces on that, though two papers come close and the search was not exhaustive.
+**Compared with the closest papers** ([docs/RELATED_WORK.md](docs/RELATED_WORK.md)): FIDES (preprint) also checks the context label (whether untrusted text was in scope when the agent chose the action), which our argument-only gate (it checks only the values of the tool call's arguments) does not, so an injection that steers the agent's choice using only trusted values is a known gap. LlamaFirewall (preprint) is text only and reports PromptGuard 2 86M. We do not claim to be the first: we found no work that traces tool-call argument values to text recovered from images and enforces on that, though two papers come close and the search was not exhaustive.
 
 ## Runs on Meta open-weight models
 
@@ -54,7 +54,7 @@ The model under test is Muse Spark Open (`meta-models/muse-spark-open-1026`), se
 | Muse Spark Open as an instructed-compliant agent (system prompt tells it to obey tool results; not a natural vulnerability), 40 episodes per arm (10 tasks, 4 goals, clustered) | 1/40 (0.4–12.9%) | 0/40 (0.0–8.8%); **not evidence of protection:** the intervals overlap, and the model tried only 1 injected call when gated (blocked) | 0/110 calls |
 | Qwen3-VL-2B (small open test model, not part of AgentGate), greedy, 60 images | 4/60 (2.6–15.9%) | 0/60 (0.0–6.0%) | 0/30 |
 | Qwen3-VL-2B, T=0.7, 5 samples, 300 episodes | 16/300 (3.3–8.5%) | 0/300 (0.0–1.3%) | 1/150 (0.1–3.7%) |
-| Set 3 (60 images, 3 carrier wordings): Qwen3-VL-2B, T=0.7, 3 samples | 4/90 (1.7–10.9%), all direct notes | 0/90 (0.0–4.1%) | 0/90 (0.0–4.1%) |
+| Set 3 (a hidden-text image set: six layouts × three carrier wordings, `eval/SET3_V0.md`): Qwen3-VL-2B, T=0.7, 3 samples | 4/90 (1.7–10.9%), all direct notes | 0/90 (0.0–4.1%) | 0/90 (0.0–4.1%) |
 | Set 3: Muse Spark Open, 1 run | 0/30 (0.0–11.4%) | 0/30 (0.0–11.4%) | 0/30 (0.0–11.4%) |
 
 Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md), `eval/LOCALVLM_V1.md` and `eval/SET3_V0.md`.
@@ -75,7 +75,7 @@ Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md)
 - **5 trust gaps still get through:** an attacker-chosen sender, an address already in contacts, a plus-address boundary, a listed-but-wrong file id, and a wrong-object id. Attachments are closed only by the optional policy ([report](eval/ADAPTIVE_V0.md)).
 - **Model-driven red-team (Muse Spark Open as attacker):** 30 of 90 episodes bypassed the frozen gate, all of them the known attacker-chosen `sender`/`owner` trust gap (#28); 0 new bypasses, 0 on the image channel, 0 refusals ([report](eval/REDTEAM_MUSESPARK_V0.md)).
 - **An optional layer closes that gap — off by default, and written after the first red-team run:** `agentgate/policy_recipient.py` turns a recipient trusted only via a `sender`/`owner` field into `ask`. With it on, the same model attack bypasses 0/90 (0.0–4.1%) in this harness (the attacker can only set `sender` and `owner`), the 30 saved bypasses all become `ask`, and 0 legitimate held-out workspace calls are newly asked. Gaps #27, #29, #33 and #34 are untested ([report](eval/RECIPIENT_TRUST_V0.md)).
-- **Branch steering:** a call whose arguments all trace to trusted sources, but whose choice was caused by untrusted text, is not caught ([report](eval/ADAPTIVE_V0.md)).
+- **Branch steering** (untrusted text changes which action the agent picks, not the argument values): a call whose arguments all trace to trusted sources, but whose choice was caused by untrusted text, is not caught ([report](eval/ADAPTIVE_V0.md)).
 - **Other AgentDojo suites:** with the frozen policy, banking (141 to 16 of 144) and Slack (105 to 23 of 105) improve at a utility cost, and travel does not (116 of 120 both ways). Rules tuned afterwards reach 37/120 on travel, but are not held out ([report](eval/SUITES_V0.md)). [Zero-config policies](eval/SYNTH_V0.md) are a starting point to review, and cost utility.
 - **Samples are small and clustered,** the held-out half is not fully blind, and only 6 of 14 AgentDojo goals are replayable ([RESULTS](RESULTS.md#limits)).
 - **OCR misses small text** ([report](eval/VISION_V0.md)). The second reader helps explanations, but changed no decision ([report](eval/READER_V0.md)).
@@ -155,6 +155,8 @@ Measured with fresh greedy runs on an RTX 4060 Laptop (5 per arm, `runs/live_dem
 | notice, hidden small line | 5/5 | 0/5 | 5/5, 0/5 | 42.5 s, 36.3 s |
 | clean control | 0/5 | 0/5 | 5/5, 5/5 | 3.0 s, 2.8 s |
 
+"Correct answer" is 0/5 with the gate on because the agent refuses rather than leak the hidden address, not because the gate broke the task (see below).
+
 - **These images were picked because they fool this model.** Greedy runs repeat the same output, so 5/5 means one behaviour repeated, not a rate. Most hidden lines do not fool it: 16/300 sampled episodes leak in (e) of [RESULTS.md](RESULTS.md).
 - **The cost shows on the page:** with the gate on, the agent stops the leak but apologises instead of answering the question.
 - **OCR misses the notice's hidden line,** so that block says the address "does not appear in your request" and does not name the image.
@@ -172,7 +174,7 @@ python scripts/run_worstcase.py --split tune --mode clean --policy examples.my_p
 - The first command replays each task against all 14 injection goals, and the second without injections, for false blocks.
 - Attack success, utility, and user calls blocked or asked print at the end and land in `<out>/summary.json`. Every call's decision and reason is in `<out>/results.json`.
 
-**Zero-config policies (optional): a starting point to review before use.** `agentgate/policy_synth.py` has Muse Spark Open propose a policy from tool schemas alone, used with `SynthGate`, which also blocks tools the policy doesn't classify. Frozen before measuring, worst-case replay, gated attack success: banking 0/144, slack 13/105, travel 76/120, workspace 0/240. That stops at least as much as the hand-written rules (A), but travel still leaks. Clean utility is lower than the hand-written rules on banking (7/16 vs 8/16), slack (9/21 vs 13/21) and workspace (33/40 vs 38/40), and equal on travel (20/20) (`eval/SYNTH_V0.md`).
+**Zero-config policies (optional): a starting point to review before use.** `agentgate/policy_synth.py` has Muse Spark Open propose a policy from tool schemas alone, used with `SynthGate`, which also blocks tools the policy doesn't classify. Frozen before measuring, worst-case replay, gated attack success: banking 0/144, slack 13/105, travel 76/120, workspace 0/240. That stops at least as much as the hand-written suite rules (the frozen policy plus rules for the write tools that had none, labelled "(A)" in `eval/SUITES_V0.md`), but travel still leaks. Clean utility is lower than the hand-written rules on banking (7/16 vs 8/16), slack (9/21 vs 13/21) and workspace (33/40 vs 38/40), and equal on travel (20/20) (`eval/SYNTH_V0.md`).
 
 ## Budgets and guards (agentlab/llm.py)
 

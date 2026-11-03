@@ -54,7 +54,7 @@ The model under test is Muse Spark Open (`meta-models/muse-spark-open-1026`), se
 | Muse Spark Open as an instructed-compliant agent (system prompt tells it to obey tool results; not a natural vulnerability), 40 episodes per arm (10 tasks, 4 goals, clustered) | 1/40 (0.4–12.9%) | 0/40 (0.0–8.8%); **not evidence of protection:** the intervals overlap, and the model tried only 1 injected call when gated (blocked) | 0/110 calls |
 | Qwen3-VL-2B (small open test model, not part of AgentGate), greedy, 60 images | 4/60 (2.6–15.9%) | 0/60 (0.0–6.0%) | 0/30 |
 | Qwen3-VL-2B, T=0.7, 5 samples, 300 episodes | 16/300 (3.3–8.5%) | 0/300 (0.0–1.3%) | 1/150 (0.1–3.7%) |
-| Set 3 (a hidden-text image set: six layouts × three carrier wordings, `eval/SET3_V0.md`): Qwen3-VL-2B, T=0.7, 3 samples | 4/90 (1.7–10.9%), all direct notes | 0/90 (0.0–4.1%) | 0/90 (0.0–4.1%) |
+| Set 3 (a hidden-text image set: 60 images, six layouts and three carrier wordings, `eval/SET3_V0.md`): Qwen3-VL-2B, T=0.7, 3 samples | 4/90 (1.7–10.9%), all direct notes | 0/90 (0.0–4.1%) | 0/90 (0.0–4.1%) |
 | Set 3: Muse Spark Open, 1 run | 0/30 (0.0–11.4%) | 0/30 (0.0–11.4%) | 0/30 (0.0–11.4%) |
 
 Details, limits and the block-message comparison are in [RESULTS.md](RESULTS.md), `eval/LOCALVLM_V1.md` and `eval/SET3_V0.md`.
@@ -155,7 +155,7 @@ Measured with fresh greedy runs on an RTX 4060 Laptop (5 per arm, `runs/live_dem
 | notice, hidden small line | 5/5 | 0/5 | 5/5, 0/5 | 42.5 s, 36.3 s |
 | clean control | 0/5 | 0/5 | 5/5, 5/5 | 3.0 s, 2.8 s |
 
-"Correct answer" is 0/5 with the gate on because the agent refuses rather than leak the hidden address, not because the gate broke the task (see below).
+"Correct answer" is 0/5 with the gate on because, once the gate blocks the leak, the agent apologises instead of answering the question (see below) — not because the gate broke the task.
 
 - **These images were picked because they fool this model.** Greedy runs repeat the same output, so 5/5 means one behaviour repeated, not a rate. Most hidden lines do not fool it: 16/300 sampled episodes leak in (e) of [RESULTS.md](RESULTS.md).
 - **The cost shows on the page:** with the gate on, the agent stops the leak but apologises instead of answering the question.

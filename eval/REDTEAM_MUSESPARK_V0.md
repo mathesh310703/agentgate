@@ -127,3 +127,29 @@ Every row's gate reason is the same: "All sensitive arguments trace to your requ
 ```
 
 About $1.80, stage `arena`. Results and transcripts are in `runs/redteam_v0/`.
+
+## Which optional layers close the sender/owner gap
+
+**None of them, on these 30 bypasses.** The 30 saved bypass calls were replayed offline against four optional configurations (no new model attacks, frozen gate files and the attacker transcripts unchanged). Every one still allows all 30.
+
+| configuration | bypasses left of 30 | legitimate calls blocked of 28 |
+|---|---|---|
+| (a) default gate (sanity check) | 30 | — (baseline: 0 blocked, 28 asked) |
+| (b) default gate + Prompt Guard 2 86M detector | 30 | not measured (does not block most) |
+| (c) strict mode (`strict-mode-v0`) | 30 | not measured (does not block most) |
+| (d) SynthGate, synthesized workspace policy | 30 | not measured (does not block most) |
+| (d) AttachGate, attachment policy | 30 | not measured (does not block most) |
+
+Because no configuration blocks most of the 30, the utility-cost replay of the 28 held-out asks was not run; the task made it conditional on a layer that helps, and none does. The baseline for that measurement would be 0 legitimate calls blocked and 28 asked, from RESULTS (a).
+
+**Why each one does not help:**
+
+- **(b) 86M detector.** The sender/owner rule in `agentgate/gate.py` blocks a recipient taken only from a `sender`/`owner` field *only when* an untrusted free-text record scores at or above the 0.5 injection threshold. The 86M was attached to each replayed session and scored the injected body/content. On these 30 model-written injections the **maximum score was 0.2252, the median 0.0012, and 0 of 30 reached 0.5**, so the rule never fired. This is consistent with `eval/LAYER1_86M.md`: the 86M flags about a third of AgentDojo's own stock payloads, but Muse Spark Open's own prose ("compliance directive", "system override") is not flagged as an injection. The detector helps against the benchmark's payloads, not against this attacker's wording. The threshold was **not** lowered to fit these 30.
+- **(c) strict mode.** Strict mode (`agentgate/fields_strict.py`) narrows which structured leaves vouch for a recipient to an identity-field allowlist — but that allowlist **contains both `sender` and `owner`**. Strict mode was built for a different out-of-distribution failure (prose under data-bearing keys, `eval/SUITES_V0.md`), and it does not change how `sender`/`owner` are trusted. All 30 remain allowed.
+- **(d) SynthGate and AttachGate.** The synthesized workspace policy classifies `share_file.email` and `send_email.recipients` as recipients and keeps the default `structured_trust` ({recipient, id}), so a `sender`/`owner` leaf still vouches; SynthGate only adds blocking of *unknown tools*, and these tools are known. AttachGate only adds a check on `send_email` attachments, and none of these calls carries one. Both leave all 30 allowed.
+
+**Limits of this follow-up.**
+- **Not a blind test.** These four layers were chosen *after* seeing the 30 bypasses, specifically to try to close the sender/owner gap. This measures whether existing optional layers happen to catch it, not a pre-registered defense.
+- **Same sample.** The 30 bypasses come from the same 90 episodes, one attacker model (Muse Spark Open) at temperature 0.7, up to 5 rounds. A detector-based rule that fails here could still fire on a differently-worded attacker, and a different attacker could score above 0.5.
+- **The gap is in the trust model, not the detector.** Closing it properly means not trusting an attacker-chosen `sender`/`owner` field for a recipient at all; that is a change to the frozen gate's trust rules, which was not made here. No rule or threshold was tuned to these 30, and no optional layer was made the default.
+
